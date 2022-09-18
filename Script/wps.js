@@ -7,6 +7,7 @@
 
 [rewrite_local]
 ^https?:\/\/account\.wps\.cn\/api\/users url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/wps.js
+^https?:\/\/account\.wps\.cn\/api\/v3\/mine\/vips url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/wps_Docker.js
 ^https?:\/\/.+\.(docer.)?wps.cn\/(user\/v1\/vip|android\/mb\/buy|download\/v1\/ios|partner\/invoke\/usable|(api|rank)\/v1(\/mobile\/mb)?\/detail) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/wpsDocker.js
 
 [mitm]
