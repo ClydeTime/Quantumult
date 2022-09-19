@@ -17,7 +17,7 @@ hostname = ap*.intsig.net
 **************************/
 
 var body = JSON.parse($response.body);
-body.data.psnl_vip_property = {
+body[data]["psnl_vip_property"] = {
       "product_id" : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
       "initial_tm" : "1614867690",
       "svip" : 1,
