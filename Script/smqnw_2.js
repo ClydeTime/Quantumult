@@ -19,7 +19,7 @@ hostname = ap*.intsig.net
 
 var body = JSON.parse($response.body);
 body["data"] = {
-    watchad_vip_chance_total : "999",
+    watchad_vip_chance_total : "3",
     pdfword_balance : "1",
     points_exchange_cfgrs : {
       CamScanner_ID_Card_Credit : 500,
@@ -65,11 +65,11 @@ body["data"] = {
     balance_demoire : 998,
     CamScanner_RoadMap : "0",
     vip_balance_recolor : 1000,
-    watermarks_balance : 0,
+    watermarks_balance : 1,
     immt_expy_points : "0",
     server_time : body.data.server_time.toString(),
     points : "99999",
-    fax_balance : "0",
+    fax_balance : "1",
     CamScanner_Erase : 1000,
     greetcard_list : {
       CamScanner_NONVIP_PayGreetCard_1 : "0",
