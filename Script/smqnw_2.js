@@ -2,6 +2,7 @@
 
 脚本功能：扫描全能王-手机扫描仪+解锁VIP
 更新时间：2022-9-19
+By MartinsKing
 使用声明：⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 
 *******************************
@@ -67,7 +68,7 @@ body["data"] = {
     watermarks_balance : 0,
     immt_expy_points : "0",
     server_time : body.data.server_time.toString(),
-    points : "9999",
+    points : "99999",
     fax_balance : "0",
     CamScanner_Erase : 1000,
     greetcard_list : {
