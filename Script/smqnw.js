@@ -26,7 +26,7 @@ body[data]["psnl_vip_property"] = {
   group2_paid: 0,
   inherited_flag: 0,
   nxt_renew_tm: "4417948799",
-  level_info: { level: 2, days: 1, end_days: 30 },
+  level_info: { level: 1, days: 1, end_days: 30 },
   group1_paid: 1,
   ys_first_pay: 0,
   renew_type: year,
