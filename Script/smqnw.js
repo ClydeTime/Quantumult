@@ -18,11 +18,11 @@ hostname = ap*.intsig.net
 
 var body = JSON.parse($response.body);
 body["data"] = {
-    fax_balance : "0",
+    fax_balance : "1",
     used_points : "0",
     cert_mode_balance : 0,
     login_ocr_balance : "10",
-    points : "9999",
+    points : "99999",
     psnl_vip_property : {
       product_id : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
       initial_tm : "1662040800",
@@ -46,8 +46,8 @@ body["data"] = {
       renew_method : "appstore",
       last_payment_method : "appstore"
     },
-    pdfword_balance : "0",
-    bookmode_balance : 20,
+    pdfword_balance : "1",
+    bookmode_balance : 999,
     immt_expy_points : "0",
     ocr_balance : 1000,
     no_login_ocr_balance : "2",
