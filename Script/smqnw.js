@@ -8,7 +8,7 @@
 
 [rewrite_local]
 
-^https:\/\/(api|api-cs)\.intsig\.net\/purchase\/cs\/query_property\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/smqnw.js
+^https:\/\/(api|api-cs)\.intsig\.net\/purchase\/cs\/query_property\? url script-response-body https://github.com/ClydeTime/Quantumult/blob/main/Script/smqnw.js
 
 [mitm]
 
@@ -16,8 +16,8 @@ hostname = ap*.intsig.net
 
 **************************/
 
-let body = JSON[parse]($response[body]);
-body[data]["psnl_vip_property"] = {
+var body = JSON.parse($response.body);
+body.data["psnl_vip_property"] = {
       "product_id" : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
       "initial_tm" : "1614867690",
       "svip" : 1,
@@ -40,4 +40,4 @@ body[data]["psnl_vip_property"] = {
       "renew_method" : "appstore",
       "last_payment_method" : "appstore"
 };
-$done({ body: JSON[stringify](body) });
+$done({ body: JSON.stringify(body) });
