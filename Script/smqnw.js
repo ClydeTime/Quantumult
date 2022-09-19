@@ -1,7 +1,8 @@
 /******************************
 
 脚本功能：扫描全能王-手机扫描仪+解锁VIP
-更新时间：2022-9-9
+更新时间：2022-9-19
+By MartinsKing
 使用声明：⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 
 *******************************
@@ -9,6 +10,7 @@
 [rewrite_local]
 
 ^https:\/\/(api|api-cs)\.intsig\.net\/purchase\/cs\/query_property\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/smqnw.js
+^https:\/\/(api|api-cs)\.intsig\.net\/purchase\/cs\/query_property\?.+\%(7CCamScanner_Pdfword%) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/smqnw_2.js
 
 [mitm]
 
