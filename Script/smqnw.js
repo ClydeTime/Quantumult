@@ -17,8 +17,8 @@ hostname = ap*.intsig.net
 **************************/
 
 var body = JSON.parse($response.body);
-body[data]["psnl_vip_property"] = {
-  renew_method : "appstore",
+body["data"]["psnl_vip_property"] = {
+  product_id : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
   initial_tm : "1614867690",
   svip : 1,
   auto_renewal : true,
@@ -37,8 +37,8 @@ body[data]["psnl_vip_property"] = {
   renew_type : "year",
   expiry : 8487890487,
   grade : 2,
-  last_payment_method : "appstore",
-  product_id : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low"
+  renew_method : "appstore",
+  last_payment_method : "appstore"  
 };
 
 $done({ body: JSON.stringify(body) });
