@@ -9,6 +9,7 @@
 [rewrite_local]
 
 ^https:\/\/(api|api-cs)\.intsig\.net\/purchase\/cs\/query_property\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/smqnw.js
+
 [mitm]
 
 hostname = ap*.intsig.net
@@ -18,20 +19,20 @@ hostname = ap*.intsig.net
 let body = JSON[parse]($response[body]);
 body[data]["psnl_vip_property"] = {
   renew_method: appstore,
-  initial_tm: 1614867690,
-  svip: 0x1,
-  auto_renewal: !![],
-  ms_first_pay: 0x0,
-  pending: 0x0,
-  group2_paid: 0x0,
-  inherited_flag: 0x0,
-  nxt_renew_tm: "9915126887",
-  level_info: { level: 0x1, days: 0x1, end_days: 0x1e },
-  group1_paid: 0x1,
-  ys_first_pay: 0x0,
+  initial_tm: 1662040830,
+  svip: 1,
+  auto_renewal: true,
+  ms_first_pay: 0,
+  pending: 0,
+  group2_paid: 0,
+  inherited_flag: 0,
+  nxt_renew_tm: "4417948799",
+  level_info: { level: 1, days: 1, end_days: 30 },
+  group1_paid: 1,
+  ys_first_pay: 0,
   renew_type: year,
-  expiry: 0x1f9eaee37,
-  grade: 0x2,
+  expiry: 4102415999,
+  grade: 2,
   last_payment_method: appstore,
   product_id: com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low
 };
