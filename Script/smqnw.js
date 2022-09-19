@@ -47,10 +47,10 @@ body[data] = {
       "renew_method" : "appstore"
     },
     "pdfword_balance" : "0",
-    "bookmode_balance" : 50,
+    "bookmode_balance" : 20,
     "immt_expy_points" : "0",
-    "no_login_ocr_balance" : "5",
-    "ocr_balance" : 1000,
+    "no_login_ocr_balance" : "3",
+    "ocr_balance" : 15,
     "server_time" : body.data.server_time,
     "CamScanner_RoadMap" : "0"
 };
