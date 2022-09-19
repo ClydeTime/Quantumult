@@ -17,28 +17,42 @@ hostname = ap*.intsig.net
 **************************/
 
 var body = JSON.parse($response.body);
-body["data"]["psnl_vip_property"] = {
-  product_id : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
-  initial_tm : "1614867690",
-  svip : 1,
-  auto_renewal : true,
-  ms_first_pay : 0,
-  pending : 0,
-  group2_paid : 0,
-  inherited_flag : 0,
-  nxt_renew_tm : "9915126887",
-  level_info : {
-    level : 1,
-    days : 1,
-    end_days : 30 
-  },
-  group1_paid : 1,
-  ys_first_pay : 0,
-  renew_type : "year",
-  expiry : 8487890487,
-  grade : 2,
-  renew_method : "appstore",
-  last_payment_method : "appstore"  
+body["data"] = {
+    fax_balance : "0",
+    used_points : "0",
+    cert_mode_balance : 0,
+    login_ocr_balance : "10",
+    points : "0",
+    psnl_vip_property : {
+      product_id : "com.intsig.camscanner.premiums.oneyear.autorenewable.svip.low",
+      initial_tm : "1614867690",
+      svip : 1,
+      auto_renewal : true,
+      ms_first_pay : 0,
+      pending : 0,
+      group2_paid : 0,
+      inherited_flag : 0,
+      nxt_renew_tm : "9915126887",
+      level_info : {
+        level : 1,
+        days : 1,
+        end_days : 30
+      },
+      group1_paid : 1,
+      ys_first_pay : 0,
+      renew_type : "year",
+      expiry : 8487890487,
+      grade : 2,
+      renew_method : "appstore",
+      last_payment_method : "appstore"
+    },
+    pdfword_balance : "0",
+    bookmode_balance : 20,
+    immt_expy_points : "0",
+    ocr_balance : 14,
+    no_login_ocr_balance : "2",
+    server_time : body.data.server_time.toString(),
+    CamScanner_RoadMap : "0"
 };
 
 $done({ body: JSON.stringify(body) });
