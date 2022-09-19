@@ -1,8 +1,16 @@
-/*
+/******************************
 脚本功能：知乎优化
 使用声明：⚠️⚠️⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
-*/
+*******************************
+    
+[rewrite_local]
+https://www.zhihu.com/appview/ url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/zhihu1.js
+^https?:\/\/link\.zhihu\.com\/\?target\=.*$ url script-echo-response https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/zhihu2.js
 
+[mitm]
+hostname = www.zhihu.com, link.zhihu.com
+
+**************************/
 
 var modifyUrl = $request['url'];
 var modifyBody = $response['body']['replace'](/\"is\_copyable\"\ ?\:\ ?false/g, '"is_copyable":true')['replace'](/\"isCopyable\"\ ?\:\ ?false/g, '"isCopyable":true')['replace']('class="AppBar-rightButton"', 'class="AppBar-rightButton" style="visibility:hidden;"')['replace'](/style\=\"font\-size\:17px\"/g, 'style="font-size:17px;color:#777777;"')['replace'](/-webkit-user-select:\w+;?/g, '')['replace'](/-moz-user-select:\w+;?/g, '')['replace'](/-ms-user-select:\w+;?/g, '')['replace'](/user-select:\w+;?/g, '')['replace'](/-webkit-touch-callout:\w+;?/g, '')['replace'](/user-scalable=0/g, 'user-scalable=1')['replace'](/\"\>\d+(\.)?(\d*)?\ (万)?人赞同了该(回答|文章)\<\/a\>/g, '" style="display: none;visibility: hidden;">888 人赞同了码的字</a>')['replace'](/\<\/style\>/, '</style><style>.BottomShare{display: none!important;visibility: hidden!important;}</style>')['replace'](/\<p\>备案号:(\ )?\w+\<\/p\>/g, '')['replace'](/aria-label\=\"[一-龥]*?\"\/\>\<\/button\>/g, 'aria-label=""/></button>')['replace'](/class\=\"KfeCollection-GoodsCardV4-guide\"/g, 'class="KfeCollection-GoodsCardV4-guide" style="display:none!important;visibility:hidden!important;"');
