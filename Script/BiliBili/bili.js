@@ -10,10 +10,11 @@ hostname= *.bilibili.*
 */
 
 var body = JSON.parse($response.body);
-body.data.coin = 999;
-body.data.bcoin = 999.9;
+body.data.coin = 99999;
+body.data.bcoin = 99999.9;
 body.data.following = 999.9;
-body.data.follower = 999;
+body.data.follower = 9999999;
+body.data.dynamic = 0;
 body.data.vip_type = 2;
 body.data.level = 6;
 body.data.vip_section_v2 = {
