@@ -33,7 +33,7 @@ body.data.vip = {
 	status: 1,
 	avatar_subscript: 1,
 	nickname_color: "#FB7299",
-	due_date: 1676476800000,
+	due_date: 4102329600000,
 	role: 3,
 	vip_pay_type: 0,
 	avatar_subscript_url: "",
