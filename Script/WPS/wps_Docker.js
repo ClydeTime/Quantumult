@@ -9,7 +9,7 @@
 
 [rewrite_local]
 # > WPS解锁稻壳会员
-^https?:\/\/account\.wps\.cn\/api\/v3\/mine\/vips url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/wps_test.js
+^https?:\/\/account\.wps\.cn\/api\/v3\/mine\/vips url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_Docker.js
 
 [mitm] 
 hostname = account.wps.cn
