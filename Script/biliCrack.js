@@ -9,7 +9,7 @@ hostname= *.biliapi.*, *.bilibili.*
 
 */
 
-
+var body = JSON.parse($response.body);
 var obj = {
 	code : 0,
 	message : "0",
