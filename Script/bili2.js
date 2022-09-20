@@ -10,11 +10,7 @@ hostname= *.biliapi.*, *.bilibili.*
 */
 
 var body = JSON.parse($response.body);
-body.data.elec.list[0].vip_info = {
-	vipType: 2,
-	vipStatus: 1,
-	vipDueMsec: 0
-};
+
 body.data.card.fans = 999;
 body.data.card.level_info.current_level = 6;
 body.data.card.friend = 999;
