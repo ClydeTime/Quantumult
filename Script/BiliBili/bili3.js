@@ -79,6 +79,5 @@ body.data.user = {
       },
       avatar_pendant: null,
       is_tv_auto_renew: false
-    }
-
+};
 $done({ body: JSON.stringify(body) });
