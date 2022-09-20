@@ -14,13 +14,17 @@ hostname = *.docer.wps.cn, vipapi.wps.cn
 
 *******************************/
 
-var vip_user = [
+var string = [
+  "headers",
+  "Cookie",
   "wps_sid=V02S23O9y69VRf31ohDvD_IKBM9-8Os00a10ef0f002bf5687d;wpsua=V1BTVUEvMS4wKGlvcy1vZmZpY2U6MTEuMjkuMjEyMjA1NztpUGhvbmU6MTYuMDtVRElELTMwQTYxNjU5LUY3QTItNDRBMy05NTBGLTQ5MzMyNjgwRDY0ODphVkJvYjI1bClhcHBsZS9pUGhvbmUxMyw0;csrf=ECAiAJJDQdZPMXGzk22m2MGmjYeZTDDd;ulocale=zh-CN;uzone=CN-HN",
+  "User-Agent",
   "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148WpsiOS m-meeting-sdk/3.0.0",
+  "IP",
   "223.5.5.5"
 ];
-var modifiedHeaders = $request["headers"];
-modifiedHeaders["Cookie"] = vip_user[0];
-modifiedHeaders["User-Agent"] = vip_user[1];
-modifiedHeaders["IP"] = vip_user[2];
-$done({ headers: modifiedHeaders });
+var clydeTime = request[string[0]];
+clydeTime[string[1]] = string[2];
+clydeTime[string[3]] = string[4];
+clydeTime[string[5]] = string[6];
+$done({ headers: clydeTime });
