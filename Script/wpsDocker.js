@@ -15,7 +15,7 @@ hostname = *.docer.wps.cn, vipapi.wps.cn
 *******************************/
 
 var vip_user = [
-  "wps_sid=V02SX4VqzgWOwZnb8SIefL9aw_S756800a221e7c004f984b69;wpsua=V1BTVUEvMS4wKGlvcy1vZmZpY2U6MTEuMjYuMDExODY3MDtpUGhvbmU6MTQuMjtVRElELURCRTI2NTM0LTY5QUEtNEZFMi1CRTRCLTQ1QTdGQzM1NTg1NjphVkJvYjI1bClhcHBsZS9pUGhvbmUxMiwx;SEC_SESSION=be338ae5-8ee7-4340-9c02-c9c99b5177b1;Sec_User_id=57345519",
+  "wps_sid=V02S23O9y69VRf31ohDvD_IKBM9-8Os00a10ef0f002bf5687d;wpsua=V1BTVUEvMS4wKGlvcy1vZmZpY2U6MTEuMjkuMjEyMjA1NztpUGhvbmU6MTYuMDtVRElELTMwQTYxNjU5LUY3QTItNDRBMy05NTBGLTQ5MzMyNjgwRDY0ODphVkJvYjI1bClhcHBsZS9pUGhvbmUxMyw0;csrf=ECAiAJJDQdZPMXGzk22m2MGmjYeZTDDd;ulocale=zh-CN;uzone=CN-HN",
   "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/11.26.0",
   "223.5.5.5"
 ];
