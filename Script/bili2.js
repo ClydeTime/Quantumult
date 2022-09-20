@@ -5,25 +5,29 @@
 
 [mitm]
 
-hostname= *.biliapi.*, *.bilibili.*
+hostname= *.bilibili.*
 
 */
 
 var body = JSON.parse($response.body);
-
+body.data.elec.list[0].vip_info = {
+	vipType: 2,
+	vipStatus: 1,
+	vipDueMsec: 0
+};
 body.data.card.fans = 999;
 body.data.card.level_info.current_level = 6;
 body.data.card.friend = 999;
 body.data.card.attention = 0;
 body.data.card.vip = {
-	vipStatusWarn" : "",
-	vipType" : 2,
-	dueRemark" : "",
-	vipDueDate" : 1676476800000,
-	accessStatus" : 0,
-	vipStatus" : 1,
-	themeType" : 0,
-	label" : {
+	vipStatusWarn: "",
+	vipType: 2,
+	dueRemark: "",
+	vipDueDate: 1676476800000,
+	accessStatus: 0,
+	vipStatus: 1,
+	themeType: 0,
+	label: {
 		bg_color: "#FB7299",
 		bg_style: 1,
 		text: "年度大会员",
