@@ -13,6 +13,7 @@ var body = JSON.parse($response.body);
 body.data.coin = 999;
 body.data.bcoin = 999.9;
 body.data.vip_type = 2;
+body.data.level = 6;
 body.data.vip_section_v2 = {
 	id: 6465,
 	title: "我的大会员",
