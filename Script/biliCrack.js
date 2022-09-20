@@ -1,7 +1,7 @@
 /*
 
 [rewrite_local]
-^https:\/\/app\.bilibili\.com\/x\/v2\/account\/mine.*$ url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/biliCrack.js
+^https:\/\/app\.bilibili\.com\/x\/v2\/account\/myinfo\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/biliCrack.js
 
 [mitm]
 
