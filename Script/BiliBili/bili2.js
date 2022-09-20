@@ -11,15 +11,16 @@ hostname= *.bilibili.*
 
 var body = JSON.parse($response.body);
 
-body.data.card.fans = 999;
+body.data.card.fans = 9999999;
 body.data.card.level_info.current_level = 6;
-body.data.card.friend = 999;
+body.data.card.friend = 0;
+body.data.card.likes.like_num = 9999999;
 body.data.card.attention = 0;
 body.data.card.vip = {
 	vipStatusWarn: "",
 	vipType: 2,
 	dueRemark: "",
-	vipDueDate: 1676476800000,
+	vipDueDate: 4102329600000,
 	accessStatus: 0,
 	vipStatus: 1,
 	themeType: 0,
