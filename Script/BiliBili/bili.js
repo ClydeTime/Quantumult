@@ -1,17 +1,19 @@
 /*
 
 [rewrite_local]
-^https:\/\/app\.bilibili\.com\/x\/v2\/account\/mine\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/bili.js
+^https:\/\/app\.bilibili\.com\/x\/v2\/account\/mine\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/bili.js
 
 [mitm]
 
-hostname= *.biliapi.*, *.bilibili.*
+hostname= *.bilibili.*
 
 */
 
 var body = JSON.parse($response.body);
 body.data.coin = 999;
 body.data.bcoin = 999.9;
+body.data.following = 999.9;
+body.data.follower = 999;
 body.data.vip_type = 2;
 body.data.level = 6;
 body.data.vip_section_v2 = {
