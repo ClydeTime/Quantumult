@@ -17,6 +17,7 @@ body.data.follower = 9999999;
 body.data.dynamic = 0;
 body.data.vip_type = 2;
 body.data.level = 6;
+body.data.silence = 1;
 body.data.vip_section_v2 = {
 	id: 6465,
 	title: "我的大会员",
