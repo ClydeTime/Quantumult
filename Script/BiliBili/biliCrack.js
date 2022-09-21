@@ -26,7 +26,7 @@ var obj = {
 		sex: body.data.sex,
 		level: 6,
 		rank: 10000,
-		silence: 0,
+		silence: 1,
 		vip: {
 			type: 2,
 			status: 1,
@@ -51,7 +51,7 @@ var obj = {
 			nickname_color: "#FB7299",
 			role: 3,
 			avatar_subscript_url: "",
-			tv_vip_status: 0,
+			tv_vip_status: 1,
 			tv_vip_pay_type: 0
 		},
 		email_status: 1,
