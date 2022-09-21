@@ -14,6 +14,8 @@ var body = JSON.parse($response.body);
 body.data.card.fans = 9999999;
 body.data.elec.count = 9999999;
 body.data.card.level_info.current_level = 6;
+body.data.card.likes.like_num = 9999999;
+body.data.card.attention = 0;
 
 body.data.card.vip = {
 	vipStatusWarn: "",
