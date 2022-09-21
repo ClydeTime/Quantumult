@@ -15,7 +15,7 @@ var obj = {
 	message: "0",
 	ttl: 1,
 	data: {
-		mid: body.data.name.mid,
+		mid: body.data.mid,
 		name: body.data.name.toString(),
 		sign: "",
 		coins: 9999999,
