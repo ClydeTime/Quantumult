@@ -21,7 +21,6 @@ body.data.card.level_info.next_exp = "--";
 body.data.card.space_tag_bottom.title = "IP属地：火星";
 body.data.card.likes.like_num = 9999999;
 body.data.card.attention = 0;
-body.data.card.mid = 666;
 body.data.card.nameplate = {
         level: "稀有勋章",
         condition: "单个自制视频总播放数>=100万",
