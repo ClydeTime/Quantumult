@@ -27,7 +27,7 @@ hostname = *.bili*.*, 124.239.240.*, 101.89.57.66, 218.94.210.66, 240e:b1:9801:2
 */
 
 var modifiedHeaders = $request['headers'];
-modifiedHeaders['Cookie'] = 'sid=ohe1fg3z; Buvid=ZC4147CFB1A9154740EFAB429F1FE215383E; _uuid=43E3C6210-7518-C29E-A6CE-E24B625A10DE995850infoc; buvid3=6576FB56-7E7E-4FB3-A618-03573CC3D03C96247infoc; buvid4=47152C56-AAB5-8EA6-624E-2AFA48F94FF396247-122092113-eAin87xgtCqu+/B0QKEg3w%3D%3D; buvid_fp=49adb99cb983b307ac1ae864ebc72f7b; SESSDATA=f7a4c5e2%2C1679288984%2C4a594991; bili_jct=c0dbb1ff6300068720f9742bd7050ed9; DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c; b_nut=1663736996';
+modifiedHeaders['Cookie'] = 'sid=ohe1fg3z; Buvid=ZC4147CFB1A9154740EFAB429F1FE215383E; SESSDATA=f7a4c5e2%2C1679288984%2C4a594991; bili_jct=c0dbb1ff6300068720f9742bd7050ed9; DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c';
 modifiedHeaders['Authorization'] = 'identify_v1 dbafe27a84a61e033693449a63996991';
 modifiedHeaders['User-Agent'] = 'bili-universal/69000100 os/ios model/iPhone 12 Pro Max mobi_app/iphone osVer/16.0 network/2';
 modifiedHeaders['x-bili-locale-bin'] = 'Eg4KAnpoEgRIYW5zGgJDTg==';
