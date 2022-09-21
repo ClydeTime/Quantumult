@@ -27,11 +27,11 @@ hostname = *.bili*.*, 124.239.240.*, 101.89.57.66, 218.94.210.66, 240e:b1:9801:2
 */
 
 var modifiedHeaders = $request['headers'];
-modifiedHeaders['Cookie'] = 'Buvid=ZC4147CFB1A9154740EFAB429F1FE215383E; DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c; SESSDATA=8611887c%2C1679225351%2Ccf5fea91; bili_jct=03dc098ee4b9c1a73b63e704cdee569f; sid=6b4nlvk9';
-modifiedHeaders['Authorization'] = 'identify_v1 b01dfd8d053ab64187aa3697410a2591';
+modifiedHeaders['Cookie'] = 'sid=ohe1fg3z; Buvid=ZC4147CFB1A9154740EFAB429F1FE215383E; _uuid=43E3C6210-7518-C29E-A6CE-E24B625A10DE995850infoc; buvid3=6576FB56-7E7E-4FB3-A618-03573CC3D03C96247infoc; buvid4=47152C56-AAB5-8EA6-624E-2AFA48F94FF396247-122092113-eAin87xgtCqu+/B0QKEg3w%3D%3D; buvid_fp=49adb99cb983b307ac1ae864ebc72f7b; SESSDATA=f7a4c5e2%2C1679288984%2C4a594991; bili_jct=c0dbb1ff6300068720f9742bd7050ed9; DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c; b_nut=1663736996';
+modifiedHeaders['Authorization'] = 'identify_v1 dbafe27a84a61e033693449a63996991';
 modifiedHeaders['User-Agent'] = 'bili-universal/69000100 os/ios model/iPhone 12 Pro Max mobi_app/iphone osVer/16.0 network/2';
 modifiedHeaders['x-bili-locale-bin'] = 'Eg4KAnpoEgRIYW5zGgJDTg==';
 modifiedHeaders['x-bili-device-bin'] = 'CAEQpLfzIBokWkM0MTQ3Q0ZCMUE5MTU0NzQwRUZBQjQyOUYxRkUyMTUzODNFIgZpcGhvbmUqA2lvczIFcGhvbmU6BWFwcGxlQgVBcHBsZUoRaVBob25lIDEyIFBybyBNYXhSBDE2LjBqBjYuOTAuMHJAOTQwNkY4MkQyQkUwQjc0QjcwQjgwOENBNUNBM0RFNjgyMDE5MDkxNDE0MzczMEZFRDgzMjQ2NzkzRUE2RUM3M3i/o7KD4C4=';
 modifiedHeaders['x-bili-metadata-bin'] = 'CiBiMDFkZmQ4ZDA1M2FiNjQxODdhYTM2OTc0MTBhMjU5MRIGaXBob25lGgVwaG9uZSCkt/MgKgVhcHBsZTIkWkM0MTQ3Q0ZCMUE5MTU0NzQwRUZBQjQyOUYxRkUyMTUzODNFOgNpb3M=';
-modifiedHeaders['x-bili-fawkes-req-bin'] = 'CgZpcGhvbmUSBHByb2QaEGZmZmZmZmZmMDE3OTg0MDM=';
+modifiedHeaders['x-bili-fawkes-req-bin'] = 'CgZpcGhvbmUSBHByb2QaEGZmZmZmZmZmY2NmZTIwNjc=';
 $done({ 'headers': modifiedHeaders });
