@@ -26,6 +26,9 @@ hostname = *.bili*.*, 124.239.240.*, 101.89.57.66, 218.94.210.66, 240e:b1:9801:2
 *
 */
 
+/*
+ *
+ *
 var modifiedHeaders = $request['headers'];
 modifiedHeaders['Cookie'] = '_uuid=AEAC85FC-AABF-B57E-EF74-541010D8E329D482203infoc; b_nut=1663751882; buvid3=44EF0EA8-295C-9676-867A-BA2821A93B0F82532infoc; buvid4=429C58EB-1C9D-94BE-8E2D-7F92DD9A711C82533-122092117-eAin87xgtCqu+/B0QKEg3w%3D%3D; buvid_fp=7c260b55aa9aa2746e4450871830b7fd; Buvid=ZC4147CFB1A9154740EFAB429F1FE215383E; SESSDATA=e127a882%2C1679303862%2C66144a91; DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c; bili_jct=ad48eb786149724c478090a5285ebf13; sid=ef3yfsmv';
 modifiedHeaders['Authorization'] = 'identify_v1 66c023fc071f147572dc8ac089310591';
@@ -35,3 +38,6 @@ modifiedHeaders['x-bili-device-bin'] = 'CAEQpLfzIBokWkM0MTQ3Q0ZCMUE5MTU0NzQwRUZB
 modifiedHeaders['x-bili-metadata-bin'] = 'CiBiMDFkZmQ4ZDA1M2FiNjQxODdhYTM2OTc0MTBhMjU5MRIGaXBob25lGgVwaG9uZSCkt/MgKgVhcHBsZTIkWkM0MTQ3Q0ZCMUE5MTU0NzQwRUZBQjQyOUYxRkUyMTUzODNFOgNpb3M=';
 modifiedHeaders['x-bili-fawkes-req-bin'] = 'CgZpcGhvbmUSBHByb2QaEGZmZmZmZmZmZDA1YmFkNzA=';
 $done({ 'headers': modifiedHeaders });
+*
+*
+*/
