@@ -12,7 +12,7 @@ var body = JSON.parse($response.body);
 body.data.user = {
       panel_title: body.data.user.panel_title.toString(),
       vip: {
-        mid: body.data.user.mid,
+        mid: body.data.user.vip.mid,
         theme_type: 0,
         label: {
           img_label_uri_hans_static: "https://i0.hdslb.com/bfs/vip/8d4f8bfc713826a5412a0a27eaaac4d6b9ede1d9.png",
