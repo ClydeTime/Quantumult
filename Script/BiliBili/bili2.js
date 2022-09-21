@@ -12,10 +12,24 @@ hostname= *.bilibili.*
 var body = JSON.parse($response.body);
 
 body.data.card.fans = 9999999;
+body.data.elec.count = 9999999;
 body.data.card.level_info.current_level = 6;
-body.data.card.friend = 0;
+body.data.card.level_info.identity = 2;
+body.data.card.level_info.current_min = 28800;
+body.data.card.level_info.current_exp = 39900;
+body.data.card.level_info.next_exp = "--";
+body.data.card.space_tag_bottom.title = "IP属地：火星";
 body.data.card.likes.like_num = 9999999;
 body.data.card.attention = 0;
+body.data.card.mid = 666;
+body.data.card.nameplate = {
+        level: "稀有勋章",
+        condition: "单个自制视频总播放数>=100万",
+        nid: 1,
+        name: "黄金殿堂",
+        image: "http://i1.hdslb.com/bfs/face/82896ff40fcb4e7c7259cb98056975830cb55695.png",
+        image_small: "http://i1.hdslb.com/bfs/face/627e342851dfda6fe7380c2fa0cbd7fae2e61533.png"
+};
 body.data.card.vip = {
 	vipStatusWarn: "",
 	vipType: 2,
