@@ -19,7 +19,7 @@ body.data.card.attention = 0;
 body.data.card.level_info.current_min = 28800;
 body.data.card.level_info.current_exp = 39900;
 body.data.card.level_info.next_exp = "--";
-body.data.card.space_tag_bottom.title = "IP属地：火星";
+body.data.card.space_tag_bottom[0].title = "IP属地：火星";
 
 body.data.card.nameplate = {
         level: "稀有勋章",
