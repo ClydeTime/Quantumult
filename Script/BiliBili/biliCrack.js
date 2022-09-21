@@ -36,7 +36,7 @@ var obj = {
 			label: {
 				path: "",
 				text: "年度大会员",
-				label_theme: "annual_vip",
+				label_theme: "hundred_annual_vip",
 				text_color: "#FFFFFF",
 				bg_style: 1,
 				bg_color: "#FB7299",
