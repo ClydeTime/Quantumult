@@ -15,7 +15,7 @@ var obj = {
 	message: "0",
 	ttl: 1,
 	data: {
-		mid: body.data.mid,
+		mid: 666,
 		name: body.data.name.toString(),
 		sign: "",
 		coins: 9999999,
@@ -26,7 +26,7 @@ var obj = {
 		sex: body.data.sex,
 		level: 6,
 		rank: 10000,
-		silence: 1,
+		silence: 0,
 		vip: {
 			type: 2,
 			status: 1,
