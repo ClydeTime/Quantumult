@@ -6,7 +6,7 @@
 *******************************
 
 [rewrite_local]
-^https?:\/\/userinfo\.docer\.wps\.cn\/user\/v1\/vip_dl_times\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_docer_total.js
+^https?:\/\/userinfo\.docer\.wps\.cn\/user\/v1\/vip\_dl\_times\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_docer_total.js
 
 [mitm]
 hostname = *.docer.wps.cn
