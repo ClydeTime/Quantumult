@@ -19,16 +19,16 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.current_min = 28800;
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
-  
+  if(body.data.card.name = "这就进入我知识盲区了"){
+    body.data.card.name = "你 妈什么时候死啊？"
+  }
   const Length = body.data.card.space_tag_bottom.length;
- 
   for(let i=0; i<Length; i++) {
     if(body.data.card.space_tag_bottom[i].type === "location"){
       body.data.card.space_tag_bottom[i].title = "蒙古上单";
       break;
     } 
   }
-
   body.data.card.vip = {
     vipStatusWarn: "",
     vipType: 2,
