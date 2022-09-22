@@ -6,7 +6,7 @@
 *******************************
 
 [rewrite_local]
-^https?:\/\/client\.docer\.wps\.cn\/android\/mb\/buy_info url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wpsDocer_free_times.js
+^https?:\/\/client\.docer\.wps\.cn\/android\/mb\/buy url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wpsDocer_free_times.js
 
 [mitm]
 hostname = *.docer.wps.cn
