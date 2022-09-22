@@ -13,4 +13,4 @@ hostname = drive.wps.cn
 
 var body = JSON.parse($response.body);
 body.total = 391915765760;
-$done({ body: JSON.stringify(obj) });
+$done({ body: JSON.stringify(body) });
