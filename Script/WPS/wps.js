@@ -1,7 +1,7 @@
 /******************************
 脚本功能：WPS Office+解锁VIP
 软件版本：11.26.0
-更新时间：2022-9-9
+更新时间：2022-9-22
 使用声明：⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 *******************************
 
@@ -10,10 +10,10 @@
 ^https?:\/\/account\.wps\.cn\/api\/v3\/mine\/vips url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_Docker.js
 ^https?:\/\/.+\.(docer.)?wps.cn\/(user\/v1\/vip|android\/mb\/buy|partner\/invoke\/usable|(api|rank)\/v1(\/mobile\/mb)?\/detail) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wpsDocker.js
 ^https?:\/\/.+\.(docer.)?wps.cn/download\/v1\/ios url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_download.js
-
+^https?:\/\/drive\.wps\.cn\/api\/v3\/spaces url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_spaces.js
 
 [mitm]
-hostname = *.docer.wps.cn, vipapi.wps.cn, account.wps.cn
+hostname = *.docer.wps.cn, vipapi.wps.cn, account.wps.cn, *.drive.wps.cn
 
 **************************/
 
