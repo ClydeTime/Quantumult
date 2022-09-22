@@ -23,12 +23,22 @@ if("vip_space_label" in body.data){
     body.data.card.name = "蒙古上单";
     body.data.card.sign = "你 妈什么时候死啊？";
     body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
+    body.data.card.live_fans_wearing = {
+      level: 23,
+      medal_name: "蚌埠住",
+      medal_color_start: 1725515,
+      medal_color_end: 5414290,
+      medal_color_border: 6809855,
+      guard_icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/SREsu5SRPI.png",
+      medal_jump_url: "https://live.bilibili.com/p/html/live-fansmedal-wall/index.html?is_live_webview=1&tId=35847683#/medal"
+    }
+    
     body.data.card.official_verify = {
-                type: 0,
-                desc: "知名UP主、陈睿猎妈人",
-                role: 1,
-                title: "知名UP主、陈睿猎妈人"
-            }
+      type: 0,
+      desc: "知名UP主、陈睿猎妈人",
+      role: 1,
+      title: "知名UP主、陈睿猎妈人"
+    }
     const Length = body.data.card.space_tag_bottom.length;
     for(let i=0; i<Length; i++) {
       if(body.data.card.space_tag_bottom[i].type === "location"){
