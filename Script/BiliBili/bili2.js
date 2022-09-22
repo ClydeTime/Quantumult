@@ -20,19 +20,27 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
   if(body.data.card.name = "这就进入我知识盲区了"){
-    body.data.card.name = "你 妈什么时候死啊？";
-    body.data.card.sign = "你所热爱的，就是你的生活";
+    body.data.card.name = "蒙古上单";
+    body.data.card.sign = "你 妈什么时候死啊？";
+    body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
     body.data.card.official_verify = {
                 type: 0,
-                desc: "bilibili 知名UP主、陈睿猎妈人",
+                desc: "知名UP主、陈睿猎妈人",
                 role: 1,
-                title: "bilibili 知名UP主、陈睿猎妈人"
+                title: "知名UP主、陈睿猎妈人"
             }
+      const Length = body.data.card.space_tag_bottom.length;
+      for(let i=0; i<Length; i++) {
+        if(body.data.card.space_tag_bottom[i].type === "location"){
+          body.data.card.space_tag_bottom[i].title = "IP属地：蒙古";
+          break;
+        } 
+      }
   }
   const Length = body.data.card.space_tag_bottom.length;
   for(let i=0; i<Length; i++) {
     if(body.data.card.space_tag_bottom[i].type === "location"){
-      body.data.card.space_tag_bottom[i].title = "蒙古上单";
+      body.data.card.space_tag_bottom[i].title = "IP属地：火星";
       break;
     } 
   }
