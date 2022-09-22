@@ -1,7 +1,7 @@
 /******************************
 脚本功能：WPS解锁稻壳会员
 软件版本：11.29.2
-更新时间：2022-09-20
+更新时间：2022-09-22
 使用声明：⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 *******************************
 [rewrite_local]
@@ -9,7 +9,7 @@
 ^https?:\/\/.+\.(docer.)?wps.cn/download\/v1\/ios url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_download.js
 
 [mitm] 
-hostname = *.docer.wps.cn, vipapi.wps.cn
+hostname = *.docer.wps.cn
 *******************************/
 
 var vip_user = [
