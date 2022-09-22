@@ -24,14 +24,12 @@ if("vip_space_label" in body.data){
   const Length = body.data.card.space_tag_bottom.length;
  
   for (; i < Length; i++) {
-    if (Bottom[i] === 'location') {
-      Bottom[i].title = "IP属地：火星";
+    if (Bottom[i].type === 'location') {
+      Bottom[i].title = "蒙古上单";
       body.data.card.space_tag_bottom = Bottom;
       break;
     };
   };
-  
-  body.data.card.space_tag_bottom[0].title = "IP属地：火星";
   body.data.card.vip = {
     vipStatusWarn: "",
     vipType: 2,
