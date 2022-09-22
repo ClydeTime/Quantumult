@@ -19,6 +19,18 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.current_min = 28800;
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
+  
+  const Bottom = body.data.card.space_tag_bottom;
+  const Length = body.data.card.space_tag_bottom.length;
+ 
+  for (; i < Length; i++) {
+    if (Bottom[i] === 'location') {
+      Bottom[i].title = "IP属地：火星";
+      body.data.card.space_tag_bottom = Bottom;
+      break;
+    };
+  };
+  
   body.data.card.space_tag_bottom[0].title = "IP属地：火星";
   body.data.card.vip = {
     vipStatusWarn: "",
