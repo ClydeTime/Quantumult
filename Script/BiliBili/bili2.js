@@ -24,12 +24,12 @@ if("vip_space_label" in body.data){
     body.data.card.sign = "你 妈什么时候死啊？";
     body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
     body.data.card.live_fans_wearing = {
-      level: 23,
+      level: 38,
       medal_name: "蚌埠住",
-      medal_color_start: 1725515,
-      medal_color_end: 5414290,
-      medal_color_border: 6809855,
-      guard_icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/SREsu5SRPI.png",
+      medal_color_start: 7996451,
+      medal_color_end: 15304379,
+      medal_color_border: 16771156,
+      guard_icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/FqYoOmgssP.png",
       medal_jump_url: "https://live.bilibili.com/p/html/live-fansmedal-wall/index.html?is_live_webview=1&tId=35847683#/medal"
     }
     
