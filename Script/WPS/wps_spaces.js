@@ -8,7 +8,7 @@
 ^https?:\/\/drive\.wps\.cn\/api\/v3\/spaces url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_spaces.js
 
 [mitm]
-hostname = *.drive.wps.cn
+hostname = drive.wps.cn
 **************************/
 
 var body = JSON.parse($response.body);
