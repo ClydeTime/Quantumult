@@ -21,7 +21,13 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.next_exp = "--";
   if(body.data.card.name = "这就进入我知识盲区了"){
     body.data.card.name = "你 妈什么时候死啊？";
-    body.data.card.description = "你所热爱的，就是你的生活";
+    body.data.card.sign = "你所热爱的，就是你的生活";
+    body.data.card.official_verify = {
+                type: 0,
+                desc: "bilibili 知名UP主、陈睿猎妈人",
+                role: 1,
+                title: "bilibili 知名UP主、陈睿猎妈人"
+            }
   }
   const Length = body.data.card.space_tag_bottom.length;
   for(let i=0; i<Length; i++) {
