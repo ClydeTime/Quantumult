@@ -15,12 +15,10 @@ hostname = *.docer.wps.cn, vipapi.wps.cn
 *******************************/
 
 var vip_user = [
-  "wps_sid=V02S23O9y69VRf31ohDvD_IKBM9-8Os00a10ef0f002bf5687d;wpsua=V1BTVUEvMS4wKGlvcy1vZmZpY2U6MTEuMjkuMjEyMjA1NztpUGhvbmU6MTYuMDtVRElELTMwQTYxNjU5LUY3QTItNDRBMy05NTBGLTQ5MzMyNjgwRDY0ODphVkJvYjI1bClhcHBsZS9pUGhvbmUxMyw0;",
-  "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/11.26.0",
-  "223.5.5.5"
+  "wps_sid=V02SUNUA3PALA04bF7a2bmCe09igluw00ab6b66e002bf5687d; wpsua=V1BTVUEvMS4wKGlvcy1vZmZpY2U6MTEuMjkuMjEyMjA1NztpUGhvbmU6MTYuMDtVRElELTMwQTYxNjU5LUY3QTItNDRBMy05NTBGLTQ5MzMyNjgwRDY0ODphVkJvYjI1bClhcHBsZS9pUGhvbmUxMyw0",
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/11.29.2",
 ];
 var modifiedHeaders = $request["headers"];
 modifiedHeaders["Cookie"] = vip_user[0];
 modifiedHeaders["User-Agent"] = vip_user[1];
-modifiedHeaders["IP"] = vip_user[2];
 $done({ headers: modifiedHeaders });
