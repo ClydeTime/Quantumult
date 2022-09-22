@@ -16,4 +16,4 @@ hostname = *.docer.wps.cn
 var body = JSON.parse($response.body);
 body.data.total = 300;
 body.data.remain = 300;
-$done({ body: JSON.stringify(obj) });
+$done({ body: JSON.stringify(body) });
