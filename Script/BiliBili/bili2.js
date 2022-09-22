@@ -29,21 +29,22 @@ if("vip_space_label" in body.data){
                 role: 1,
                 title: "知名UP主、陈睿猎妈人"
             }
-      const Length = body.data.card.space_tag_bottom.length;
-      for(let i=0; i<Length; i++) {
-        if(body.data.card.space_tag_bottom[i].type === "location"){
-          body.data.card.space_tag_bottom[i].title = "IP属地：蒙古";
-          break;
-        } 
-      }
-  }
-  const Length = body.data.card.space_tag_bottom.length;
-  for(let i=0; i<Length; i++) {
-    if(body.data.card.space_tag_bottom[i].type === "location"){
-      body.data.card.space_tag_bottom[i].title = "IP属地：火星";
-      break;
+    const Length = body.data.card.space_tag_bottom.length;
+    for(let i=0; i<Length; i++) {
+      if(body.data.card.space_tag_bottom[i].type === "location"){
+        body.data.card.space_tag_bottom[i].title = "IP属地：蒙古";
+        break;
+      } 
     } 
-  }
+  } else{
+    const Length = body.data.card.space_tag_bottom.length;
+    for(let i=0; i<Length; i++) {
+      if(body.data.card.space_tag_bottom[i].type === "location"){
+        body.data.card.space_tag_bottom[i].title = "IP属地：火星";
+        break;
+      } 
+    }
+  } 
   body.data.card.vip = {
     vipStatusWarn: "",
     vipType: 2,
