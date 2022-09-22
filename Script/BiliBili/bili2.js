@@ -24,8 +24,8 @@ if("vip_space_label" in body.data){
   const Length = body.data.card.space_tag_bottom.length;
  
   for(let i=0; i<Length; i++) {
-    if(body.data.card.space_tag_bottom[i].title === "蒙古上单"){
-      body.data.card.space_tag_bottom = Bottom;
+    if(body.data.card.space_tag_bottom[i].type === "location"){
+      body.data.card.space_tag_bottom[i].title = "蒙古上单";
       break;
     } 
   }
