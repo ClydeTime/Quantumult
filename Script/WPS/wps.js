@@ -11,6 +11,7 @@
 ^https?:\/\/.+\.(docer.)?wps.cn\/(user\/v1\/vip|android\/mb\/buy|partner\/invoke\/usable|(api|rank)\/v1(\/mobile\/mb)?\/detail) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wpsDocker.js
 ^https?:\/\/.+\.(docer.)?wps.cn/download\/v1\/ios url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_download.js
 ^https?:\/\/drive\.wps\.cn\/api\/v3\/spaces url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wps_spaces.js
+^https?:\/\/client\.docer\.wps\.cn\/android\/mb\/buy_info url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/WPS/wpsDocer_free_times.js
 
 [mitm]
 hostname = *.docer.wps.cn, vipapi.wps.cn, account.wps.cn, *.drive.wps.cn
