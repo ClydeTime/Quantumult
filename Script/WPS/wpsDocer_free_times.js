@@ -15,4 +15,4 @@ hostname = *.docer.wps.cn
 var body = JSON.parse($response.body);
 body.data.is_docer_vip = 1;
 body.data.free_times = 300;
-$done({ body: JSON.stringify(obj) });
+$done({ body: JSON.stringify(body) });
