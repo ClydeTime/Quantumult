@@ -40,6 +40,11 @@ if("vip_space_label" in body.data){
       level: "稀有勋章",
       condition: "所有自制视频总播放数>=100万"
     }
+    body.data.card.achieve = {
+      is_default: false,
+      image: "http://i2.hdslb.com/bfs/face/0497be49e08357bf05bca56e33a0637a273a7610.png",
+      achieve_url: "https://www.bilibili.com/h5/achieve?navhide=1&mid=35847683"
+    }
     body.data.card.official_verify = {
       type: 0,
       desc: "知名UP主、陈睿猎妈人",
