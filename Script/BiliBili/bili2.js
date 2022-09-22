@@ -23,13 +23,13 @@ if("vip_space_label" in body.data){
   const Bottom = body.data.card.space_tag_bottom;
   const Length = body.data.card.space_tag_bottom.length;
  
-  for (; i < Length; i++) {
-    if (Bottom[i].type === 'location') {
-      Bottom[i].title = "蒙古上单";
+  for(let i=0; i<Length; i++) {
+    if(body.data.card.space_tag_bottom[i].title === "蒙古上单"){
       body.data.card.space_tag_bottom = Bottom;
       break;
-    };
-  };
+    } 
+  }
+
   body.data.card.vip = {
     vipStatusWarn: "",
     vipType: 2,
@@ -48,7 +48,7 @@ if("vip_space_label" in body.data){
       label_theme: "annual_vip",
       text_color: "#FFFFFF"
     }
-  };
+  }
 }
 
 
