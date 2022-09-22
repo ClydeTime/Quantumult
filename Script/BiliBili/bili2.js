@@ -32,7 +32,14 @@ if("vip_space_label" in body.data){
       guard_icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/FqYoOmgssP.png",
       medal_jump_url: "https://live.bilibili.com/p/html/live-fansmedal-wall/index.html?is_live_webview=1&tId=35847683#/medal"
     }
-    
+    body.data.card.nameplate = {
+      nid: 8,
+      name: "知名偶像",
+      image: "http://i0.hdslb.com/bfs/face/27a952195555e64508310e366b3e38bd4cd143fc.png",
+      image_small: "http://i2.hdslb.com/bfs/face/0497be49e08357bf05bca56e33a0637a273a7610.png",
+      level: "稀有勋章",
+      condition: "所有自制视频总播放数>=100万"
+    }
     body.data.card.official_verify = {
       type: 0,
       desc: "知名UP主、陈睿猎妈人",
