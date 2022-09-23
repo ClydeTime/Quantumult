@@ -10,7 +10,21 @@ hostname= *.bilibili.*
 
 */
 
-var body = JSON.parse($response.body);
+const url = $request.url;
+const method = $request.method;
+if (!$response.body) {
+    // 有undefined的情况
+    console.log(`$response.body为undefined:${url}`);
+    $done({});
+}
+let body = JSON.parse($response.body);
+if (!body.data) {
+    console.log(url);
+    console.log(`body:${$response.body}`);
+    $notification.post(notifyTitle, url, "data字段错误");
+    $done({});
+}
+
 if("vip_space_label" in body.data){  
   body.data.card.fans = 9999999;
   body.data.card.level_info.current_level = 6;
