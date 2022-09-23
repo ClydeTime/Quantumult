@@ -52,12 +52,23 @@ if("vip_space_label" in body.data){
       title: "知名UP主、陈睿猎妈人"
     }
     const Length = body.data.card.space_tag_bottom.length;
+    let exist_mcn = false;
     for(let i=0; i<Length; i++) {
       if(body.data.card.space_tag_bottom[i].type === "location"){
         body.data.card.space_tag_bottom[i].title = "IP属地：蒙古";
-        break;
-      } 
-    } 
+      }
+      if(body.data.card.space_tag_bottom[i].type === "mcn_info"){
+        exist_mcn = true;
+      }
+    }
+    if(!exist_mcn){
+      body.data.card.space_tag_bottom.unshift({
+      "icon": "https://i0.hdslb.com/bfs/activity-plat/static/2be2c5f696186bad80d4b452e4af2a76/OsYihE3h0w.png",
+      "title": "抽象文化",
+      "type": "mcn_info",
+      "uri": ""
+      })
+    }
   } else{
     const Length = body.data.card.space_tag_bottom.length;
     for(let i=0; i<Length; i++) {
@@ -81,7 +92,7 @@ if("vip_space_label" in body.data){
       text: "年度大会员",
       border_color: "",
       path: "",
-      image: "https://i0.hdslb.com/bfs/vip/8d4f8bfc713826a5412a0a27eaaac4d6b9ede1d9.png",
+      image: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
       label_theme: "annual_vip",
       text_color: "#FFFFFF"
     }
