@@ -1,6 +1,7 @@
 /*
 
 [rewrite_local]
+
 ^https:\/\/app\.bilibili\.com\/x\/v2\/space\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/bili2.js
 
 [mitm]
@@ -14,11 +15,15 @@ if("vip_space_label" in body.data){
   body.data.card.fans = 9999999;
   body.data.card.level_info.current_level = 6;
   body.data.card.level_info.identity = 2;
-  body.data.card.likes.like_num = 9999999;
-  body.data.card.attention = 0;
   body.data.card.level_info.current_min = 28800;
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
+  body.data.card.likes.like_num = 9999999;
+  body.data.card.attention = 0;
+  body.data.card.school = {
+        name: "b站未来有可能会变质，但绝不会倒闭。",
+        school_id: 2217
+  };
   if(body.data.card.name == "这就进入我知识盲区了" || body.data.card.name == "令狐少侠121"){
     body.data.images.imgUrl = "http://i0.hdslb.com/bfs/garb/item/43057105228c287930db1427c21650148c4fd6b1.jpg";
     body.data.images.night_imgurl = "";
@@ -41,7 +46,7 @@ if("vip_space_label" in body.data){
       medal_color_border: 16771156,
       guard_icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/FqYoOmgssP.png",
       medal_jump_url: "https://live.bilibili.com/p/html/live-fansmedal-wall/index.html?is_live_webview=1&tId=35847683#/medal"
-    }
+    };
     body.data.card.nameplate = {
       nid: 8,
       name: "知名偶像",
@@ -49,18 +54,18 @@ if("vip_space_label" in body.data){
       image_small: "http://i2.hdslb.com/bfs/face/0497be49e08357bf05bca56e33a0637a273a7610.png",
       level: "稀有勋章",
       condition: "所有自制视频总播放数>=100万"
-    }
+    };
     body.data.card.achieve = {
       is_default: false,
       image: "http://i2.hdslb.com/bfs/face/0497be49e08357bf05bca56e33a0637a273a7610.png",
       achieve_url: "https://www.bilibili.com/h5/achieve?navhide=1&mid=35847683"
-    }
+    };
     body.data.card.official_verify = {
       type: 0,
       desc: "知名UP主、陈睿猎妈人",
       role: 1,
       title: "知名UP主、陈睿猎妈人"
-    }
+    };
     const Length = body.data.card.space_tag_bottom.length;
     let exist_mcn = false;
     for(let i=0; i<Length; i++) {
@@ -106,8 +111,6 @@ if("vip_space_label" in body.data){
       label_theme: "annual_vip",
       text_color: "#FFFFFF"
     }
-  }
+  };
 }
-
-
 $done({ body: JSON.stringify(body) });
