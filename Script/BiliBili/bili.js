@@ -43,12 +43,19 @@ body.data.vip = {
 		text: "年度大会员",
 		border_color: "",
 		path: "",
-		image: "https://i0.hdslb.com/bfs/vip/8d4f8bfc713826a5412a0a27eaaac4d6b9ede1d9.png",
-		label_theme: "annual_vip",
+		image: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+		label_theme: "hundred_annual_vip",
 		text_color: "#FFFFFF"
 	},
 	type: 2,
 	themeType: 0,
 	theme_type: 0
 };
+if(body.data.name == "这就进入我知识盲区了"){
+	body.data.name == "蒙古上单";	
+}
+
+
+
+
 $done({ body: JSON.stringify(body) });
