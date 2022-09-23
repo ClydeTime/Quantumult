@@ -52,10 +52,11 @@ body.data.vip = {
 	theme_type: 0
 };
 if(body.data.name == "这就进入我知识盲区了"){
-	body.data.name == "蒙古上单";	
+	body.data.name == "蒙古上单";
+	body.data.face == "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
+	data.official_verify = {
+	      type: 0,
+	      desc: "星空无限"
+	};	
 }
-
-
-
-
 $done({ body: JSON.stringify(body) });
