@@ -59,7 +59,7 @@ body.data = {
 		desc: "",
 		type: -1
 	},
-	identification: 2,
+	identification: 1,
 	invite: {
 		invite_remind: 1,
 		display: true
