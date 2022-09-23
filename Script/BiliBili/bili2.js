@@ -20,6 +20,16 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
   if(body.data.card.name == "这就进入我知识盲区了" || body.data.card.name == "令狐少侠121"){
+    body.data.images.imgUrl = "http://i0.hdslb.com/bfs/garb/item/43057105228c287930db1427c21650148c4fd6b1.jpg";
+    body.data.images.night_imgurl = "";
+    body.data.images.garb = {
+      fans_label: "2021拜年纪",
+      image_id: 2,
+      garb_id: 3864,
+      fans_number: "NO.000001",
+      small_image: "http://i0.hdslb.com/bfs/garb/item/43057105228c287930db1427c21650148c4fd6b1.jpg",
+      large_image: "http://i0.hdslb.com/bfs/garb/item/8f26929495b0534692bfa8fcf74e384f33d06b84.png"
+    };
     body.data.card.name = "蒙古上单";
     body.data.card.sign = "你 妈什么时候死啊？";
     body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
