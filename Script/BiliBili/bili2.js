@@ -19,7 +19,7 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.current_min = 28800;
   body.data.card.level_info.current_exp = 39900;
   body.data.card.level_info.next_exp = "--";
-  if(body.data.card.name == "这就进入我知识盲区了" || body.data.card.name == "辉仔嘻嘻与哈哈"){
+  if(body.data.card.name == "这就进入我知识盲区了" || body.data.card.name == "令狐少侠121"){
     body.data.card.name = "蒙古上单";
     body.data.card.sign = "你 妈什么时候死啊？";
     body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
