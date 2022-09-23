@@ -73,7 +73,7 @@ if(body.data.name == "这就进入我知识盲区了"){
 	body.data.name == "蒙古上单";
 	body.data.face == "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
 	body.data.official = {
-	    role: 1,
+		role: 1,
 		title: "知名UP主、陈睿猎妈人",
 		desc: "知名UP主、陈睿猎妈人",
 		type: 1
