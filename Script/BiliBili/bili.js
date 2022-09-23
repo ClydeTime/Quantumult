@@ -9,7 +9,20 @@ hostname= *.bilibili.*
 
 */
 
-var body = JSON.parse($response.body);
+const url = $request.url;
+const method = $request.method;
+if (!$response.body) {
+    // 有undefined的情况
+    console.log(`$response.body为undefined:${url}`);
+    $done({});
+}
+let body = JSON.parse($response.body);
+if (!body.data) {
+    console.log(url);
+    console.log(`body:${$response.body}`);
+    $notification.post(notifyTitle, url, "data字段错误");
+    $done({});
+}
 body.data.coin = 99999;
 body.data.bcoin = 99999.9;
 body.data.following = 0;
