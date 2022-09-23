@@ -20,10 +20,7 @@ if("vip_space_label" in body.data){
   body.data.card.level_info.next_exp = "--";
   body.data.card.likes.like_num = 9999999;
   body.data.card.attention = 0;
-  body.data.card.school = {
-        name: "b站未来有可能会变质，但绝不会倒闭。",
-        school_id: 2217
-  };
+
   if(body.data.card.name == "这就进入我知识盲区了" || body.data.card.name == "令狐少侠121"){
     body.data.images.imgUrl = "http://i0.hdslb.com/bfs/garb/item/43057105228c287930db1427c21650148c4fd6b1.jpg";
     body.data.images.night_imgurl = "";
@@ -37,6 +34,26 @@ if("vip_space_label" in body.data){
     };
     body.data.card.name = "蒙古上单";
     body.data.card.sign = "你 妈什么时候死啊？";
+    body.data.card.school = {
+      name: "b站未来有可能会变质，但绝不会倒闭。",
+      school_id: 2217
+    };
+    const LEngth = body.data.card.space_tag.length;
+    for(let i=0; i<LEngth; i++) {
+      if(body.data.card.space_tag[i].type === "submit_school"){
+        body.data.card.space_tag[i] = {
+          night_text_color: "#A2A7AE",
+          icon: "https://i0.hdslb.com/bfs/activity-plat/static/ce06d65bc0a8d8aa2a463747ce2a4752/PDqKDoER9Q.png",
+          title: "b站未来有可能会变质，但绝不会倒闭。",
+          background_color: "#F6F7F8",
+          type: "school",
+          night_background_color: "#0D0D0E",
+          uri: "bilibili://campus/detail/2217",
+          text_color: "#61666D"
+        };
+        break;
+      }
+    }  
     body.data.card.face = "https://i0.hdslb.com/bfs/face/79ba9ffec3664b6c3f2404b5d1000a56fe8c64f7.jpg";
     body.data.card.live_fans_wearing = {
       level: 38,
