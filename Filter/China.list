@@ -7,6 +7,7 @@ DOMAIN,origin-a.akamaihd.net // Origin Download
 # ---(Microsoft)---
 # > Outlook
 DOMAIN,outlook.office365.com
+DOMAIN,imap-mail.outlook.com
 DOMAIN,smtp-mail.outlook.com
 DOMAIN,smtp.office365.com
 # > Windows Server Update Services
@@ -69,7 +70,6 @@ DOMAIN-SUFFIX,zjgeo.eqobc.com
 DOMAIN-SUFFIX,xnour.xonap.com
 DOMAIN-SUFFIX,opzzy.kefsww.com
 DOMAIN-SUFFIX,tqrbq.mpckv.com
-DOMAIN-SUFFIX,imap-mail.outlook.com
 
 # Just for Quantumult X, move GEOIP,CN to the bottom (local filter at the top by default)
 GEOIP,CN,no-resolve
