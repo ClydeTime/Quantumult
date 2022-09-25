@@ -10,6 +10,7 @@ hostname= vip.video.qq.com
 
 const url = $request.url;
 const method = $request.method;
+const noticeTitle = "腾讯视频修改vip脚本错误";
 if (!$response.body) {
     // 有undefined的情况
     console.log(`$response.body为undefined:${url}`);
