@@ -5,7 +5,7 @@
 
 [mitm]
 
-hostname= vip.video.qq.com
+hostname= i.video.qq.com
 */
 
 const url = $request.url;
