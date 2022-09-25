@@ -30,6 +30,8 @@ body.endTime = "2099-12-31 00:00:00";
 body.vip_icon.icon_url = "https://puui.qpic.cn/vupload/0/20190428_VIP_7_3x.png/0";
 body.level = 7;
 body.annualneedtime = "86400";
+body.annualbegintime = 1577808000;
+body.annualendtime = 4102300800;
 body.beginTime = "2020-01-01 00:00:00";
 body.vip = 1;
 
