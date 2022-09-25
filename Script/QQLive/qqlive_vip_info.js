@@ -17,10 +17,9 @@ if (!$response.body) {
     $done({});
 }
 let body = JSON.parse($response.body);
-if (!body.vip) {
-    console.log(url);
-    console.log(`body:${$response.body}`);
-    $notification.post(notifyTitle, url, "data字段错误");
+if ("vip" in body) {
+    console.log("不存在vip字段");
+    $notification.post(notifyTitle, url, "vip字段错误");
     $done({});
 }
 
