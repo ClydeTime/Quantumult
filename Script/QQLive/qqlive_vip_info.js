@@ -30,7 +30,7 @@ body.endTime = "2099-12-31 00:00:00";
 body.vip_icon.icon_url = "https://puui.qpic.cn/vupload/0/20190428_VIP_7_3x.png/0";
 body.level = 7;
 body.annualneedtime = "86400";
-body.beginTime = "2020-01-01 00:00:0";
+body.beginTime = "2020-01-01 00:00:00";
 body.vip = 1;
 
 $done({ body: JSON.stringify(body) });
