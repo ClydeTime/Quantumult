@@ -16,7 +16,7 @@ if (!$response.body) {
     $done({});
 }
 let body = JSON.parse($response.body);
-if (!body.data) {
+if (!body.vip) {
     console.log(url);
     console.log(`body:${$response.body}`);
     $notification.post(notifyTitle, url, "data字段错误");
