@@ -9,7 +9,7 @@
 
 [rewrite_local]
 
-^https:\/\/license\.pdfexpert\.com\/api\/2\.0\/documents\/subscription\/refresh url script-request-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/documents.js
+^https:\/\/license\.pdfexpert\.com\/api\/2\.0\/documents\/subscription\/refresh url script-request-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/documents.js
 
 [mitm] 
 
