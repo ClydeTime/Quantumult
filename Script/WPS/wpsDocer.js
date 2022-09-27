@@ -16,13 +16,6 @@ hostname = *.docer.wps.cn, vipapi.wps.cn
 
 const url = $request.url;
 const method = $request.method;
-if (!$response.body) {
-    // 有undefined的情况
-    console.log("body is undefined!");
-    $done({});
-}
-
-let body = JSON.parse($response.body);
 const download = "/download";
 var headers = $request["headers"];
 
