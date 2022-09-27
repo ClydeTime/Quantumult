@@ -12,7 +12,6 @@ hostname= *.bilibili.*
 
 const url = $request.url;
 const method = $request.method;
-console.log(url);
 if (!$response.body) {
     // 有undefined的情况
     console.log(`$response.body为undefined:${url}`);
