@@ -2,7 +2,7 @@
 [rewrite_local]
 
 ^https?:\/\/ap(i|p)\.bilibili\.com\/bilibili\.\w{3,9}\..+\/(View|PlayView|DmView|Window|DynSpace|UserPreference|SuggestEmotes|DmSegMobile|PlayConf|PlayerOnline|MainList|ViewProgress)$ url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/tmpBl.js
-^https:\/\/(api|app)\.bilibili\.com\/x\/(vip|v2)\/(space\?|account|web|price|top_panel_info\?)\/(mine|myinfo|access|vip_center|panel|_bridge).* url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/bili_info.js
+^https:\/\/(api|app)\.bilibili\.com\/x\/(vip|v2)\/(space|account|web|price|top_panel_info)(\/|\?)(mine|myinfo|access|vip_center|panel|_bridge).* url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BiliBili/bili_info.js
 
 [mitm] 
 
