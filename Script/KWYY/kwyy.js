@@ -9,13 +9,13 @@
 [rewrite_local]
 
 ^https?:\/\/.*\.(kuwo|lrts)\.(cn|me)\/(a\.p|music\.pay|(vip\/(v2|enc)\/(theme|user\/vip))|(EcomResource|(Mobile)?Ad)Serv(er|ice)).* url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/KWYY/kwyy.js
+^https:\/\/vip1\.kuwo\.cn\/vip\/v2\/userbase\/vip\?op\=getMCInfo url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/KWYY/kwyy_userbase.js
 
 [mitm] 
 
 hostname = *.kuwo.cn, *.lrts.me
 
 ********************************/
-
 
 
 var url = $request["url"];
