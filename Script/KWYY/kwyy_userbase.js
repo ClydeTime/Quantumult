@@ -11,7 +11,6 @@ hostname= vip1.kuwo.cn
 */
 
 const url = $request.url;
-const method = $request.method;
 if (!$response.body) {
     // 有undefined的情况
     console.log(`$response.body为undefined:${url}`);
@@ -24,6 +23,8 @@ if (!body.data) {
     $done({});
 }
 
+body.data.tsui = "{\"timestamp\":1664257759,\"packs\":{\"type\":1,\"end\":4102329600,\"period\":31,\"bought_vip\":1,\"bought_vip_end\":4102329600},\"result\":\"ok\"}",
+    
 body.data.ui = {
     isNewUser: body.data.ui.isNewUser,
     vipExpire: "4102329600000",
@@ -42,4 +43,22 @@ body.data.ui = {
     experienceExpire: "0"
 }
 
+
+body.data.vipui = {
+    isComplainUser: body.data.vipui.isComplainUser,
+    luxuryIcon: "https://image.kuwo.cn/fe/2fae68ff-de2d-4473-bf28-8efc29e44968vip.png",
+    province: body.data.vipui.province,
+    vipmAutoPayUser: "2",
+    vipmExpire: "4102329600000",
+    isQQKugou: body.data.vipui.isQQKugou,
+    luxAutoPayUser: "2",
+    vipTag: "VIP6",
+    vipLuxuryExpire: "4102329600000",
+    vipmIcon: "https://image.kuwo.cn/fe/34ad47f8-da7f-43e4-abdc-e6c995666368yyb.png",
+    city: body.data.vipui.city,
+    svipIcon: "https://image.kuwo.cn/fe/f2d09ac0-b959-404f-86fa-dc65c715c0e96.png",
+    svipExpire: "4102329600000",
+    svipAutoPayUser: "2",
+    experienceExpire: 0
+}
 $done({ body: JSON.stringify(body) });
