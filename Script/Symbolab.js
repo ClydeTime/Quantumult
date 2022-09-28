@@ -8,7 +8,7 @@
 
 [rewrite_local]
 
-^https?:\/\/scibug\.com\/appleSubscriptionValidate$ url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Symbolab.js
+^https?:\/\/scibug\.com\/appleSubscriptionValidate url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Symbolab.js
 
 [mitm] 
 
@@ -16,8 +16,8 @@ hostname = scibug.com
 
 *******************************/
 
-let body = JSON.parse($response.body);
+var body = JSON.parse($response.body);
 
 body = {"valid":true,"hasUserConsumedAppleFreeTrial":false,"isCurrentlyInFreeTrial":false,"newlyAssociated":false,"membership":{"isCurrentlyInFreeTrial":false,"valid":true,"hasUserConsumedAppleFreeTrial":false,"newlyAssociated":false}}
 
-$done({ body: JSON.stringify(obj) });
+$done({ body: JSON.stringify(body) });
