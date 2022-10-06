@@ -3,8 +3,15 @@
 软件版本：1.5.8
 使用声明：⚠️此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 *******************************
-https://xluser-ssl.xunlei.com/xluser.core.login/v3/getuserinfo url script-response-body https://github.com/ClydeTime/Quantumult/blob/main/Script/xunlei.js
+
+[rewrite_local]
+
+https://xluser-ssl.xunlei.com/xluser.core.login/v3/getuserinfo url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/xunlei.js
+
+[mitm]
+
 hostname = xluser-ssl.xunlei.com
+
 *******************************/
 var body= JSON["parse"]($response["body"]);
 var vipList= {};
