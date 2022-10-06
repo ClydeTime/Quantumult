@@ -13,19 +13,19 @@ https://xluser-ssl.xunlei.com/xluser.core.login/v3/getuserinfo url script-respon
 hostname = xluser-ssl.xunlei.com
 
 *******************************/
-var body= JSON["parse"]($response["body"]);
-var vipList= {};
-vipList["expireDate"] = "20991231";
-vipList["isAutoDeduct"] = "0";
-vipList["isVip"] = "1";
-vipList["isYear"] = "1";
-vipList["payId"] = "0";
-vipList["payName"] = "---";
-vipList["register"] = "0";
-vipList["vasid"] = "2";
-vipList["vasType"] = "5";
-vipList["vipDayGrow"] = "20";
-vipList["vipGrow"] = "840";
-vipList["vipLevel"] = "7";
-body["vipList"] = [vipList];
+var body = JSON["parse"]($response["body"]);
+var body.vipList = {
+	expireDate: "20991231",
+	isAutoDeduct: "0",
+	isVip: "1",
+	isYear: "1",
+	payId: "0",
+	payName: "---",
+	register: "0",
+	vasid: "2",
+	vasType: "5",
+	vipDayGrow: "20",
+	vipGrow: "840",
+	vipLevel: "7"
+};
 $done({ body: JSON["stringify"](body) });
