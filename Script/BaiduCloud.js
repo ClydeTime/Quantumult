@@ -7,9 +7,10 @@ title:"可能是全网最稳定的版本"
 
 [rewrite_local]
 
-^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/membership\/user url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/membership\/(volume|product|user) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 ^https:\/\/pan\.baidu\.com\/cms\/config\?method=query url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 ^https:\/\/pan\.baidu\.com\/act\/v2\/skin\/(userset|inuse)\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https:\/\/pan\.baidu\.com\/(pmall\/space|api)\/quota url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 
 [mitm]
 
