@@ -1,36 +1,36 @@
 #EXTM3U
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c68d2b19b.jpg",CCTV1 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225490/1.m3u8
+http://39.134.65.70:80/wh7f454c46tw1719921417_1421347936/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225652/index.m3u8?icpid=88888888&RTS=1554599492&from=1&hms_devid=135
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c68d35f9b.jpg",CCTV2 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225612/1.m3u8
+http://39.135.135.45:80/wh7f454c46tw1847153581_1346583337/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225588/index.m3u8?icpid=88888888&RTS=1554599619&from=1&hms_devid=670
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c68d1dad7.jpg",CCTV3 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225611/1.m3u8
+http://39.134.66.110/PLTV/88888888/224/3221225799/index.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c6d9a7e8c.jpg",CCTV4 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225610/1.m3u8
+http://39.135.138.60:18890/PLTV/88888910/224/3221225621/index.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c6d9bd7d0.jpg",CCTV5 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225489/1.m3u8
+http://39.134.66.110/PLTV/88888888/224/3221225818/index.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="https://www.hualigs.cn/image/6153c6d99c62a.jpg",CCTV5+ 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225494/1.m3u8
+http://39.134.65.2:80/wh7f454c46tw1753176804_334703569/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225603/index.m3u8?icpid=88888888&RTS=1554599525&from=1&hms_devid=11
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV6.png",CCTV6 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225609/1.m3u8
+http://39.135.138.59:18890/PLTV/88888910/224/3221225650/index.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV7.png",CCTV7 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221226002/1.m3u8
+http://39.135.135.22:80/wh7f454c46tw1882204598_-1795601636/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225733/index.m3u8?icpid=88888888&RTS=1554599654&from=1&hms_devid=698
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV8.png",CCTV8 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225492/1.m3u8
+http://39.135.138.60:18890/PLTV/88888910/224/3221225635/index.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV9.png",CCTV 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225607/1.m3u8
+http://39.135.135.35:80/wh7f454c46tw1747233213_-873787546/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225735/index.m3u8?icpid=88888888&RTS=1554599519&from=1&hms_devid=691
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV10.png",CCTV10 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225606/1.m3u8
+http://39.135.135.79:80/wh7f454c46tw1853683378_-322509916/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225730/index.m3u8?icpid=88888888&RTS=1554599626&from=1&hms_devid=703
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV11.png",CCTV11 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225853/1.m3u8
+http://39.134.65.7:80/wh7f454c46tw1736895264_-839369804/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225597/index.m3u8?icpid=88888888&RTS=1554599509&from=1&hms_devid=29
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV12.png",CCTV12 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225605/1.m3u8
+http://39.135.135.70:80/wh7f454c46tw1829513060_732052264/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225731/index.m3u8?icpid=88888888&RTS=1554599602&from=1&hms_devid=686
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV13.png",CCTV13 50FPS
 http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221226062/1.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV14.png",CCTV14 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225604/1.m3u8
+http://39.135.135.36:80/wh7f454c46tw1774882669_697216759/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225732/index.m3u8?icpid=88888888&RTS=1554599547&from=1&hms_devid=683
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV15.png",CCTV15 50FPS
-http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225854/1.m3u8
+http://39.134.65.5:80/wh7f454c46tw1856642347_680427276/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225601/index.m3u8?icpid=88888888&RTS=1554599629&from=1&hms_devid=4
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV17.png",CCTV17 50FPS
 http://129.226.107.225/zycfcdn.gdwlcloud.com/PLTV/88888888/224/3221225608/1.m3u8
 #EXTINF:-1 group-title="50FPS" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/beijingjishi.png",冬奥纪实 50FPS
