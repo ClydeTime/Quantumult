@@ -11,16 +11,16 @@ Safari浏览器打开 https://m.iqiyi.com/user.html 使用密码登录, 如通�
 获取Cookie后, 请将Cookie脚本禁用并移除主机名，以免产生不必要的MITM.
 脚本将在每天上午9:00执行, 您可以修改执行时间。
 
+*/
+
 var cookie = ''; //单引号内填入手动获取的Cookie
-
-
 
 /*********************
 QuantumultX 远程脚本配置:
 **********************
 [task_local]
 # 爱奇艺会员签到
-0 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/iQIYI.js
+10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/iQIYI.js
 
 [rewrite_local]
 # 获取Cookie
@@ -28,6 +28,7 @@ QuantumultX 远程脚本配置:
 
 [mitm]
 hostname= passport.iqiyi.com
+
 
 */
 
@@ -79,7 +80,6 @@ var $nobyda = nobyda();
           }
         }
         const expires = $nobyda.expire ? $nobyda.expire.replace(/\u5230\u671f/, "") : "获取失败 ⚠️"
-        if (!$nobyda.isNode) $nobyda.notify("爱奇艺", "到期时间: " + expires, pushMsg.join('\n'));
         await $nobyda.time();
       } else {
         console.log(`Cookie缺少关键值，需重新获取`)
@@ -396,7 +396,6 @@ function GetCookie() {
   }
 }
 
-
 function nobyda() {
   const times = 0
   const start = Date.now()
@@ -439,7 +438,6 @@ function nobyda() {
       callback(null, adapterStatus(response), response.body)
     }, reason => callback(reason.error, null, null))
   }
-
 
   const log = (message) => console.log(message)
   const time = () => {
