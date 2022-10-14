@@ -41,13 +41,11 @@ var dfp = '';
 var $nobyda = nobyda();
 
 (async () => {
-  cookie = cookie || $nobyda.read("CookieQY")
+  cookie = $nobyda.read("CookieQY")
   LogDetails = $nobyda.read("iQIYI_LogDetails") === "true" ? true : LogDetails
 	if (typeof process !== 'undefined' && typeof process.env !== 'undefined') {
 		cookie = cookie || process.env.IQIYI_COOKIE;
 		LogDetails = LogDetails || process.env.IQIYI_DEBUG;
-		barkKey = barkKey || process.env.BARK_PUSH;
-		barkServer = barkServer || process.env.BARK_SERVER;
 	}
   if ($nobyda.isRequest) {
     GetCookie()
@@ -78,8 +76,6 @@ var $nobyda = nobyda();
         	}
         }
         const expires = $nobyda.expire ? $nobyda.expire.replace(/\u5230\u671f/, "") : "获取失败 ⚠️"
-        if (!$nobyda.isNode) $nobyda.notify("爱奇艺", "到期时间: " + expires, pushMsg.join('\n'));
-        if (barkKey) await BarkNotify($nobyda, barkKey, '爱奇艺', `到期时间: ${expires}\n${pushMsg.join('\n')}`, barkServer);
         await $nobyda.time();
       } else {
         console.log(`Cookie缺少关键值，需重新获取`)
@@ -400,16 +396,6 @@ function nobyda() {
   const times = 0
   const start = Date.now()
   const isRequest = typeof $request != "undefined"
-  const node = (() => {
-    if (isNode) {
-      const request = require('request');
-      return ({
-        request
-      })
-    } else {
-      return (null)
-    }
-  })()
   const notify = (title, subtitle, message) => {
     $notify(title, subtitle, message)
       title: title,
