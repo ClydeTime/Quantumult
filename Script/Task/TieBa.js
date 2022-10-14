@@ -19,7 +19,7 @@ QuantumultX 本地脚本配置:
 
 [rewrite_local]
 # 获取Cookie
-https?:\/\/(tiebac\.baidu\.com|180\.97\.\d+\.\d+)\/c\/s\/login url script-request-header TieBa.js
+https?:\/\/(tiebac\.baidu\.com|180\.97\.\d+\.\d+)\/c\/s\/login url script-request-header ClydeTime/TieBa.js
 
 [mitm] 
 hostname= tiebac.baidu.com
@@ -28,7 +28,7 @@ hostname= tiebac.baidu.com
 var $nobyda = nobyda();
 var cookieVal = $nobyda.read("CookieTB");
 var useParallel = 0; //0自动切换,1串行,2并行(当贴吧数量大于30个以后,并行可能会导致QX崩溃,所以您可以自动切换)
-var singleNotifyCount = 15; //想签到几个汇总到一个通知里,这里就填几个(比如我有13个要签到的,这里填了5,就会分三次消息通知过去)
+var singleNotifyCount = 20; //想签到几个汇总到一个通知里,这里就填几个(比如我有13个要签到的,这里填了5,就会分三次消息通知过去)
 var process = {
   total: 0,
   result: [
@@ -239,6 +239,8 @@ function GetCookie() {
             $nobyda.notify("更新贴吧Cookie成功 🎉", "", "");
           }
         }
+      }else{
+        $nobyda.notify("贴吧Cookie未过期!", "", "");
       }
     } else {
       if (headerCookie.indexOf("BDUSS") != -1) {
@@ -256,15 +258,14 @@ function GetCookie() {
 
 function nobyda() {
   const isRequest = typeof $request != "undefined"
-  const isQuanX = typeof $task != "undefined"
   const notify = (title, subtitle, message) => {
     $notify(title, subtitle, message)
   }
   const write = (value, key) => {
-    $prefs.setValueForKey(value, key)
+    return $prefs.setValueForKey(value, key)
   }
   const read = (key) => {
-    $prefs.valueForKey(key)
+    return $prefs.valueForKey(key)
   }
   const adapterStatus = (response) => {
     if (response) {
@@ -283,7 +284,7 @@ function nobyda() {
     options["method"] = "GET"
     $task.fetch(options).then(response => {
       callback(null, adapterStatus(response), response.body)
-    }, reason => callback(reason.error, null, null))    
+    }, reason => callback(reason.error, null, null))
   }
   const post = (options, callback) => {
     if (typeof options == "string") options = {
@@ -292,7 +293,7 @@ function nobyda() {
     options["method"] = "POST"
     $task.fetch(options).then(response => {
       callback(null, adapterStatus(response), response.body)
-    }, reason => callback(reason.error, null, null))  
+    }, reason => callback(reason.error, null, null))
   }
   const done = (value = {}) => {
     return $done(value)
