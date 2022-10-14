@@ -257,7 +257,9 @@ function Lottery(s) {
           if (error) throw new Error("接口请求出错 ‼️");
           const obj = JSON.parse(data);
           $nobyda.last = data.match(/(机会|已经)用完/) ? true : false
-          if (obj.awardName && obj.code == 0) {
+          if ($nobyda.last && obj.code == 3) {
+            LotteryMsg = `应用抽奖: 您的抽奖次数已经用完 ⚠️`
+          } else if (obj.awardName && obj.code == 0) {
             LotteryMsg = `应用抽奖: ${!$nobyda.last ? `${obj.awardName.replace(/《.+》/, "未中奖")} 🎉` : `您的抽奖次数已经用完 ⚠️`}`
           } else if (data.match(/\"errorReason\"/)) {
             const msg = data.match(/msg=.+?\)/) ? data.match(/msg=(.+?)\)/)[1].replace(/用户(未登录|不存在)/, "Cookie无效") : ""
