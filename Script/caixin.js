@@ -15,10 +15,11 @@
 hostname = gateway.caixin.com
 
 ***********************************/
+
 var headers = $request["headers"];
 delete headers["User-Agent"];
 delete headers["Accept-Language"];
-const url = $request["url"]
+url = $request["url"]
   ["replace"](/uid=(\d+|)/g, "uid=12622061")
   ["replace"](/code=(\w+|)/g, "code=DFDA516BB81A452BC80D9A288A8F67AD")
   ["replace"](/device=(\w+|)/g, "device=b3107e958f22af8ed9f0ca123b84d87420fa7929")
