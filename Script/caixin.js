@@ -26,7 +26,7 @@ const url = $request["url"]
     "device=b3107e958f22af8ed9f0ca123b84d87420fa7929"
   )
   ["replace"](/deviceType=(\d+|)/g, "deviceType=1");
-if ($request["url"]["indexOf"]("validateAudioAuth") != -0x1) {
+if ($request["url"]["indexOf"]("validateAudioAuth") != -1) {
   headers["appinfo"] = "fuckcaixin";
 }
 $done({ url: url, headers: headers });
