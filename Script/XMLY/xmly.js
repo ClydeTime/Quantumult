@@ -4,19 +4,19 @@
 下载地址：https://is.gd/rgiKbd
 特别说明：共享会员—随时失效！
 软件版本：9.0.67
-更新时间：2022-10-15
+更新时间：2022-10-16
 使用声明：此脚本仅供学习与交流，请勿转载与贩卖！⚠️⚠️⚠️
 
 *******************************
 
 [rewrite_local]
 
-^https?:\/\/(mobile|mwsa|m)\.ximalaya\.com\/(mobile\/(v1\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v1\/recommand)|mobile-(user|playpage\/(playpage|track))|product\/promotion|business-vip-) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly.js
+^https?:\/\/(mobile|mwsa|m)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|playpage\/(playpage|track))|product\/promotion|business-vip-) url script-response-body ClydeTime/xmly.js
 ^https?:\/\/(mobile|pns)\.ximalaya\.com\/(mobile-playpage|mobile\/(quickplay|acceptapn)|comment-mobile/get|sound-guide-portal\/(sound\/guide|display)) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly_crack.js
 
 [mitm] 
 
-hostname = *.ximalaya.com, 180.153.255.*, 180.153.140.202,  180.153.250.*, 114.80.139.237, 114.80.161.29
+hostname = *.ximalaya.com, 180.153.255.*, 180.153.140.*, 180.153.250.*, 114.80.139.237, 114.80.161.29
 
 *******************************/
 
