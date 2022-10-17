@@ -6,7 +6,7 @@
 
 [rewrite_local]
 
-https://xluser-ssl.xunlei.com/xluser.core.login/v3/getuserinfo url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/xunlei.js
+^https:\/\/xluser-ssl\.xunlei\.com\/xluser\.core\.login\/v\d\/(getuserinfo|loginkey) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/xunlei.js
 
 [mitm]
 
@@ -14,18 +14,18 @@ hostname = xluser-ssl.xunlei.com
 
 *******************************/
 var body = JSON["parse"]($response["body"]);
-var body.vipList = {
-	expireDate: "20991231",
+body.vipList = [{
 	isAutoDeduct: "0",
-	isVip: "1",
 	isYear: "1",
 	payId: "0",
-	payName: "---",
+	isVip: "1",
+	vipLevel: "7",
 	register: "0",
-	vasid: "2",
-	vasType: "5",
+	expireDate: "20991231",
+	payName: "---",
 	vipDayGrow: "20",
 	vipGrow: "840",
-	vipLevel: "7"
-};
+	vasid: "2",
+	vasType: "5"
+}];
 $done({ body: JSON["stringify"](body) });
