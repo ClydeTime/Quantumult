@@ -120,42 +120,47 @@ async function signBiliBili() {
   config.cookie = cookie2object(config.headers.Cookie);
   await queryStatus();
   if (config.cookie && (await me())) {
-    await dynamic();
-    if (config.cards.length) {
-      item = config.cards[Math.floor(Math.random() * config.cards.length)];
-      card = JSON.parse(item.card);
-      await watch(item.desc.rid, item.desc.bvid, card.cid);
-      await share(item.desc.rid, item.desc.bvid);
-    }else{
-      console.log("获取视频失败，请重试或寻求帮助");
-    }
-    let exec_times = 5 - (config.coins.num / 10);
-    if (config.user.money < 5) {
-      console.log("- 硬币不足, 投币失败");
-      exec_times = 0;
-    } else {
-      if (exec_times == 0){
-        console.log(`#### 投币任务`);
-        console.log(`- 今日已完成投币 ${config.coins.time}`);
-      } else{
-        console.log(`准备投币次数 ${exec_times}`);
-        for (var i=0; i<exec_times; i++) {
-          if (config.user.money < 5) {
-            console.log("- 硬币不足, 投币失败");
-            break;
-          } else {
-            await coin();
-          }
-        }
-      }
-    }
-
-    await silver2coin();
-    await liveSign();
     var flag = true;
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
       flag = false;
     }
+    if (!flag){
+      await dynamic();
+      if (config.cards.length) {
+        item = config.cards[Math.floor(Math.random() * config.cards.length)];
+        card = JSON.parse(item.card);
+        await watch(item.desc.rid, item.desc.bvid, card.cid);
+        await share(item.desc.rid, item.desc.bvid);
+      }else{
+        console.log("- 获取视频失败，请重试或寻求帮助");
+      }
+      let exec_times = 5 - (config.coins.num / 10);
+      if (config.user.money < 5) {
+        console.log("- 硬币不足, 投币失败");
+        exec_times = 0;
+      } else {
+        if (exec_times == 0){
+          console.log(`#### 投币任务`);
+          console.log(`- 今日已完成投币 ${config.coins.time}`);
+        } else{
+          console.log(`- 需要投币次数 ${exec_times}`);
+          for (var i=0; i<exec_times; i++) {
+            if (config.user.money < 5) {
+              console.log("- 硬币不足, 投币失败");
+              break;
+            } else {
+              await coin();
+            }
+          }
+        }
+      }
+    } else {
+      console.log(`#### 经验值任务均已完成,将尝试额外任务`);
+    }
+    
+    await liveSign();
+    await silver2coin();
+    
     let title = `${name} 每日任务 登录${config.user.num}/观看${config.watch.num}/分享${config.share.num}/投币${config.coins.num / 10}${flag ? "已完成" : "未完成"}`;
     console.log(`#### ${title}`);
 
@@ -180,7 +185,7 @@ async function signBiliBili() {
         `等级:${config.user.level_info.current_level} 升级${
           config.user.next_day
         }/满级${config.user.v6_day}/满级(投币方式)${Math.ceil(
-          (config.user.v6_exp - config.user.money * 10) / 65
+          (config.user.v6_exp) / 65
         )}/天`,
     };
     clyde.notify(notice.title, "", notice.content);
@@ -200,8 +205,8 @@ async function queryStatus() {
   };
   const myRequest = {
       url: url,
-      method: method, // Optional, default GET.
-      headers: headers // Optional.
+      method: method,
+      headers: headers
   };
   return await $task.fetch(myRequest).then(
         (response) => {
@@ -271,8 +276,8 @@ async function queryStatus() {
             }
             return true;
           } else {
-            console.log("message " + JSON.stringify(body.message));
-            console.log("查询失败");
+            console.log("- 失败原因 " + body.message);
+            console.log("- 查询失败");
             return false;
           }
         }, (reason) =>  {
@@ -316,7 +321,7 @@ async function coin(){
         const myRequest = {
           url: url,
           headers: headers,
-          method: method, // Optional, default GET.
+          method: method,
           body: body
         };
         console.log("- 正在投币");
@@ -337,11 +342,7 @@ async function coin(){
               return true;
             } else {
               console.log("- 投币失败");
-              console.log("message " + JSON.stringify(body.message));
-              // if (config.user.money > 5) {
-              //   console.log("- 正在重试...");
-              //   await coin();
-              // }              
+              console.log("- 失败原因 " + body.message);             
               return false;
             }
           }, (reason) =>  {
@@ -371,7 +372,7 @@ async function silver2coin() {
   const body = `csrf=${config.cookie.bili_jct}&csrf_token=${config.cookie.bili_jct}`;
   const myRequest = {
     url: url,
-    method: method, // Optional, default GET.
+    method: method,
     headers: headers,
     body: body
   }
@@ -390,7 +391,7 @@ async function silver2coin() {
       // 兑换中止（重复兑换&银瓜子不足）
       else if (result && result.code == 403) {
         let subTitle = `未成功兑换`
-        let detail = `- 说明: ${result.message}`
+        let detail = `- 原因: ${result.message}`
         console.log(detail)
         clyde.notify(title, subTitle, detail)
         return false;
@@ -398,7 +399,7 @@ async function silver2coin() {
       // 兑换失败
       else {
         let subTitle = `兑换失败`
-        let detail = `- 说明: ${result.message}`
+        let detail = `- 原因: ${result.message}`
         console.log(detail)
         clyde.notify(title, subTitle, detail)
         return false;
@@ -421,7 +422,7 @@ async function liveSign(){
   };
   const myRequest = {
     url: url,
-    method: method, // Optional, default GET.
+    method: method,
     headers: headers
   };
   await $task.fetch(myRequest).then(
@@ -431,11 +432,12 @@ async function liveSign(){
         console.log("- 直播签到成功");
         console.log(`签到奖励:${body.data.text},连续签到${body.data.hadSignDays}天`);
         return true;
-      }
-      // 签到失败
-      else {
+      } else if (body && body.code == 1011040){
+        console.log("- 今日已完成直播签到");
+        return false;
+      } else {
         console.log("- 直播签到失败");
-        console.log("message " + JSON.stringify(body.message));
+        console.log("- 失败原因 " + body.message);
         return false;
       }
     },
@@ -457,7 +459,7 @@ async function getFavUid(){
   const myRequest = {
     url: url,
     headers: headers,
-    method: method // Optional, default GET.
+    method: method
   };
   const like_uid_list = new Array();
   return await $task.fetch(myRequest).then(
@@ -475,7 +477,7 @@ async function getFavUid(){
         return like_uid_list;
       } else {
         console.log("- 获取关注列表成失败");
-        console.log("message " + JSON.stringify(body.message));
+        console.log("- 失败原因 " + body.message);
         return like_uid_list;
       }
     },
@@ -500,7 +502,7 @@ async function getFavAid(arr){
   const myRequest = {
     url: url,
     headers: headers,
-    method: method // Optional, default GET.
+    method: method
   }
   return await $task.fetch(myRequest).then(
     (response) => {
@@ -514,7 +516,7 @@ async function getFavAid(arr){
         return aid;
       } else {
         console.log("- 获取随机视频失败");
-        console.log("message " + JSON.stringify(body.message));
+        console.log("- 失败原因 " + body.message);
         return 0;
       }
     },
@@ -542,8 +544,8 @@ async function watch(aid, bvid, cid) {
 
     const myRequest = {
         url: url,
-        method: method, // Optional, default GET.
-        headers: headers, // Optional.
+        method: method,
+        headers: headers,
         body: body
     };
     return await $task.fetch(myRequest).then(
@@ -578,7 +580,7 @@ async function watch(aid, bvid, cid) {
         }
       );
   } else {
-    console.log(`- 今天已经观看 ${config.watch.time}`);
+    console.log(`- 今日已经观看 ${config.watch.time}`);
     return false;
   }
 }
@@ -597,8 +599,8 @@ async function share(aid, bvid) {
     const body = `aid=${aid}&csrf=${config.cookie.bili_jct}`;
     const myRequest = {
         url: url,
-        method: method, // Optional, default GET.
-        headers: headers, // Optional.
+        method: method,
+        headers: headers,
         body: body
     };
     return await $task.fetch(myRequest).then((response) => {
@@ -621,7 +623,7 @@ async function share(aid, bvid) {
         }
       });
   } else {
-    console.log(`- 今天已经分享 ${config.share.time}`);
+    console.log(`- 今日已经分享 ${config.share.time}`);
     return false;
   }
 }
@@ -634,8 +636,8 @@ async function me(){
 
   const myRequest = {
       url: url,
-      method: method, // Optional, default GET.
-      headers: headers // Optional.
+      method: method,
+      headers: headers
   };
 
   await $task.fetch(myRequest).then(response => {
@@ -686,11 +688,11 @@ async function me(){
     `- 距离满级(6级)还需: ${config.user.v6_day}天(登录+5 观看+5 分享+5)`
   );
 
-  console.log(`- 最多投币: ${(config.user.money - 1) / 4} 天`);
+  console.log(`- 剩余硬币最多可投: ${(config.user.money - 1) / 5} 天`);
 
   console.log(
     "- 距离满级(6级)最快还需: " +
-      Math.ceil((config.user.v6_exp - config.user.money * 10) / 65) +
+      Math.ceil(config.user.v6_exp / 65) +
       "天(登录+5 观看+5 分享+5 投币+5*10)"
   );
 
@@ -698,24 +700,24 @@ async function me(){
 }
 
 async function dynamic() {
-  console.log(`#### 更新动态`);
+  console.log(`#### 获取首页视频`);
 
-  const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=18866638&type_list=8&from=&platform=web`;
+  const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=${config.cookie.DedeUserID}&type_list=8&from=&platform=web`;
   const method = "GET";
   const headers = {"cookie": `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`};
 
   const myRequest = {
     url: url,
-    method: method, // Optional, default GET.
-    headers: headers // Optional.
+    method: method,
+    headers: headers
   };
   return await $task.fetch(myRequest).then(response => {
     const body = JSON.parse(response.body);
     if (body.data.cards) {
-      console.log(`- 刷新视频动态成功`);
+      console.log(`- 获取视频动态成功`);
       config.cards = body.data.cards;
     } else {
-      console.log(`- 刷新视频动态失败 ${body}`);
+      console.log(`- 获取视频动态失败 ${body}`);
     }
   })
 }
