@@ -135,7 +135,8 @@ async function signBiliBili() {
         console.log("- 获取视频失败，请重试或寻求帮助");
       }
       let exec_times = 5 - (config.coins.num / 10);
-      if (config.user.money < 5) {
+      if (config.user.money < 1) {
+        console.log(`#### 投币任务`);
         console.log("- 硬币不足, 投币失败");
         exec_times = 0;
       } else {
@@ -143,7 +144,7 @@ async function signBiliBili() {
           console.log(`#### 投币任务`);
           console.log(`- 今日已完成投币 ${config.coins.time}`);
         } else{
-          console.log(`- 需要投币次数 ${exec_times}`);
+          //console.log(`- 需要投币次数 ${exec_times}`);
           for (var i=0; i<exec_times; i++) {
             if (config.user.money < 5) {
               console.log("- 硬币不足, 投币失败");
@@ -161,6 +162,11 @@ async function signBiliBili() {
     await liveSign();
     await silver2coin();
     
+    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
+      flag = false;
+    } else {
+      flag = true;
+    }
     let title = `${name} 每日任务 登录${config.user.num}/观看${config.watch.num}/分享${config.share.num}/投币${config.coins.num / 10}${flag ? "已完成" : "未完成"}`;
     console.log(`#### ${title}`);
 
@@ -330,7 +336,7 @@ async function coin(){
             const body = JSON.parse(response.body);
             if (body.code == 0 && body.data.like) {
               console.log("- 投币成功");
-              config.user.money -= 5;
+              config.user.money -= 1;
               config.coins = {
                 num: (config.coins.num += 10),
                 time: format(startTime)
@@ -450,7 +456,7 @@ async function liveSign(){
 }
 
 async function getFavUid(){
-  console.log(`#### 获取关注列表`);
+  console.log(`- 获取关注列表`);
   const url = `https://api.bilibili.com/x/relation/followings?vmid=${config.cookie.DedeUserID}&ps=10&order_type=attention`;
   const method = "GET";
   const headers = {
@@ -490,10 +496,9 @@ async function getFavUid(){
 }
 
 async function getFavAid(arr){
-  console.log(`#### 获取关注列表中的随机视频`);
+  console.log(`- 获取关注列表中的随机视频`);
   var random_int = Math.floor((Math.random()*arr.length));
   var random_mid = arr[random_int];
-  console.log(random_mid);
   const url = `https://api.bilibili.com/x/space/arc/search?mid=${random_mid}`;
   const method = "GET";
   const headers = {
@@ -508,21 +513,21 @@ async function getFavAid(arr){
     (response) => {
       const body = JSON.parse(response.body);
       if (body.code == 0) {
-        console.log("- 获取随机视频成功, 即将投币");
+        console.log("- 获取投币视频成功");
         let vlist = body.data.list.vlist;
         random_v_int = Math.floor((Math.random()*vlist.length));
         aid = vlist[random_v_int].aid;
-        console.log("视频内容: 作者" + vlist[random_v_int]['author'] + "视频标题" + vlist[random_v_int]['title']);
+        console.log("- 作者: " + vlist[random_v_int]['author'] + "; 视频标题: " + vlist[random_v_int]['title']);
         return aid;
       } else {
-        console.log("- 获取随机视频失败");
+        console.log("- 获取投币视频失败");
         console.log("- 失败原因 " + body.message);
         return 0;
       }
     },
     (reason) => {
       console.log(`- headers ${JSON.stringify(response.headers)}`);
-      console.log("- 获取随机视频失败");
+      console.log("- 获取投币视频失败");
       return 0;
     }
   );
