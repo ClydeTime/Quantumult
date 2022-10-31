@@ -1,5 +1,6 @@
 /*
 脚本功能：哔哩哔哩签到
+脚本作者：MartinsKing
 软件功能：登录/观看/分享/投币/直播签到/银瓜子转硬币
 更新时间：2022-10-31
 使用平台：圈X, 其他平台未适配
@@ -10,6 +11,11 @@
     ③将此脚本加到定时任务如[10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站升级任务, enabled=true]。
     ④等待定时任务执行，或手动执行。
     ⑤提示投币失败可尝试多次手动执行。
+注意事项：
+  抓取cookie时注意保证账号登录状态；
+  账号内须有一定数量的关注数，否则无法完成投币；
+  保证硬币数量充足；
+  长期使用脚本存在多次投币同一视频的现象，导致投币失败，手动执行或尽量多关注UP即可。
 使用声明：⚠️此脚本仅供学习与交流，
         请勿转载与贩卖！⚠️⚠️⚠️
 *******************************
@@ -21,6 +27,7 @@
 
 hostname= app.bilibili.com
 */
+
 
 const format = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
   date = new Date(date);
@@ -84,10 +91,10 @@ const config = {
 };
 
 if (clyde.isRequest) {
-  console.log("正在获取cookie，请稍后。");
+  console.log("- 正在获取cookie，请稍后。");
   GetCookie();
 } else {
-  console.log("任务正在进行，请耐心等待。");
+  console.log("- 任务正在进行，请耐心等待。");
   signBiliBili();
 }
 
@@ -306,7 +313,6 @@ async function coin(){
       //console.log("即将投币的视频aid: " + aid);
       if (aid != 0) {
         const body = `aid=${aid}&multiply=1&select_like=1&cross_domain=true&csrf=${config.cookie.bili_jct}`;
-        console.log(JSON.stringify(body));
         const myRequest = {
           url: url,
           headers: headers,
@@ -317,7 +323,6 @@ async function coin(){
         return await $task.fetch(myRequest).then(
           (response) => {
             const body = JSON.parse(response.body);
-            console.log(JSON.stringify(body));
             if (body.code == 0 && body.data.like) {
               console.log("- 投币成功");
               config.user.money -= 5;
@@ -640,7 +645,7 @@ async function me(){
         console.log(
           "- 获得用户信息失败(请更新cookie) " + JSON.stringify(body.data)
         );
-        $notify(name, "cookie in expires", JSON.stringify(body));
+        clyde.notify(name, "cookie in expires", JSON.stringify(body));
         clyde.write(null, name + "_user");
         return false;
       } else {
