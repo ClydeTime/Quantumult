@@ -7,7 +7,7 @@
 使用方法：
     ①将[https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf]添加远程重写。
     ②打开手机B站客户端，提示获取cookie成功,获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
-    ③将此脚本加到定时任务如[10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站升级任务, enabled=false]。
+    ③将此脚本加到定时任务如[10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站升级任务, enabled=true]。
     ④等待定时任务执行，或手动执行。
     ⑤提示投币失败可尝试多次手动执行。
 使用声明：⚠️此脚本仅供学习与交流，
