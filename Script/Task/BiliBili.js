@@ -1,9 +1,9 @@
 /*
 脚本功能：哔哩哔哩签到
-软件功能：登录/观看/分享/投币/银瓜子转硬币
+软件功能：登录/观看/分享/投币/直播签到/银瓜子转硬币
 更新时间：2022-10-31
 使用平台：圈X, 其他平台未适配
-脚本参考：Nobyda、Wyatt1026、ABreadTree感谢以上人员的开源奉献
+脚本参考：Nobyda、Wyatt1026、ABreadTree、chavyleung感谢以上人员的开源奉献
 使用方法：
     ①将[https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf]添加远程重写。
     ②打开手机B站客户端，提示获取cookie成功,获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
@@ -21,7 +21,6 @@
 
 hostname= app.bilibili.com
 */
-
 
 const format = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
   date = new Date(date);
@@ -145,6 +144,7 @@ async function signBiliBili() {
     }
 
     await silver2coin();
+    await liveSign();
     var flag = true;
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
       flag = false;
@@ -402,6 +402,41 @@ async function silver2coin() {
     (reason) => {
       console.log(`- headers ${JSON.stringify(response.headers)}`);
       console.log("- 兑换失败");
+      return false;
+    }
+  );
+}
+
+async function liveSign(){
+  console.log(`#### 直播签到任务`);
+  const url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign";
+  const method = "GET";
+  const headers = {
+    'cookie': `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+  };
+  const myRequest = {
+    url: url,
+    method: method, // Optional, default GET.
+    headers: headers
+  };
+  await $task.fetch(myRequest).then(
+   (response) => {
+      let body = JSON.parse(response.body)
+      if (body && body.code == 0) {
+        console.log("- 直播签到成功");
+        console.log(`签到奖励:${body.data.text},连续签到${body.data.hadSignDays}天`);
+        return true;
+      }
+      // 签到失败
+      else {
+        console.log("- 直播签到失败");
+        console.log("- message ${body.message}");
+        return false;
+      }
+    },
+    (reason) => {
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      console.log("- 直播签到失败");
       return false;
     }
   );
