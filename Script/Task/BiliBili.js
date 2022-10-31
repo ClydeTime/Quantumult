@@ -330,7 +330,7 @@ async function coin(){
           method: method,
           body: body
         };
-        console.log("- 正在投币");
+        //console.log("- 正在投币");
         return await $task.fetch(myRequest).then(
           (response) => {
             const body = JSON.parse(response.body);
@@ -388,7 +388,7 @@ async function silver2coin() {
       let title = `${name} 银瓜子转硬币`
       // 兑换成功
       if (result && result.code == 0) {
-        let subTitle = `${result.message}`
+        let subTitle = `- ${result.message}`
         let detail = `- 成功兑换: ${result.data.coin} 个硬币\n当前银瓜子: ${result.data.silver} , 当前金瓜子: ${result.data.gold}`
         console.log(detail)
         clyde.notify(title, subTitle, detail)
@@ -396,15 +396,16 @@ async function silver2coin() {
       }
       // 兑换中止（重复兑换&银瓜子不足）
       else if (result && result.code == 403) {
-        let subTitle = `未成功兑换`
+        let subTitle = `- 未成功兑换`
         let detail = `- 原因: ${result.message}`
+        console.log(subTitle)
         console.log(detail)
         clyde.notify(title, subTitle, detail)
         return false;
       }
       // 兑换失败
       else {
-        let subTitle = `兑换失败`
+        let subTitle = `- 兑换失败`
         let detail = `- 原因: ${result.message}`
         console.log(detail)
         clyde.notify(title, subTitle, detail)
@@ -456,7 +457,7 @@ async function liveSign(){
 }
 
 async function getFavUid(){
-  console.log(`- 获取关注列表`);
+  //console.log(`- 获取关注列表`);
   const url = `https://api.bilibili.com/x/relation/followings?vmid=${config.cookie.DedeUserID}&ps=10&order_type=attention`;
   const method = "GET";
   const headers = {
@@ -496,7 +497,7 @@ async function getFavUid(){
 }
 
 async function getFavAid(arr){
-  console.log(`- 获取关注列表中的随机视频`);
+  //console.log(`- 获取关注列表中的随机视频`);
   var random_int = Math.floor((Math.random()*arr.length));
   var random_mid = arr[random_int];
   const url = `https://api.bilibili.com/x/space/arc/search?mid=${random_mid}`;
