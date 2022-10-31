@@ -435,7 +435,7 @@ async function liveSign(){
       // 签到失败
       else {
         console.log("- 直播签到失败");
-        console.log("- message ${body.message}");
+        console.log("message " + JSON.stringify(body.message));
         return false;
       }
     },
