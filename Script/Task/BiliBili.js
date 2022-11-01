@@ -315,7 +315,7 @@ async function coin(){
       let aid = await getFavAid(like_uid_list);
       //console.log("即将投币的视频aid: " + aid);
       if (aid != 0) {
-        const body = `aid=${aid}&multiply=1&select_like=1&cross_domain=true&csrf=${config.cookie.bili_jct}`;
+        const body = `aid=${aid}&multiply=1&select_like=0&cross_domain=true&csrf=${config.cookie.bili_jct}`;
         const myRequest = {
           url: url,
           headers: headers,
