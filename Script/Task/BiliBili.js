@@ -326,7 +326,7 @@ async function coin(){
         return await $task.fetch(myRequest).then(
           (response) => {
             const body = JSON.parse(response.body);
-            if (body.code == 0 && body.data.like) {
+            if (body.code == 0 && body.message == 0) {
               console.log("- 投币成功");
               config.user.money -= 1;
               config.coins = {
