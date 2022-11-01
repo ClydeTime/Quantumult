@@ -13,5 +13,5 @@
 
 [mitm] 
 
-hostname = *.bilibili.com, 124.239.240.*, 101.89.57.66, 218.94.210.66, 240e:b1:9801:206:11:0:0:*
+hostname = *.bilibili.com
 */
