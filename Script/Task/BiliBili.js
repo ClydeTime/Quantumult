@@ -75,19 +75,7 @@ const startTime = Date.now();
 const config = {
   cookie: {},
   cards: [],
-  headers: {
-    accept: "*/*",
-    "user-agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36",
-    "accept-language": "zh-CN,zh;q=0.9",
-    "sec-ch-ua":
-      '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"macOS"',
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-site",
-  }
+  headers: {}
 };
 
 if (clyde.isRequest) {
@@ -194,7 +182,11 @@ async function signBiliBili() {
           (config.user.v6_exp) / 65
         )}/天`,
     };
-    clyde.notify(notice.title, "", notice.content);
+    if (!flag) {
+      clyde.notify(notice.title, "", `- !!!有未完成的任务, 请检查console查看具体原因, 可尝试手动执行完成任务\n` + notice.content);
+    } else {
+      clyde.notify(notice.title, "", notice.content);
+    }
     clyde.done();
   } else{
     clyde.notify(`${name} 任务失败`,`📅 ${format(startTime)}`,"请更新cookie");
@@ -282,13 +274,13 @@ async function queryStatus() {
             }
             return true;
           } else {
-            console.log("- 失败原因 " + body.message);
             console.log("- 查询失败");
+            console.log("- 失败原因 " + body.message);
             return false;
           }
         }, (reason) =>  {
-          console.log(`- headers ${JSON.stringify(response.headers)}`);
           console.log(`- 查询失败`);
+          console.log(`- headers ${JSON.stringify(response.headers)}`);
           return false;
         }
     );
@@ -645,15 +637,14 @@ async function me(){
       method: method,
       headers: headers
   };
-
+  var flag_cookie = true;
   await $task.fetch(myRequest).then(response => {
       const body = JSON.parse(response.body);
 
       if (body.code) {
-        console.log(
-          "- 获得用户信息失败(请更新cookie) " + JSON.stringify(body.data)
-        );
-        clyde.notify(name, "cookie in expires", JSON.stringify(body));
+        console.log("- 获得用户信息失败(请更新cookie) ");
+        flag_cookie = false;
+        //clyde.notify(name, "cookie in expires", JSON.stringify(body));
         clyde.write(null, name + "_user");
         return false;
       } else {
@@ -669,40 +660,45 @@ async function me(){
       $notify(name, "- 获得用户信息失败", reason.error); // Error!
       return false;
   });
+  if (flag_cookie) {
+    config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp;
+    config.user.next_day = Math.ceil(config.user.mext_exp / 15);
+    config.user.v6_exp = 28800 - config.user.level_info.current_exp;
+    config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
 
-  config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp;
-  config.user.next_day = Math.ceil(config.user.mext_exp / 15);
-  config.user.v6_exp = 28800 - config.user.level_info.current_exp;
-  config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
+    console.log("- 用户名称: " + config.user.uname);
+    console.log("- 用户ID: " + config.user.mid);
+    console.log("- 用户硬币: " + config.user.money);
+    console.log("- 用户B币: " + config.user.wallet.bcoin_balance);
+    console.log("- 用户等级: " + config.user.level_info.current_level);
+    console.log(
+      `- 当前经验:${config.user.level_info.current_exp}/${config.user.level_info.next_exp}`
+    );
 
-  console.log("- 用户名称: " + config.user.uname);
-  console.log("- 用户ID: " + config.user.mid);
-  console.log("- 用户硬币: " + config.user.money);
-  console.log("- 用户B币: " + config.user.wallet.bcoin_balance);
-  console.log("- 用户等级: " + config.user.level_info.current_level);
-  console.log(
-    `- 当前经验:${config.user.level_info.current_exp}/${config.user.level_info.next_exp}`
-  );
+    console.log(`- 升级还需经验: ${config.user.mext_exp}`);
 
-  console.log(`- 升级还需经验: ${config.user.mext_exp}`);
+    console.log(
+      `- 距离下级还需: ${config.user.next_day}天(登录+5 观看+5 分享+5)`
+    );
 
-  console.log(
-    `- 距离下级还需: ${config.user.next_day}天(登录+5 观看+5 分享+5)`
-  );
+    console.log(
+      `- 距离满级(6级)还需: ${config.user.v6_day}天(登录+5 观看+5 分享+5)`
+    );
 
-  console.log(
-    `- 距离满级(6级)还需: ${config.user.v6_day}天(登录+5 观看+5 分享+5)`
-  );
+    console.log(`- 剩余硬币最多可投: ${(config.user.money - 1) / 5} 天`);
 
-  console.log(`- 剩余硬币最多可投: ${(config.user.money - 1) / 5} 天`);
+    console.log(
+      "- 距离满级(6级)最快还需: " +
+        Math.ceil(config.user.v6_exp / 65) +
+        "天(登录+5 观看+5 分享+5 投币+5*10)"
+    );
 
-  console.log(
-    "- 距离满级(6级)最快还需: " +
-      Math.ceil(config.user.v6_exp / 65) +
-      "天(登录+5 观看+5 分享+5 投币+5*10)"
-  );
-
-  return true;
+    return true;
+  } else {
+    console.log("- 请按说明正确获取cookie后手动执行此任务");
+    console.log("- 任务终止!");
+    return false;
+  } 
 }
 
 async function dynamic() {
