@@ -228,7 +228,7 @@ async function queryStatus() {
             } else {
               console.log("- 今日尚未观看");
               config.watch = {
-                num; 0
+                num: 0
               };
               clyde.write(
                 JSON.stringify(config.watch),
@@ -248,7 +248,7 @@ async function queryStatus() {
             } else {
               console.log("- 今日尚未分享");
               config.share = {
-                num:0
+                num: 0
               };
               clyde.write(
                 JSON.stringify(config.share),
