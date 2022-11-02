@@ -90,11 +90,10 @@ function GetCookie() {
   if ("object" == typeof $request) {
     console.log("正在获得 cookie");
     config.headers.Cookie = $request.headers.Cookie;
-    console.log(
-      clyde.write(JSON.stringify(config.headers), name + "_headers")
-        ? clyde.notify(name, "cookie catch success", "获得 cookie 成功")
-        : clyde.notify(name, "cookie catch failed", "获得 cookie 失败")
-    );
+    clyde.write(JSON.stringify(config.headers), name + "_headers")
+      ? clyde.notify(name, "cookie catch success", "获得 cookie 成功")
+      : clyde.notify(name, "cookie catch failed", "获得 cookie 失败")
+    console.log(JSON.stringify(config.headers));
   }
   clyde.done();
 }
