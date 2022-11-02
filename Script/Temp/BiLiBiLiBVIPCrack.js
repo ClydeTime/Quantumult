@@ -13,11 +13,11 @@ hostname = *.bilibili.com, 124.239.240.*, 101.89.57.66, 218.94.210.66, 240e:b1:9
 */
 
 var headers = $request['headers'];
-headers['Cookie'] = 'DedeUserID=400825589; DedeUserID__ckMd5=74eca1c0cd603ce4; SESSDATA=a83cd0d7%2C1682772575%2C25a814a2; bili_jct=3b92aaaced567a3678ae817a03f1c730; sid=q5lgiz12';
-headers['Authorization'] = 'identify_v1 3b723486e6cae13db7d53514486e49a2';
-headers['User-Agent'] = 'bili-inter/70000100 os/ios model/iPhone XR mobi_app/iphone_i osVer/15.6.1 network/2';
-headers['x-bili-locale-bin'] = 'Eg4KAnpoEgRIYW5zGgJUVw==';
-headers['x-bili-device-bin'] = 'CA4Q5LuwIRokWTI0MzBDMjkzNTkyNTYwMTRDMkNBOUJFN0UzQTdGMkM3RjI5IghpcGhvbmVfaSoDaW9zMgVwaG9uZToFYXBwbGVCBUFwcGxlSglpUGhvbmUgWFJSBjE1LjYuMWoGMy4xNC4wckBEMzc1RjFGMDI5NjQ4MkFFQjUzOTYwOTZDQkI4RkFBNDIwMTkwOTE0MjMyNDU1OTk1QzA1MTcwMEY3QzRDQjc0eJW9/+7BMA==';
-headers['x-bili-metadata-bin'] = 'CiAzYjcyMzQ4NmU2Y2FlMTNkYjdkNTM1MTQ0ODZlNDlhMhIIaXBob25lX2kaBXBob25lIOS7sCEqBWFwcGxlMiRZMjQzMEMyOTM1OTI1NjAxNEMyQ0E5QkU3RTNBN0YyQzdGMjk6A2lvcw==';
-headers['x-bili-fawkes-req-bin'] = 'CghpcGhvbmVfaRIEcHJvZBoQZmZmZmZmZmY2ZjAxYjZlYw==';
+headers['Cookie'] = 'DedeUserID=18866638; DedeUserID__ckMd5=068cecaa89d60c4c; SESSDATA=eede2898%2C1682474864%2C75d3efa1; bili_jct=97ade97115e35dc530a50841ecc2dd0e; sid=5uihjy9l';
+headers['Authorization'] = 'identify_v1 9510f95f856e6051642a055c98ef53a1';
+headers['User-Agent'] = 'bili-universal/70200100 os/ios model/iPad mini 5G mobi_app/iphone osVer/15.5 network/2';
+headers['x-bili-locale-bin'] = 'Eg4KAnpoEgRIYW5zGgJKUA==';
+headers['x-bili-device-bin'] = 'CAEQpNa8IRokWkQ0MjcwREM5NTg5N0JFNjRBM0JCNzgwN0YyNDVDNThCNkQ5IgZpcGhvbmUqA2lvczIDcGFkOgVhcHBsZUIFQXBwbGVKDGlQYWQgbWluaSA1R1IEMTUuNWoFNy4yLjByQDJDMTBCQjNBNTAzQjE4REFCQTQxRjI5MUU5MzFFM0QzMjAxOTA5MzAxNzIyMjE0QzBCQTBEMzI1NjRGMzJFM0N4r8Gh4ewt';
+headers['x-bili-metadata-bin'] = 'CiA5NTEwZjk1Zjg1NmU2MDUxNjQyYTA1NWM5OGVmNTNhMRIGaXBob25lGgNwYWQgpNa8ISoFYXBwbGUyJFpENDI3MERDOTU4OTdCRTY0QTNCQjc4MDdGMjQ1QzU4QjZEOToDaW9z';
+headers['x-bili-fawkes-req-bin'] = 'CgZpcGhvbmUSBHByb2QaCGFjMDVkNWE5';
 $done({ 'headers': headers });
