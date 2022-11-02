@@ -93,7 +93,6 @@ function GetCookie() {
     clyde.write(JSON.stringify(config.headers), name + "_headers")
       ? clyde.notify(name, "cookie catch success", "获得 cookie 成功")
       : clyde.notify(name, "cookie catch failed", "获得 cookie 失败")
-    console.log(JSON.stringify(config.headers));
   }
   clyde.done();
 }
