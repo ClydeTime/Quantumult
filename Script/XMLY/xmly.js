@@ -11,7 +11,7 @@
 
 [rewrite_local]
 
-^https?:\/\/(mobile|mwsa|m|ar)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|playpage\/(playpage\/(tabs|recommendInfo)|track))|product\/promotion|business-vip-|rec-association\/recommend\/album) url script-response-body ClydeTime/xmly.js
+^https?:\/\/(mobile|mwsa|m|ar)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|playpage\/(playpage\/(tabs|recommendInfo)|track))|product\/promotion|business-vip-|rec-association\/recommend\/album) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly.js
 ^https?:\/\/(mobile|pns)\.ximalaya\.com\/(mobile-playpage|mobile\/(quickplay|acceptapn)|comment-mobile/get|sound-guide-portal\/(sound\/guide|display)) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly_crack.js
 
 [mitm] 
