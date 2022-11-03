@@ -1,5 +1,5 @@
 /*
-脚本功能：哔哩哔哩签到
+脚本名称：哔哩哔哩签到
 脚本作者：MartinsKing
 软件功能：登录/观看/分享/投币/直播签到/银瓜子转硬币
 更新时间：2022-10-31
@@ -88,7 +88,7 @@ if (clyde.isRequest) {
 
 function GetCookie() {
   if ("object" == typeof $request) {
-    console.log("正在获得 cookie");
+    console.log("正在获取 cookie");
     config.headers.Cookie = $request.headers.Cookie;
     clyde.write(JSON.stringify(config.headers), name + "_headers")
       ? clyde.notify(name, "cookie catch success", "获得 cookie 成功")
@@ -103,6 +103,7 @@ async function signBiliBili() {
   config.watch = JSON.parse(clyde.read(name + "_watch") || "{}");
   config.share = JSON.parse(clyde.read(name + "_share") || "{}");
   config.coins = JSON.parse(clyde.read(name + "_coins") || "{}");
+  config.score = JSON.parse(clyde.read(name + "_score") || "{}");
   config.cookie = cookie2object(config.headers.Cookie);
   await queryStatus();
   if (config.cookie && (await me())) {
@@ -147,6 +148,7 @@ async function signBiliBili() {
     
     await liveSign();
     await silver2coin();
+    await vipScoreSign();
     
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
       flag = false;
@@ -215,10 +217,10 @@ async function queryStatus() {
             }
             if (body.data.watch){
               console.log("- 今日已观看");
-              config.watch = {
-                num: (config.watch.num=0 ? 1 : config.watch.num),
-                time: format(startTime),
-              };
+              config.watch.num = (config.watch.num==0 ? 1 : config.watch.num);
+              if (!config['watch'].hasOwnProperty("time")) {
+                config.watch.time = format(startTime);
+              }
               clyde.write(
                 JSON.stringify(config.watch),
                 name + "_watch"
@@ -235,10 +237,10 @@ async function queryStatus() {
             }
             if (body.data.share){
               console.log("- 今日已分享");
-              config.share = {
-                num: (config.share.num=0 ? 1 : config.share.num),
-                time: format(startTime)
-              };
+              config.share.num = (config.share.num==0 ? 1 : config.share.num);
+              if (!config['share'].hasOwnProperty("time")) {
+                config.share.time = format(startTime);
+              }
               clyde.write(
                 JSON.stringify(config.share),
                 name + "_share"
@@ -255,20 +257,21 @@ async function queryStatus() {
             }
             if (body.data.coins == 50){
               console.log("- 今日已投币");
-              config.coins = {
-                num: 50,
-                time: format(startTime)
-              };
+              config.coins.num = 50;
+              if (!config['coins'].hasOwnProperty("time")) {
+                config.coins.time = format(startTime);
+              } else {
+                if (format(new Date().toDateString()) > config.coins.time) {
+                  config.coins.time = format(startTime);
+                }
+              }
               clyde.write(
                 JSON.stringify(config.coins),
                 name + "_coins"
               );
             } else {
               console.log("- 今日尚未投币(或不足五次投币)");
-              config.coins = {
-                num: body.data.coins,
-                time: format(startTime)
-              };
+              config.coins.num = body.data.coins;
               clyde.write(
                 JSON.stringify(config.coins),
                 name + "_coins"
@@ -331,10 +334,7 @@ async function coin(){
             if (body.code == 0 && body.message == 0) {
               console.log("- 投币成功");
               config.user.money -= 1;
-              config.coins = {
-                num: (config.coins.num += 10),
-                time: format(startTime)
-              };
+              config.coins.num += 10;
               clyde.write(
                 JSON.stringify(config.coins),
                 name + "_coins"
@@ -450,6 +450,52 @@ async function liveSign(){
   );
 }
 
+async function vipScoreSign(){
+  console.log(`#### 大会员大积分签到任务`);
+  if (config.user.vipType == 0) {
+    console.log(`- 当前用户非大会员, 无法完成任务`);
+  } else {
+    if (check("score")) {
+      const url = "https://api.bilibili.com/pgc/activity/score/task/sign";
+      const method = "POST";
+      const headers = {
+        'Referer': 'https://big.bilibili.com/mobile/bigPoint/task',
+        'Cookie': `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+      };
+      const myRequest = {
+        url: url,
+        method: method,
+        headers: headers
+      };
+      await $task.fetch(myRequest).then(
+        (response) => {
+          const body = JSON.parse(response.body);
+          if (body.code == 0 && body.message == "success") {
+            console.log("- 大会员大积分任务签到成功");
+            config.score.time = format(startTime);
+            clyde.write(
+              JSON.stringify(config.score),
+              name + "_score"
+            );
+            return true;
+          } else {
+            console.log("- 大会员大积分任务签到失败");
+            console.log("- 失败原因 " + body.message);             
+            return false;
+          }
+        }, (reason) =>  {
+          console.log("- 大会员大积分任务签到失败");
+          console.log(`- headers ${JSON.stringify(response.headers)}`);
+          return false;
+        }
+      );
+    }else {
+      console.log("- 今日已完成会员积分签到任务");
+      return false;
+    }
+  }
+}
+
 async function getFavUid(){
   //console.log(`- 获取关注列表`);
   const url = `https://api.bilibili.com/x/relation/followings?vmid=${config.cookie.DedeUserID}&ps=10&order_type=attention`;
@@ -553,12 +599,7 @@ async function watch(aid, bvid, cid) {
           const body = JSON.parse(response.body);
           if (body.code == 0) {
             console.log(`- 累计观看(登录)次数 ${(config.watch.num || 0) + 1}`);
-
-            config.watch = {
-              num: (config.watch.num || 0) + 1,
-              time: format(startTime),
-            };
-
+            config.watch.num = (config.watch.num || 0) + 1;
             clyde.write(
               JSON.stringify(config.watch),
               name + "_watch"
@@ -566,16 +607,14 @@ async function watch(aid, bvid, cid) {
 
             return true;
           } else {
-            console.log("headers " + JSON.stringify(response.headers));
+            console.log("- 观看(登录)失败");
             console.log("data " + JSON.stringify(response.body));
-            console.log("观看(登录)失败");
             return false;
           }
         },
         (reason) => {
+          console.log("- 观看(登录)失败");
           console.log(`- headers ${JSON.stringify(response.headers)}`);
-          console.log(`- data ${JSON.stringify(response.body)}`);
-          console.log(`- 观看(登录)失败`);
           return false;
         }
       );
@@ -606,19 +645,15 @@ async function share(aid, bvid) {
     return await $task.fetch(myRequest).then((response) => {
         const data = JSON.parse(response.body);
         if (data.code == 0) {
-          config.share = {
-            num: (config.share.num || 0) + 1,
-            time: format(startTime)
-          };
+          config.share.num = (config.share.num || 0) + 1;
           console.log("- 分享成功");
           return clyde.write(
             JSON.stringify(config.share),
             name + "_share"
           );
         } else {
-          console.log(`- headers ${JSON.stringify(response.headers)}`);
-          console.log(`- data ${JSON.stringify(response.body)}`);
           console.log(`- 分享失败`);
+          console.log(`- data ${JSON.stringify(response.body)}`);
           return false;
         }
       });
@@ -651,9 +686,16 @@ async function me(){
         return false;
       } else {
         console.log("- cookie有效即将开始任务");
-        config.user = body.data;
-        config.user.num = (config.user.num || 0) + 1;
-        config.user.time = format(startTime);
+        if (check("user") || config.user.mid != body.data.mid) {
+          config.user = body.data;
+          config.user.time = format(startTime);
+          config.watch.time = format(startTime);
+          config.share.time = format(startTime);
+          config.coins.time = format(startTime);
+          config.user.num = 1;
+        } else {
+          config.user.num = (config.user.num || 0) + 1;
+        }
         clyde.write(JSON.stringify(config.user), name + "_user");
         return true;
       }
@@ -668,6 +710,9 @@ async function me(){
     config.user.v6_exp = 28800 - config.user.level_info.current_exp;
     config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
 
+    if (config.user.vipType == 1 || config.user.vipType == 2) {
+      console.log("- 尊贵的大会员用户");
+    }
     console.log("- 用户名称: " + config.user.uname);
     console.log("- 用户ID: " + config.user.mid);
     console.log("- 用户硬币: " + config.user.money);
