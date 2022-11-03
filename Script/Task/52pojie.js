@@ -32,10 +32,11 @@ hostname= www.52pojie.cn
 
 */
 
+//url: 'https://www.52pojie.cn/home.php?mod=task&do=apply&id=2',
 const $ = API('nobyda_52pojie');
 const date = new Date();
 const reqData = {
-  url: 'https://www.52pojie.cn/home.php?mod=task&do=apply&id=2',
+  url: 'https://www.52pojie.cn/home.php?mod=task&do=draw&id=2&refer=%2F',
   headers: {
     Cookie: $.read("COOKIE"),
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
@@ -50,9 +51,10 @@ if ($.env.isRequest) {
 } else {
   $.http.put(reqData)
     .then((resp) => {
+      //console.log(JSON.stringify(resp.body));
       if (resp.body.match(/(ÒÑÍê³É|\u606d\u559c\u60a8|��̳΢�š��ᰮ�ƽ�)/)) {
         $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 签到成功 🎉"
-      } else if (resp.body.match(/(ÄúÒÑ|\u4e0b\u671f\u518d\u6765|>��Ǹ������)/)) {
+      } else if (resp.body.match(/(ÄúÒÑ|\u4e0d\u662f\u8fdb\u884c\u4e2d\u7684\u4efb\u52a1|>��Ǹ������)/)) {
         $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 已签过 ⚠️"
       } else if (resp.body.match(/(ÏÈµÇÂ¼|\u9700\u8981\u5148\u767b\u5f55|�Ҫ�ȵ�¼���ܼ�)/)) {
         $.msgBody = "签到失败, Cookie失效 ‼️‼️"
