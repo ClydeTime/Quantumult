@@ -2,7 +2,7 @@
 脚本名称：哔哩哔哩签到
 脚本作者：MartinsKing
 软件功能：登录/观看/分享/投币/直播签到/银瓜子转硬币
-更新时间：2022-10-31
+更新时间：2022-11-04
 使用平台：圈X, 其他平台未适配
 脚本参考：Nobyda、Wyatt1026、ABreadTree、chavyleung感谢以上人员的开源奉献
 使用方法：
@@ -57,6 +57,7 @@ const format = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
 const check = (key) =>
   !config.hasOwnProperty(key) ||
   !config[key].hasOwnProperty("time") ||
+  !(config[key]["num"] > 1) ||
   format(new Date().toDateString()) > config[key].time;
 
 const cookie2object = (cookie) => {
@@ -212,8 +213,15 @@ async function queryStatus() {
           if (body.code == 0) {
             if (body.data.login){
               console.log("- 今日已登录");
+              config.user.num = (config.user.num==0 ? 1 : config.user.num);
+              if (!config['user'].hasOwnProperty("time")) {
+                config.user.time = format(startTime);
+              }
+              clyde.write(JSON.stringify(config.user), name + "_user");
             } else {
               console.log("- 今日尚未登录");
+              config.user.num = 0;
+              clyde.write(JSON.stringify(config.user), name + "_user");
             }
             if (body.data.watch){
               console.log("- 今日已观看");
@@ -221,19 +229,11 @@ async function queryStatus() {
               if (!config['watch'].hasOwnProperty("time")) {
                 config.watch.time = format(startTime);
               }
-              clyde.write(
-                JSON.stringify(config.watch),
-                name + "_watch"
-              );
+              clyde.write(JSON.stringify(config.watch), name + "_watch");
             } else {
               console.log("- 今日尚未观看");
-              config.watch = {
-                num: 0
-              };
-              clyde.write(
-                JSON.stringify(config.watch),
-                name + "_watch"
-              );
+              config.watch.num = 0;
+              clyde.write(JSON.stringify(config.watch), name + "_watch");
             }
             if (body.data.share){
               console.log("- 今日已分享");
@@ -241,19 +241,11 @@ async function queryStatus() {
               if (!config['share'].hasOwnProperty("time")) {
                 config.share.time = format(startTime);
               }
-              clyde.write(
-                JSON.stringify(config.share),
-                name + "_share"
-              );
+              clyde.write(JSON.stringify(config.share), name + "_share");
             } else {
               console.log("- 今日尚未分享");
-              config.share = {
-                num: 0
-              };
-              clyde.write(
-                JSON.stringify(config.share),
-                name + "_share"
-              );
+              config.share.num = 0;
+              clyde.write(JSON.stringify(config.share), name + "_share");
             }
             if (body.data.coins == 50){
               console.log("- 今日已投币");
@@ -265,17 +257,11 @@ async function queryStatus() {
                   config.coins.time = format(startTime);
                 }
               }
-              clyde.write(
-                JSON.stringify(config.coins),
-                name + "_coins"
-              );
+              clyde.write(JSON.stringify(config.coins), name + "_coins");
             } else {
               console.log("- 今日尚未投币(或不足五次投币)");
               config.coins.num = body.data.coins;
-              clyde.write(
-                JSON.stringify(config.coins),
-                name + "_coins"
-              );
+              clyde.write(JSON.stringify(config.coins), name + "_coins");
             }
             return true;
           } else {
@@ -434,7 +420,7 @@ async function liveSign(){
         console.log(`签到奖励:${body.data.text},连续签到${body.data.hadSignDays}天`);
         return true;
       } else if (body && body.code == 1011040){
-        console.log("- 今日已完成直播签到");
+        console.log("- 今日已完成直播签到任务");
         return false;
       } else {
         console.log("- 直播签到失败");
@@ -473,10 +459,8 @@ async function vipScoreSign(){
           if (body.code == 0 && body.message == "success") {
             console.log("- 大会员大积分任务签到成功");
             config.score.time = format(startTime);
-            clyde.write(
-              JSON.stringify(config.score),
-              name + "_score"
-            );
+            config.score.num = 1;
+            clyde.write(JSON.stringify(config.score), name + "_score");
             return true;
           } else {
             console.log("- 大会员大积分任务签到失败");
@@ -576,7 +560,6 @@ async function getFavAid(arr){
 
 async function watch(aid, bvid, cid) {
   console.log(`#### 观看(登录)任务`);
-
   if (check("watch")) {
     console.log(`- 正在观看(登录)(${bvid}) ${config.watch?.time || ""}`);
 
@@ -600,11 +583,7 @@ async function watch(aid, bvid, cid) {
           if (body.code == 0) {
             console.log(`- 累计观看(登录)次数 ${(config.watch.num || 0) + 1}`);
             config.watch.num = (config.watch.num || 0) + 1;
-            clyde.write(
-              JSON.stringify(config.watch),
-              name + "_watch"
-            );
-
+            clyde.write(JSON.stringify(config.watch), name + "_watch");
             return true;
           } else {
             console.log("- 观看(登录)失败");
@@ -692,6 +671,11 @@ async function me(){
           config.watch.time = format(startTime);
           config.share.time = format(startTime);
           config.coins.time = format(startTime);
+          config.score.num = 0;
+          clyde.write(JSON.stringify(config.watch), name + "_watch");
+          clyde.write(JSON.stringify(config.share), name + "_share");
+          clyde.write(JSON.stringify(config.coins), name + "_coins");
+          clyde.write(JSON.stringify(config.score), name + "_score");
           config.user.num = 1;
         } else {
           config.user.num = (config.user.num || 0) + 1;
@@ -711,7 +695,7 @@ async function me(){
     config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
 
     if (config.user.vipType == 1 || config.user.vipType == 2) {
-      console.log("- 尊贵的大会员用户");
+      console.log("- 🎉🎉尊贵的大会员用户🎉🎉");
     }
     console.log("- 用户名称: " + config.user.uname);
     console.log("- 用户ID: " + config.user.mid);
