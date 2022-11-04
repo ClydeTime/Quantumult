@@ -7,7 +7,7 @@
 脚本参考：Nobyda、Wyatt1026、ABreadTree、chavyleung感谢以上人员的开源奉献
 使用方法：
     ①将[https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf]添加远程重写。
-    ②打开手机B站客户端，提示获取cookie成功,获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
+    ②后台退出手机B站客户端的情况下，重新打开APP进入主页或通过网址[https://www.bilibili.com]登录，提示获取cookie成功。获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
     ③将此脚本加到定时任务如[10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站每日等级任务, enabled=true]。
     ④等待定时任务执行，或手动执行。
     ⑤提示投币失败可尝试多次手动执行。
@@ -22,12 +22,12 @@
 [rewrite_local]
 
 ^https:\/\/app\.bilibili\.com\/x\/resource\/domain\? url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
+^https:\/\/m\.bilibili\.com\/$ url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
 
 [mitm]
 
-hostname= app.bilibili.com
+hostname = app.bilibili.com, m.bilibili.com
 */
-
 
 const format = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
   date = new Date(date);
@@ -89,11 +89,16 @@ if (clyde.isRequest) {
 
 function GetCookie() {
   if ("object" == typeof $request) {
-    console.log("正在获取 cookie");
     config.headers.Cookie = $request.headers.Cookie;
-    clyde.write(JSON.stringify(config.headers), name + "_headers")
+    config.cookie = cookie2object(config.headers.Cookie);
+    if (config.cookie.DedeUserID) {
+      console.log("- cookie获取成功");
+      clyde.write(JSON.stringify(config.headers), name + "_headers")
       ? clyde.notify(name, "cookie catch success", "获得 cookie 成功")
       : clyde.notify(name, "cookie catch failed", "获得 cookie 失败")
+    } else {
+      console.log("- 尚未登录, 请登录后再重新获取cookie");
+    }   
   }
   clyde.done();
 }
