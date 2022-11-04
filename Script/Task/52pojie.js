@@ -1,7 +1,7 @@
 /*
 吾爱破解签到脚本
 
-更新时间: 2022.6.18
+更新时间: 20221.4
 脚本兼容: QuantumultX
 电报频道: @NobyDa
 问题反馈: @NobyDa_bot
@@ -32,11 +32,19 @@ hostname= www.52pojie.cn
 
 */
 
-//url: 'https://www.52pojie.cn/home.php?mod=task&do=apply&id=2',
 const $ = API('nobyda_52pojie');
 const date = new Date();
 const reqData = {
   url: 'https://www.52pojie.cn/home.php?mod=task&do=draw&id=2&refer=%2F',
+  headers: {
+    Cookie: $.read("COOKIE"),
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
+  }
+};
+
+//双重签到更保险
+const req_data = {
+  url: 'https://www.52pojie.cn/home.php?mod=task&do=apply&id=2&referer=%2F',
   headers: {
     Cookie: $.read("COOKIE"),
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
@@ -49,25 +57,52 @@ if ($.env.isRequest) {
 } else if (!reqData.headers.Cookie.includes('_auth=')) {
   $.notify('吾爱破解', ``, `Cookie关键授权字段缺失, 需重新获取!`);
 } else {
-  $.http.put(reqData)
-    .then((resp) => {
-      //console.log(JSON.stringify(resp.body));
-      if (resp.body.match(/(ÒÑÍê³É|\u606d\u559c\u60a8|��̳΢�š��ᰮ�ƽ�)/)) {
-        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 签到成功 🎉"
-      } else if (resp.body.match(/(ÄúÒÑ|\u4e0d\u662f\u8fdb\u884c\u4e2d\u7684\u4efb\u52a1|>��Ǹ������)/)) {
-        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 已签过 ⚠️"
-      } else if (resp.body.match(/(ÏÈµÇÂ¼|\u9700\u8981\u5148\u767b\u5f55|�Ҫ�ȵ�¼���ܼ�)/)) {
-        $.msgBody = "签到失败, Cookie失效 ‼️‼️"
+  console.log("只要任意一次提示成功即可");
+  console.log("多次运行脚本会提示两次都已签过");
+  sign52();
+}
+
+async function sign52(){
+  console.log("第一次签到尝试");
+  await realSign(reqData, 1);
+  console.log("第二次签到尝试");
+  await realSign(req_data, 2);
+  $.done();
+}
+
+async function realSign(reqData, count){
+  await $.http.put(reqData)
+    .then((resp) => { 
+      if (resp.body.match(/\u606d\u559c\u60a8/)) {
+        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 签到成功 🎉";
+        console.log("签到成功");
+        return true;
+      } else if (resp.body.match(/\u8bf7\u4e0b\u671f\u518d\u6765/)) {
+        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 已签过 ⚠️";
+        console.log("今日已签");
+        return true;
+      } else if (resp.body.match(/\u4e0d\u662f\u8fdb\u884c\u4e2d\u7684\u4efb\u52a1/)) {
+        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 已签过 ⚠️";
+        console.log("今日已签");
+        return true;
+      } else if (resp.body.match(/\u9700\u8981\u5148\u767b\u5f55/)) {
+        $.msgBody = "签到失败, Cookie失效 ‼️‼️";
+        console.log("签到失败");
+        return false;
       } else if (resp.statusCode == 403) {
-        $.msgBody = "服务器暂停签到 ⚠️"
+        $.msgBody = "服务器暂停签到 ⚠️";
+        console.log("签到失败");
+        return false;
       } else {
-        $.msgBody = "脚本待更新 ‼️‼️"
+        $.msgBody = "脚本待更新 ‼️‼️";
+        console.log(resp.body);
+        return false;
       }
     })
     .catch((err) => ($.msgBody = `签到失败 ‼️‼️\n${err || err.message}`))
     .finally(async () => {
-      $.notify('吾爱破解', ``, $.msgBody);
-      $.done();
+      $.notify('吾爱破解', `第${count}次尝试签到`, $.msgBody);
+      
     })
 }
 
