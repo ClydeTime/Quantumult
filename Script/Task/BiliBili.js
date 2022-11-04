@@ -7,7 +7,7 @@
 脚本参考：Nobyda、Wyatt1026、ABreadTree、chavyleung感谢以上人员的开源奉献
 使用方法：
     ①将[https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf]添加远程重写。
-    ②后台退出手机B站客户端的情况下，重新打开APP进入主页或通过网址[https://www.bilibili.com]登录，提示获取cookie成功。获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
+    ②打开手机B站客户端，提示获取cookie成功,获取成功后关闭远程①的重写，直到cookie过期，再次使用①获取即可。
     ③将此脚本加到定时任务如[10 9 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站每日等级任务, enabled=true]。
     ④等待定时任务执行，或手动执行。
     ⑤提示投币失败可尝试多次手动执行。
@@ -22,12 +22,13 @@
 [rewrite_local]
 
 ^https:\/\/app\.bilibili\.com\/x\/resource\/domain\? url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
-^https:\/\/m.bilibili.com/$ url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
+^https://m.bilibili.com/$ url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
 
 [mitm]
 
-hostname = app.bilibili.com, m.bilibili.com
+hostname = app.bilibili.com, www.bilibili.com
 */
+
 
 const format = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
   date = new Date(date);
@@ -139,7 +140,8 @@ async function signBiliBili() {
         } else{
           //console.log(`- 需要投币次数 ${exec_times}`);
           for (var i=0; i<exec_times; i++) {
-            if (config.user.money < 5) {
+            if (config.user.money <= 5) {
+              //console.log("- 默认最低硬币余量为5,可自行修改");
               console.log("- 硬币不足, 投币失败");
               break;
             } else {
@@ -443,7 +445,7 @@ async function liveSign(){
 
 async function vipScoreSign(){
   console.log(`#### 大会员大积分签到任务`);
-  if (config.user.vipType == 0) {
+  if (config.user.vipStatus == 0) {
     console.log(`- 当前用户非大会员, 无法完成任务`);
   } else {
     if (check("score")) {
@@ -698,8 +700,7 @@ async function me(){
     config.user.next_day = Math.ceil(config.user.mext_exp / 15);
     config.user.v6_exp = 28800 - config.user.level_info.current_exp;
     config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
-
-    if (config.user.vipType == 1 || config.user.vipType == 2) {
+    if (config.user.vipStatus == 1) {
       console.log("- 🎉🎉尊贵的大会员用户🎉🎉");
     }
     console.log("- 用户名称: " + config.user.uname);
