@@ -535,7 +535,7 @@ async function getFavAid(arr){
   };
   const myRequest = {
     url: url,
-    method: method
+    headers: headers
   }
   return await $.http.get(myRequest).then(
     (response) => {
@@ -649,7 +649,7 @@ async function me(){
       headers: headers
   };
   var flag_cookie = true;
-  await $.http.get(myRequest).then(response => {
+  return await $.http.get(myRequest).then(response => {
       const body = JSON.parse(response.body);
 
       if (body.code) {
