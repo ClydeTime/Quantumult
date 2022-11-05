@@ -495,7 +495,7 @@ async function getFavUid(){
   };
   const myRequest = {
     url: url,
-    method: method
+    headers: headers
   };
   const like_uid_list = new Array();
   return await $.http.get(myRequest).then(
