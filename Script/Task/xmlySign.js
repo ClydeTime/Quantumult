@@ -27,7 +27,7 @@ Surge 脚本配置:
 喜马拉雅获取Cookie = type=http-request,pattern=^http:\/\/mobile\.ximalaya\.com\/app-skin-service\/skin\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
 [MITM] 
-hostname = mobile.ximalaya.com, 180.153.255.10*
+hostname = mobile.ximalaya.com, 180.153.255.*
 
 ************************
 QuantumultX 远程脚本配置:
@@ -39,7 +39,7 @@ QuantumultX 远程脚本配置:
 
 [rewrite_remote]
 # 喜马拉雅获取Cookie
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到cookie, update-interval=172800, opt-parser=false, enabled=false
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing通用签到cookie, update-interval=172800, opt-parser=false, enabled=false
 
 [mitm]
 hostname = mobile.ximalaya.com, 180.153.255.10*
@@ -76,12 +76,12 @@ async function xmlySign(){
         "Host": "hybrid.ximalaya.com",
         "Content-Type": "application/json",
         "Accept": "*/*",
-        "X-Xuid-Fp": `${modifiedHeaders['X-Xuid-Fp']}`,
+        "X-Xuid-Fp": `${typeof modifiedHeaders['X-Xuid-Fp']=='undefined' ? modifiedHeaders['x-xuid-fp'] : modifiedHeaders['X-Xuid-Fp']}`,
         "Accept-Encoding": "gzip, deflate",
         "Connection": "keep-alive",
-        "Cookie": `${modifiedHeaders['Cookie']}`,
-        "User-Agent": `${modifiedHeaders['User-Agent']}`,
-        "X-Xuid-Xuid": `${modifiedHeaders['X-Xuid-Xuid']}`,
+        "Cookie": `${typeof modifiedHeaders['Cookie']=='undefined' ? modifiedHeaders['cookie'] : modifiedHeaders['Cookie']}`,
+        "User-Agent": `${typeof modifiedHeaders['User-Agent']=='undefined' ? modifiedHeaders['user-agent'] : modifiedHeaders['User-Agent']}`,
+        "X-Xuid-Xuid": `${typeof modifiedHeaders['X-Xuid-Xuid']=='undefined' ? modifiedHeaders['x-xuid-xuid'] : modifiedHeaders['X-Xuid-Xuid']}`,
         "Content-Length": "10",
         "Accept-Language": "zh-CN,zh-Hans;q=0.9"
     };
