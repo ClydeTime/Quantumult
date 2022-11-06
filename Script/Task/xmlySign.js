@@ -93,12 +93,15 @@ async function xmlySign(){
     return await $.http.post(myRequest).then(
        (response) => {
             body = JSON.parse(response.body)
-            console.log(body)
             if (body.ret == 0) {
-                console.log(`【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:签到成功  ✅ `)
+                let message = `【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:签到成功 ✅ `
+                console.log(message)
+                $.msg(name, "", message)
                 return true
             } else {
-                console.log(`【🎉 恭喜个屁 🎉】签到状态:失败 ❌ 了呢,${body.msg} `)
+                let message = `【❤️‍🩹❤️‍🩹❤️‍🩹 恭喜个屁 ❤️‍🩹❤️‍🩹❤️‍🩹】签到状态:签到失败 ❌ ,${body.msg} `
+                console.log(message)
+                $.msg(name, "", message)
                 return false
             }
         },
