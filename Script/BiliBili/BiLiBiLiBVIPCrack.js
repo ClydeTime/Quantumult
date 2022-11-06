@@ -13,5 +13,5 @@
 
 [mitm] 
 
-hostname = *.bilibili.com
+hostname = app.bilibili.com, api.bilibili.com
 */
