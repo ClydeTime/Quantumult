@@ -27,7 +27,7 @@ Surge 脚本配置:
 喜马拉雅获取Cookie = type=http-request,pattern=^http:\/\/mobile\.ximalaya\.com\/app-skin-service\/skin\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
 [MITM] 
-hostname = mobile.ximalaya.com
+hostname = mobile.ximalaya.com, 180.153.255.10*
 
 ************************
 QuantumultX 远程脚本配置:
@@ -42,7 +42,7 @@ QuantumultX 远程脚本配置:
 https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到cookie, update-interval=172800, opt-parser=false, enabled=false
 
 [mitm]
-hostname = mobile.ximalaya.com
+hostname = mobile.ximalaya.com, 180.153.255.10*
 */
 
 
@@ -65,7 +65,7 @@ function getCookie() {
     if ("object" == typeof $request) {
         const headers = JSON.stringify($request.headers)
         if (headers) $.setdata(headers, name + "_headers")
-        $.msg(name, "", "- 喜马拉雅获取headers成功")
+        $.msg(name, "", "- 喜马拉雅获取cookie成功")
     }
     $.done();
 }
