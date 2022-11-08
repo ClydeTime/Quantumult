@@ -3,7 +3,7 @@
 待深入研究。。。
 *******************************
 [rewrite_local]
-^https:\/\/xyst\.yuanfudao\.com\/solar-vip\/(api|iphone)\/users/* url script-response-body https://raw.githubusercontent.com/WeeekWin/quanx/main/rewrite/xyst.js
+^https:\/\/xyst\.yuanfudao\.com\/solar-vip\/(api|iphone)\/users/* url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/xyst.js
 [mitm] 
 hostname = xyst.yuanfudao.com
 *******************************/
