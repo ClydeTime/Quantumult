@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2022-11-05
+更新时间: 2022-11-08
 脚本兼容: QuantumultX, Surge
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到
@@ -648,14 +648,13 @@ async function me(){
       url: url,
       headers: headers
   };
-  var flag_cookie = true;
+
   return await $.http.get(myRequest).then(response => {
       const body = JSON.parse(response.body);
 
       if (body.code) {
         console.log("- 获得用户信息失败(请更新cookie)");
-        flag_cookie = false;
-        //$.msg(name, "cookie in expires", JSON.stringify(body));
+
         $.setdata(null, name + "_user");
         return false;
       } else {
@@ -676,6 +675,41 @@ async function me(){
           config.user.num = (config.user.num || 0) + 1;
         }
         $.setdata(JSON.stringify(config.user), name + "_user");
+
+        config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp;
+        config.user.next_day = Math.ceil(config.user.mext_exp / 15);
+        config.user.v6_exp = 28800 - config.user.level_info.current_exp;
+        config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
+
+        if (config.user.vipStatus == 1) {
+          console.log("- 🎉🎉尊贵的大会员用户🎉🎉");
+        }
+        console.log("- 用户名称: " + config.user.uname);
+        console.log("- 用户ID: " + config.user.mid);
+        console.log("- 用户硬币: " + config.user.money);
+        console.log("- 用户B币: " + config.user.wallet.bcoin_balance);
+        console.log("- 用户等级: " + config.user.level_info.current_level);
+        console.log(
+          `- 当前经验:${config.user.level_info.current_exp}/${config.user.level_info.next_exp}`
+        );
+
+        console.log(`- 升级还需经验: ${config.user.mext_exp}`);
+
+        console.log(
+          `- 距离下级还需: ${config.user.next_day}天(登录+5 观看+5 分享+5)`
+        );
+
+        console.log(
+          `- 距离满级(6级)还需: ${config.user.v6_day}天(登录+5 观看+5 分享+5)`
+        );
+
+        console.log(`- 剩余硬币最多可投: ${(config.user.money) / 5} 天`);
+
+        console.log(
+          "- 距离满级(6级)最快还需: " +
+            Math.ceil(config.user.v6_exp / 65) +
+            "天(登录+5 观看+5 分享+5 投币+5*10)"
+        );
         return true;
       }
   }, reason => {
@@ -683,48 +717,6 @@ async function me(){
       $notify(name, "- 获得用户信息失败", reason.error); // Error!
       return false;
   });
-  if (flag_cookie) {
-    config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp;
-    config.user.next_day = Math.ceil(config.user.mext_exp / 15);
-    config.user.v6_exp = 28800 - config.user.level_info.current_exp;
-    config.user.v6_day = Math.ceil(config.user.v6_exp / 15);
-
-    if (config.user.vipStatus == 1) {
-      console.log("- 🎉🎉尊贵的大会员用户🎉🎉");
-    }
-    console.log("- 用户名称: " + config.user.uname);
-    console.log("- 用户ID: " + config.user.mid);
-    console.log("- 用户硬币: " + config.user.money);
-    console.log("- 用户B币: " + config.user.wallet.bcoin_balance);
-    console.log("- 用户等级: " + config.user.level_info.current_level);
-    console.log(
-      `- 当前经验:${config.user.level_info.current_exp}/${config.user.level_info.next_exp}`
-    );
-
-    console.log(`- 升级还需经验: ${config.user.mext_exp}`);
-
-    console.log(
-      `- 距离下级还需: ${config.user.next_day}天(登录+5 观看+5 分享+5)`
-    );
-
-    console.log(
-      `- 距离满级(6级)还需: ${config.user.v6_day}天(登录+5 观看+5 分享+5)`
-    );
-
-    console.log(`- 剩余硬币最多可投: ${(config.user.money) / 5} 天`);
-
-    console.log(
-      "- 距离满级(6级)最快还需: " +
-        Math.ceil(config.user.v6_exp / 65) +
-        "天(登录+5 观看+5 分享+5 投币+5*10)"
-    );
-
-    return true;
-  } else {
-    console.log("- 请按说明正确获取cookie后手动执行此任务");
-    console.log("- 任务终止!");
-    return false;
-  } 
 }
 
 async function dynamic() {
