@@ -105,6 +105,9 @@ function GetCookie() {
       $.setdata("", name + "_share")
       $.setdata("", name + "_coins")
       $.setdata("", name + "_score")
+      let url = $request.url
+      let key = /.*access_key=(.*?)&build/.exec(url)[1]
+      $.setdata(key, name + "_key")
       $.setdata(JSON.stringify(config.headers), name + "_headers")
       ? $.msg(name, "cookie catch success", "获得 cookie 成功")
       : $.msg(name, "cookie catch failed", "获得 cookie 失败")
@@ -122,6 +125,7 @@ async function signBiliBili() {
   config.share = $.getjson(name + "_share", {});
   config.coins = $.getjson(name + "_coins", {});
   config.score = $.getjson(name + "_score", {});
+  config.key = $.getdata(name + "_key");
   config.cookie = cookie2object(config.headers.Cookie);
   await queryStatus();
   if (config.cookie && (await me())) {
@@ -167,6 +171,11 @@ async function signBiliBili() {
     await liveSign();
     await silver2coin();
     await vipScoreSign();
+    if (config.user.vipStatus == 1) {
+      await vipScoreGo();
+      await vipScoreFan();
+      await vipScoreMovie();
+    }
     
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
       flag = false;
@@ -485,6 +494,92 @@ async function vipScoreSign(){
       return false;
     }
   }
+}
+
+async function vipScoreGo(){
+  console.log("#### 大会员浏览会员购10s任务");
+  let url = `https://show.bilibili.com/api/activity/fire/common/event/dispatch`;
+  let headers = {
+    'Content-Type' : `application/json`,
+    'Cookie': `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+  };
+  let body = `{"eventId":"hevent_oy4b7h3epeb"}`;
+  const myRequest = {
+    url: url,
+    headers: headers,
+    body: body
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0 && body.message == "SUCCESS") {
+        console.log("- 浏览会员购任务成功,获得10点大积分");
+        return true;
+      } else {
+        console.log("- 浏览会员购任务失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 浏览会员购任务失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function vipScoreFan(){
+  console.log("#### 大会员浏览追番频道10s任务");
+  let url = `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=jp_channel&sign=768d600feba34e6d1109e4157c0f0c5f&task_sign=557D1ACE13E9E81393259FFB621D6D0E`;
+  let headers = {};
+  const myRequest = {
+      url: url,
+      headers: headers
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0 && body.message == "success") {
+        console.log("- 浏览追番频道任务成功,获得10点大积分");
+        return true;
+      } else {
+        console.log("- 浏览追番频道任务失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 浏览追番频道任务失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function vipScoreMovie(){
+  console.log("#### 大会员浏览影视频道10s任务");
+  let url = `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=tv_channel&sign=09ece1c295cb86d74778b93c59c0da3a&task_sign=B7DA5FAE25C39F53C62C03076CF2878B`;
+  let headers = {};
+  const myRequest = {
+      url: url,
+      headers: headers
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0 && body.message == "success") {
+        console.log("- 浏览影视频道任务成功,获得10点大积分");
+        return true;
+      } else {
+        console.log("- 浏览影视频道任务失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 浏览影视频道任务失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
 }
 
 async function getFavUid(){
