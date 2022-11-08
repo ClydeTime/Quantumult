@@ -63,11 +63,38 @@ if ($.env.isRequest) {
 }
 
 async function sign52(){
+  await login();
   console.log("第一次签到尝试");
   await realSign(reqData, 1);
   console.log("第二次签到尝试");
   await realSign(req_data, 2);
   $.done();
+}
+
+async function login(){
+  console.log("- 正在登录");
+  const logData = {
+    url: 'https://www.52pojie.cn',
+    headers: {
+      Cookie: $.read("COOKIE"),
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0"
+    }
+  };
+  await $.http.get(logData)
+    .then((response) => {
+      if (typeof response == "object") {
+        console.log("- 登录成功");
+        return true;
+      } else {
+        console.log("- 登录失败");
+        console.log(`- headers ${JSON.stringify(response.headers)}`);
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 登录失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    });
 }
 
 async function realSign(reqData, count){
