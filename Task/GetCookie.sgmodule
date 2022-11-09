@@ -1,0 +1,14 @@
+#!name=Get cookie. By MartinsKing
+#!desc=该模块适用于定时签到脚本的Cookie获取. 集成: BiliBili, 喜马拉雅; 您可以在使用后手动将其禁用，以免产生不必要的MITM.
+#!system=ios
+
+
+[Script]
+B站Cookie(APP) = type=http-request,pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/domain\?,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js,requires-body=0
+
+B站Cookie(网页) = type=http-request,pattern=^https?:\/\/m.bilibili.com/$,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js,requires-body=0
+
+喜马拉雅Cookie = type=http-request,pattern=^https?:\/\/mobile\.ximalaya\.com\/app-skin-service\/skin\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,requires-body=0
+
+[MITM]
+hostname = %APPEND% app.bilibili.com, m.bilibili.com, mobile.ximalaya.com, 180.153.255.*, 180.153.250.*, 180.153.140.*, 114.80.99.*, 114.80.139.*, 114.80.161.*, 1.62.62.64
