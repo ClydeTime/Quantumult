@@ -1,0 +1,15 @@
+#!name=TikTok-KR
+#!desc=解锁 TikTok 韩国
+
+[URL Rewrite]
+
+(?<=_region=)CN(?=&) KR 307
+(?<=_region=)cn(?=&) kr 307
+(?<=&mcc_mnc=)460[0-1][0-9](?=&) 45005 307
+^(https?:\/\/(tnc|dm)[\w-]+\.\w+\.com\/.+)(\?)(.+) $1$3 302
+(?<=&carrier=)[%A-Z0-9]+(?=&) SKT 307
+(?<=tz_name=)Asia/Shanghai(?=&) Asia/Seoul 307
+(?<=timezone=)8(?=&) 9 307
+
+[MITM]
+hostname = %APPEND% *.tiktokv.com, *.byteoversea.com, *.tik-tokapi.com
