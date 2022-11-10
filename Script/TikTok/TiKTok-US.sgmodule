@@ -10,6 +10,7 @@
 (?<=&carrier=)[%A-Z0-9]+(?=&) Verizon 307
 (?<=tz_name=)Asia/Shanghai(?=&) America/New_York 307
 (?<=timezone=)8(?=&) -4 307
+(?<=eme\/v)2(?=\/f\w{2}d\/\?.*) 1 302
 
 [Script]
 http-response https?:\/\/.*\.tiktokv\.com\/aweme\/v\d\/(feed|mix\/aweme|aweme\/post|(multi\/)?aweme\/detail|follow\/feed|nearby\/feed|search\/item|general\/search\/single|hot\/search\/video\/list|aweme\/favorite) script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/TikTok/Tiktok.js, requires-body=true, timeout=10, tag=去水印
