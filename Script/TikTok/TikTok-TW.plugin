@@ -1,0 +1,21 @@
+#!name=TikTok-TW
+#!desc=解锁 TikTok 台湾
+#!author= MartinsKing
+#!homepage= https://github.com/ClydeTime/Quantumult/tree/master
+#!icon= https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Tips/IMG_4128.png
+
+[URL Rewrite]
+
+(?<=_region=)CN(?=&) TW 307
+(?<=_region=)cn(?=&) tw 307
+(?<=&mcc_mnc=)460[0-1][0-9](?=&) 46692 307
+^(https?:\/\/(tnc|dm)[\w-]+\.\w+\.com\/.+)(\?)(.+) $1$3 302
+(?<=&carrier=)[%A-Z0-9]+(?=&) %E4%B8%AD%E8%8F%AF%E9%9B%BB%E4%BF%A1 307
+(?<=tz_name=)Asia/Shanghai(?=&) Asia/Taipei 307
+(?<=eme\/v)2(?=\/f\w{2}d\/\?.*) 1 302
+
+[Script]
+http-response https?:\/\/.*\.tiktokv\.com\/aweme\/v\d\/(feed|mix\/aweme|aweme\/post|(multi\/)?aweme\/detail|follow\/feed|nearby\/feed|search\/item|general\/search\/single|hot\/search\/video\/list|aweme\/favorite) script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/TikTok/Tiktok.js, requires-body=true, timeout=10, tag=去水印
+
+[MITM]
+hostname = *.tiktokv.com, *.byteoversea.com, *.tik-tokapi.com
