@@ -1,24 +1,26 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2022-11-08
-脚本兼容: QuantumultX, Surge
+更新时间: 2022-11-11
+脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
-软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到
+软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务
 注意事项:
   抓取cookie时注意保证账号登录状态；
   账号内须有一定数量的关注数，否则无法完成投币；
   当硬币不足5枚，提示硬币不足，停止投币；
   长期使用脚本存在多次投币同一视频的现象，导致投币失败，手动执行或尽量多关注UP即可。
+  Loon特别注意:
+    MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
 使用声明: ⚠️此脚本仅供学习与交流，请勿贩卖！⚠️
 脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung
 特别鸣谢: tg用户「🐈🐈‍⬛🐈‍⬛整点猫咪️」提供Surge供测试, 频道链接「https://t.me/GetsomeCats」
 ************************
-QX, Surge说明：
+QX, Surge, Loon说明：
 ************************
 获取cookie
-	①后台退出手机B站客户端的情况下，重新打开APP进入主页
-	②通过网址[https://www.bilibili.com]登录，不支持请求桌面网站。
+  ①后台退出手机B站客户端的情况下，重新打开APP进入主页
+  ②通过网址[https://www.bilibili.com]登录，不支持请求桌面网站。
 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
 脚本将在每天上午8点30执行, 您可以修改执行时间.
@@ -29,12 +31,8 @@ Surge 脚本配置:
 [Script]
 B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
 
-#以下cookie获取方式二选其一即可
-B站获取Cookie(APP) = type=http-request,pattern=^https:\/\/app\.bilibili\.com\/x\/resource\/domain\?,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
-B站获取Cookie(网页) = type=http-request,pattern=^https:\/\/m.bilibili.com/$,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
-
-[MITM] 
-hostname= app.bilibili.com, m.bilibili.com
+# BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块应去除勾选」
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.sgmodule
 
 ************************
 QuantumultX 远程脚本配置:
@@ -45,11 +43,21 @@ QuantumultX 远程脚本配置:
 30 8 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
 
 [rewrite_remote]
-# B站获取Cookie(支持两种方式)
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=自用签到cookie, update-interval=172800, opt-parser=false, enabled=false
+# B站获取Cookie 「成功获取Cookie后请去除勾选」
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到Cookie, update-interval=172800, opt-parser=false, enabled=true
 
-[mitm]
-hostname = app.bilibili.com, m.bilibili.com
+************************
+Loon 远程脚本配置:
+************************
+
+[Script]
+# BiliBili每日等级任务
+cron "30 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=BiliBili每日等级任务
+
+[Plugin]
+# BiliBili获取Cookie 「成功获取Cookie后请禁用插件」
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
+
 */
 
 const format = (ts, fmt = 'yyyy-MM-dd HH:mm:ss') => {
@@ -343,10 +351,7 @@ async function coin(){
               console.log("- 投币成功");
               config.user.money -= 1;
               config.coins.num += 10;
-              $.setdata(
-                JSON.stringify(config.coins),
-                name + "_coins"
-              );
+              $.setdata(JSON.stringify(config.coins), name + "_coins");
               return true;
             } else {
               console.log("- 投币失败");
@@ -719,10 +724,7 @@ async function share(aid, bvid) {
         if (data.code == 0) {
           config.share.num = (config.share.num || 0) + 1;
           console.log("- 分享成功");
-          return $.setdata(
-            JSON.stringify(config.share),
-            name + "_share"
-          );
+          return $.setdata(JSON.stringify(config.share), name + "_share");
         } else {
           console.log("- 分享失败");
           console.log(`- data ${JSON.stringify(response.body)}`);
@@ -808,8 +810,7 @@ async function me(){
         return true;
       }
   }, reason => {
-      // reason.error
-      $notify(name, "- 获得用户信息失败", reason.error); // Error!
+      $notify(name, "- 获得用户信息失败", reason.error);
       return false;
   });
 }
