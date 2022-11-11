@@ -2,21 +2,21 @@
 喜马拉雅签到脚本
 
 更新时间: 2022-11-10
-脚本兼容: QuantumultX, Surge
+脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
 注意事项:
   抓取cookie时注意保证账号登录状态；
 使用声明: ⚠️此脚本仅供学习与交流, 请勿贩卖！⚠️
 脚本参考: yml2213、chavyleung
-************************
-QX, Surge说明：
-************************
-获取cookie
-    后台退出手机喜马拉雅客户端的情况下,重新打开APP进入主页
-    如通知成功获取cookie,则可以使用此签到脚本.
-    获取Cookie后, 请将Cookie脚本禁用并移除主机名,以免产生不必要的MITM.
-    脚本将在每天上午8点35执行,您可以修改执行时间.
+使用说明：
+    获取cookie
+        后台退出手机喜马拉雅客户端的情况下,重新打开APP进入主页
+        如通知成功获取cookie,则可以使用此签到脚本.
+        获取Cookie后, 请将Cookie脚本禁用并移除主机名,以免产生不必要的MITM.
+        脚本将在每天上午8点35执行,您可以修改执行时间.
+    Loon注意事项
+        MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
 /***********************
 Surge 远程脚本配置:
 ************************
@@ -33,12 +33,24 @@ QuantumultX 远程脚本配置:
 ************************
 
 [task_local]
-# 喜马拉雅签到任务
+# 喜马拉雅签到+任务
 35 8 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, tag=喜马拉雅签到任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/ximalaya.png, enabled=true
 
 [rewrite_remote]
 # 喜马拉雅获取Cookie
 https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing通用签到cookie, update-interval=172800, opt-parser=false, enabled=true
+
+************************
+Loon  远程脚本配置:
+************************
+
+[Script]
+# 喜马拉雅签到+任务
+cron "35 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, tag=喜马拉雅签到
+
+[Plugin]
+# 喜马拉雅获取Cookie
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
 
 */
 
