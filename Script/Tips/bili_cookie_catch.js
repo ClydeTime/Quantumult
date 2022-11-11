@@ -40,4 +40,5 @@ nessary_headers['x-bili-device-bin'] = config['headers']['x-bili-device-bin'];
 nessary_headers['x-bili-metadata-bin'] = config['headers']['x-bili-metadata-bin'];
 nessary_headers['x-bili-fawkes-req-bin'] = config['headers']['x-bili-fawkes-req-bin'];
 console.log(JSON.stringify(nessary_headers));
-$notify("定制cookie获取", "cookie catch success", JSON.stringify(nessary_headers));
+$notify("BiliBili-cookie获取", "获取成功", JSON.stringify(nessary_headers));
+$done({});
