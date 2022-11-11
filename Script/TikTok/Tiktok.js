@@ -1,5 +1,4 @@
 /*
-去水印,仅用于Surge
 搬运自Tartarus2014
 */
 var watermark = (data) => {
