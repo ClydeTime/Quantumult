@@ -34,4 +34,5 @@ config.cookie = cookie2object(config.headers.Cookie);
 var nessary_headers = {};
 nessary_headers.Cookie = `pt_key=${config.cookie.pt_key}; pt_pin=${config.cookie.pt_pin}`;
 console.log(JSON.stringify(nessary_headers));
-$notify("京东cookie获取", "cookie catch success", JSON.stringify(nessary_headers));
+$notify("京东cookie获取", "获取成功", JSON.stringify(nessary_headers));
+$done({});
