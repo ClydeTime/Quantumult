@@ -2,7 +2,7 @@
 #!desc= 包括B站, 喜马拉雅, 获取方法请看脚本注释; 建议使用后手动将该插件禁用, 以避免无意义的MITM.
 #!author= MartinsKing
 #!homepage= https://github.com/ClydeTime/Quantumult/tree/master
-#!icon= https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png
+#!icon= https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Tips/IMG_4128.png
 
 [Script]
 http-request ^https?:\/\/mobile\.ximalaya\.com\/app-skin-service\/skin\/ script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, tag=喜马拉雅Cookie
