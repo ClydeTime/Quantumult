@@ -1,0 +1,11 @@
+#!name= 喜马拉雅破解
+#!desc= 修改会员等级
+#!author= MartinsKing
+
+[Script]
+喜马拉雅会员 = type=http-response,requires-body=1,max-size=0,pattern=^https?:\/\/(mobile|mwsa|m|ar)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|playpage\/(playpage\/(tabs|recommendInfo)|track))|product\/promotion|business-vip-|rec-association\/recommend\/album),script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly.js
+
+喜马拉雅共享 = type=http-request,requires-body=0,max-size=0,pattern=^https?:\/\/(mobile|pns)\.ximalaya\.com\/(mobile-playpage|mobile\/(quickplay|acceptapn)|comment-mobile/get|sound-guide-portal\/(sound\/guide|display)),script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly_crack.js
+
+[MITM]
+hostname = %APPEND% *.ximalaya.com, 180.153.255.*, 180.153.140.*, 180.153.250.*, 114.80.99.*, 114.80.139.237, 114.80.161.29, 1.62.62.64
