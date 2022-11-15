@@ -1,7 +1,7 @@
 /*
 喜马拉雅签到脚本
 
-更新时间: 2022-11-10
+更新时间: 2022-11-15
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
@@ -150,9 +150,9 @@ async function main() {
         inspect("gene")
 
         if (check("gene")) {
-            let exec_times = 6 - config.gene.num
+            let exec_times = 5 - config.gene.num
             console.log("- 通用任务即将进行, 请耐心等待")
-            let listSet = [101, 143, 176, 177, 180, 216]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 双十一特惠」
+            let listSet = [101, 143, 176, 177, 180]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, -双十一特惠-(任务结束216)」
             let gene_flag = true
             for (let i=0; i<exec_times; i++) {
                 await takeGeneralTask(listSet[i])
@@ -162,7 +162,7 @@ async function main() {
                 }  
             }
             if (gene_flag) {
-                config.gene.num = 6
+                config.gene.num = 5
                 config.gene.time = format(startTime)
                 gene_message = `- 今日通用任务已全部完成 ✅ `
                 $.setdata(JSON.stringify(config.gene), name + "_gene")
@@ -425,9 +425,9 @@ async function userAdd(){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/x-www-form-urlencoded`
     }
-    let body = `{}`
+    let body = `bizType=11&isFollow=1&toUid=21061786`
     let myRequest = {
-        url: `https://m.ximalaya.com/fans-web/follow?toUid=390369423&isFollow=true&bizType=501`,
+        url: `https://mobile.ximalaya.com/mobile/follow`,
         headers: headers,
         body: body
     }
@@ -462,7 +462,7 @@ async function userDelete(){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/x-www-form-urlencoded`
     }
-    let body = `bizType=13&isFollow=0&toUid=390369423`
+    let body = `bizType=13&isFollow=0&toUid=21061786`
     let myRequest = {
         url: `https://mobile.ximalaya.com/mobile/follow`,
         headers: headers,
