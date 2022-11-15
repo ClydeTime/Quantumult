@@ -8,7 +8,7 @@ B站Cookie(APP) = type=http-request,pattern=^https?:\/\/app\.bilibili\.com\/x\/r
 
 B站Cookie(网页) = type=http-request,pattern=^https?:\/\/m.bilibili.com/$,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js,requires-body=0
 
-喜马拉雅Cookie = type=http-request,pattern=^https?:\/\/mobile\.ximalaya\.com\/app-skin-service\/skin\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,requires-body=0
+喜马拉雅Cookie = type=http-request,pattern=^https?:\/\/(mobile|mobilehera|mobwsa)\.ximalaya\.com\/app-skin-service\/skin\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,requires-body=0
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, m.bilibili.com, mobile.ximalaya.com, 180.153.255.*, 180.153.250.*, 180.153.140.*, 114.80.99.*, 114.80.139.*, 114.80.161.*, 1.62.62.64, 61.172.194.184
+hostname = %APPEND% app.bilibili.com, m.bilibili.com, mobile.ximalaya.com, mobwsa.ximalaya.com, mobilehera.ximalaya.com, 180.153.255.*, 180.153.250.*, 180.153.140.*, 114.80.99.*, 114.80.139.*, 114.80.161.*, 1.62.62.64, 61.172.194.184
