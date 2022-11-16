@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2022-11-11
+更新时间: 2022-11-16
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务
@@ -18,12 +18,15 @@
 ************************
 QX, Surge, Loon说明：
 ************************
-获取cookie
+1.获取cookie
   ①后台退出手机B站客户端的情况下，重新打开APP进入主页
   ②通过网址[https://www.bilibili.com]登录，不支持请求桌面网站。
 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
 脚本将在每天上午8点30执行, 您可以修改执行时间.
+2.投币设置
+用户如需要不投币的版本,请使用boxjs订阅「https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/boxjs.json」
+将投币次数置为0,并保存即可。
 /***********************
 Surge 脚本配置:
 ************************
@@ -135,10 +138,22 @@ async function signBiliBili() {
   config.score = $.getjson(name + "_score", {});
   config.key = $.getdata(name + "_key");
   config.cookie = cookie2object(config.headers.Cookie);
+
   await queryStatus();
   if (config.cookie && (await me())) {
     var flag = true;
-    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
+
+    let exec_times = $.getdata(name + "_exec"); //实际执行次数
+    let real_times = 0;                         //需要执行总数
+    if (exec_times == "" || exec_times == 'undefined') {
+      real_times = 5;
+      exec_times = 5 - (config.coins.num / 10);
+    } else {
+      real_times = exec_times;
+      exec_times = exec_times - (config.coins.num / 10);
+    }
+
+    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
       flag = false;
     }
     if (!flag){
@@ -151,7 +166,7 @@ async function signBiliBili() {
       }else{
         console.log("- 获取视频失败，请重试或寻求帮助");
       }
-      let exec_times = 5 - (config.coins.num / 10);
+      
       if (config.user.money < 1) {
         console.log("#### 投币任务");
         console.log("- 硬币不足, 投币失败");
@@ -185,7 +200,7 @@ async function signBiliBili() {
       await vipScoreMovie();
     }
     
-    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < 50) {
+    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
       flag = false;
     } else {
       flag = true;
