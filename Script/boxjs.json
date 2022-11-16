@@ -41,6 +41,28 @@
                     "desc": "投币次数(用户自行设置，默认5次)"
                 }
             ]
+        },
+        {
+            "id": "ximalaya.com",
+            "name": "ximalaya",
+            "author": "@MartinsKing",
+            "script": "https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js",
+            "descs_html":
+            [
+                ""
+            ],
+            "icons":
+            [
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/ximalaya.png",
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Color/ximalaya.png"
+            ],
+            "keys":
+            [
+                "xmly_headers",
+                "xmly_watch",
+                "xmly_spec",
+                "xmly_gene"
+            ]
         }
     ]
 }
