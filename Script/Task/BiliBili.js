@@ -145,7 +145,7 @@ async function signBiliBili() {
 
     let exec_times = $.getdata(name + "_exec"); //实际执行次数
     let real_times = 0;                         //需要执行总数
-    if (exec_times == "" || exec_times == 'undefined') {
+    if (exec_times == "" ||typeof exec_times == 'undefined') {
       real_times = 5;
       exec_times = 5 - (config.coins.num / 10);
     } else {
