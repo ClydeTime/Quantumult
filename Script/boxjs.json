@@ -22,13 +22,13 @@
             ],
             "keys":
             [
-                "config.headers",
-                "config.user",
-                "config.watch",
-                "config.share",
-                "config.coins",
-                "config.score",
-                "config.key"
+                "bilibili_headers",
+                "bilibili_watch",
+                "bilibili_share",
+                "bilibili_coins",
+                "bilibili_score",
+                "bilibili_user",
+                "bilibili_key"
             ]
         }
     ]
