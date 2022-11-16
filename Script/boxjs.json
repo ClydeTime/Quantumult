@@ -1,0 +1,35 @@
+{
+    "id": "clydetime.app.sub",
+    "name": "MartinsKing 脚本订阅",
+    "author": "@MartinsKing",
+    "icon": "https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Tips/IMG_4128.png",
+    "repo": "https://github.com/ClydeTime/Quantumult/tree/main/Script",
+    "apps":
+    [
+        {
+            "id": "bilibili.com",
+            "name": "bilibili",
+            "author": "@MartinsKing",
+            "script": "https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js",
+            "descs_html":
+            [
+                ""
+            ],
+            "icons":
+            [
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/bilibili.png",
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Color/bilibili.png"
+            ],
+            "keys":
+            [
+                "config.headers",
+                "config.user",
+                "config.watch",
+                "config.share",
+                "config.coins",
+                "config.score",
+                "config.key"
+            ]
+        }
+    ]
+}
