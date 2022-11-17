@@ -137,12 +137,12 @@ async function main() {
                 }  
             }
             if (config.watch.num == 6) {
-                watch_message = `### 今日视频任务已全部完成 ✅ `
+                watch_message = `🟢 今日视频任务已全部完成`
             } else {
-                watch_message = `### 今日视频任务尚未完成 ❌ `
+                watch_message = `🟡 今日视频任务尚未完成`
             }
         } else {
-            watch_message = `### 今日视频任务已全部完成 ✅ `
+            watch_message = `🟢 今日视频任务已全部完成`
         }
         console.log(watch_message)
 
@@ -166,13 +166,13 @@ async function main() {
             if (gene_flag) {
                 config.gene.num = 6
                 config.gene.time = format(startTime)
-                gene_message = `### 今日通用任务已全部完成 ✅ `
                 $.setdata(JSON.stringify(config.gene), name + "_gene")
+                gene_message = `🟢 今日通用任务已全部完成`
             } else {
-                gene_message = `### 今日通用任务尚未完成,请查看日志 ❌ `
+                gene_message = `🟡 今日通用任务尚未全部完成,请查看日志`
             }   
         } else {
-            gene_message = `### 今日通用任务已全部完成 ✅ `
+            gene_message = `🟢 今日通用任务已全部完成`
         }
         console.log(gene_message)
 
@@ -210,18 +210,18 @@ async function main() {
             }
 
             if (config.spec.num = 6) {
-                spec_message = `### 今日特殊任务已全部完成 ✅ `
+                spec_message = `🟢 今日特殊任务已全部完成`
             } else {
-                spec_message = `### 今日特殊任务尚未完成,请查看日志 ❌ `
+                spec_message = `🟡 今日特殊任务尚未全部完成,请查看日志`
             }
         } else {
-            spec_message = `### 今日特殊任务已全部完成 ✅ `   
+            spec_message = `🟢 今日特殊任务已全部完成`   
         }
         console.log(spec_message)
-        let message = `【恭喜】签到状态:签到成功 ✅ \n` + `${watch_message}\n` + `${gene_message}\n` + `${spec_message}\n` + "- 其中特殊任务完成进度以app内完成度为准"
+        let message = `🟢【恭喜】签到状态:签到成功 \n` + `${watch_message}\n` + `${gene_message}\n` + `${spec_message}\n` + "- 其中特殊任务完成进度以app内完成度为准"
         $.msg(zh_name, "", message)
     }else{
-        let message = `【抱歉】签到状态:签到失败 ❌ \n` + "请重新获取cookie"
+        let message = `🔴【抱歉】签到状态:签到失败 \n` + "请重新获取cookie"
         console.log(message)
         $.msg(zh_name, "", message)
     }
