@@ -2,11 +2,14 @@
 百度网盘 解锁在线视频倍率/清晰度/皮肤/头像框/会员等级/下载增速（自慰）/网盘空间（自慰）
 original author: NobyDa
 modified by: MartinsKing
-title:"可能是全网最稳定的版本"
 ***************************
 
 [rewrite_local]
 
+^https?:\/\/pan\.abide\.com\/act\/v\d\/bchannel\/list url reject-200
+^https?:\/\/pan\.baidu\.com\/act\/v\d\/welfare\/list url reject-200
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/pcs\/ad url reject-200
+^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry url reject-200
 ^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/membership\/(volume|product|user) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 ^https:\/\/pan\.baidu\.com\/cms\/config\?method=query url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 ^https:\/\/pan\.baidu\.com\/act\/v2\/skin\/(userset|inuse)\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
