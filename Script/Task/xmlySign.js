@@ -1,7 +1,7 @@
 /*
 喜马拉雅签到脚本
 
-更新时间: 2022-11-16
+更新时间: 2022-11-30
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
@@ -153,7 +153,7 @@ async function main() {
             let exec_times = 6 - config.gene.num
             if (exec_times != 0) {
                 console.log("### 通用任务进行中")
-                let listSet = [101, 143, 176, 177, 180, 224]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 高德领水果, -双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
+                let listSet = [101, 143, 176, 177, 180, 227]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 高德领水果(失效224), 123狂欢节 -双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
                 for (let i=0; i<exec_times; i++) {
                     await takeGeneralTask(listSet[i])
                     let temp_flag = await handInGeneralTask(listSet[i])
@@ -188,6 +188,10 @@ async function main() {
             await cancelVoiceLike()
             await userAdd()
             await userDelete()
+            let actCode = await jumpDzdp()
+            if (actCode != "") {
+                await dzdpComplete(actCode)
+            }
             let uid = await getUid()
             let content = urlencode(await wyy())
             let commentId = await createComment(uid, content)
@@ -204,12 +208,12 @@ async function main() {
             config.spec.time = format(startTime)
             $.setdata(JSON.stringify(config.spec), name + "_spec")
 
-            let listset = [96, 168, 169, 170, 171, 172]
+            let listset = [96, 168, 169, 170, 171, 172, 217]     //任务列表分别为「分享声音, 收藏声音, 动态点赞, 声音点赞, 关注用户, 声音评论, 大众点评」
             for (let i=0; i<listset.length; i++) {
                await handInGeneralTask(listset[i])
             }
 
-            if (config.spec.num = 6) {
+            if (config.spec.num = 7) {
                 spec_message = `🟢 今日特殊任务已全部完成`
             } else {
                 spec_message = `🟡 今日特殊任务尚未全部完成,请查看日志`
@@ -616,16 +620,14 @@ async function createComment(uid, content){
             if (body.ret == 0) {
                 console.log("- 评论成功")
                 commentId = body.id
-                return commentId
             } else if (body.ret == 801){
                 console.log("- !!!请勿发送相同内容")
-                return commentId
             }else if (body.ret == 805){
                 console.log("- !!!发送内容频繁")
-                return commentId
             } else {
                 console.log("- !!!评论失败")
             }
+            return commentId
         },(reason) => {
             console.log("- !!!评论失败")
             return commentId
@@ -652,9 +654,66 @@ async function deleteComment(commentId){
                 return true
             } else {
                 console.log("- !!!未知评论状态")
+                return false
             }
         },(reason) => {
             console.log("- !!!删除评论失败")
+            return false
+        }
+    )
+}
+
+async function jumpDzdp(){
+    let headers = {
+        "Cookie": config.xm_cookie
+    }
+    let body = ``
+    let myRequest = {
+        url: "http://m.ximalaya.com/web-activity/task/v2/genGuideLink?aid=112&taskId=217",
+        headers: headers,
+        body: body
+    }
+    return await $.http.get(myRequest).then(
+       (response) => {
+            body = JSON.parse(response.body)
+            if (body.ret == 0) {
+                console.log("- 获取跳转链接成功")
+                let link = body.data.h5Link
+                let key = /.*actCode=(.*?)&titleBar/.exec(link)[1]
+                return key
+            } else {
+                console.log("- !!!未知跳转状态")
+                return ""
+            }
+        },(reason) => {
+            console.log("- !!!获取跳转链接失败")
+            return ""
+        }
+    )
+}
+
+async function dzdpComplete(actCode){
+    let headers = {
+        'Content-Type' : `application/json`
+    }
+    let body = `{"thirdAppName":"xmly_exchange_dzdp","paramInfo":"{\\"taskId\\":\\"exchange_dzdp\\",\\"actCode\\":${actCode}}"}`;
+    let myRequest = {
+        url: "https://m.dianping.com/faaslocal/h5applink/api/pointmallapplink/thirdAppTaskComplete",
+        headers: headers,
+        body: body
+    }
+    return await $.http.post(myRequest).then(
+       (response) => {
+            body = JSON.parse(response.body)
+            if (body.code == 200) {
+                console.log("- 跳转任务完成")
+                return true
+            } else {
+                console.log("- !!!未知完成状态")
+                return false
+            }
+        },(reason) => {
+            console.log("- !!!跳转任务失败")
             return false
         }
     )
@@ -736,8 +795,7 @@ async function adVideoFinish(token){
 async function takeGeneralTask(taskId){
     let headers = {
         "Cookie": config.xm_cookie,
-        'Content-Type': `application/json`,
-        'User-Agent': `ting_v9.0.76_c5(CFNetwork, iOS 16.1.1, iPhone13,4)`
+        'Content-Type': `application/json`
     }
     let body = `{"aid":112,"taskId":${taskId}}`
     let myRequest = {
@@ -785,7 +843,7 @@ async function handInGeneralTask(taskId){
             body = JSON.parse(response.body)
             if (body.ret == 0) {
                 if (body.data.status == 0) { 
-                    if ((taskId > 167 && taskId < 173) || taskId == 96) {
+                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 217) {
                         config.spec.num += 1
                         config.spec.time = format(startTime)
                         $.setdata(JSON.stringify(config.spec), name + "_spec")
@@ -798,7 +856,7 @@ async function handInGeneralTask(taskId){
                     }
                     return true
                 } else if (body.data.status == 1) {
-                    if ((taskId > 167 && taskId < 173) || taskId == 96) {
+                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 217) {
                         config.spec.num += 1
                         config.spec.time = format(startTime)
                         $.setdata(JSON.stringify(config.spec), name + "_spec")
