@@ -6,14 +6,14 @@ modified by: MartinsKing
 
 [rewrite_local]
 
-^https?:\/\/pan\.abide\.com\/act\/v\d\/bchannel\/list url reject-200
+^https?:\/\/pan\.baidu\.com\/act\/v\d\/bchannel\/list url reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/v\d\/welfare\/list url reject-200
 ^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/pcs\/ad url reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry url reject-200
-^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/membership\/(volume|product|user) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
-^https:\/\/pan\.baidu\.com\/cms\/config\?method=query url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
-^https:\/\/pan\.baidu\.com\/act\/v2\/skin\/(userset|inuse)\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
-^https:\/\/pan\.baidu\.com\/(pmall\/space|api)\/quota url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https?:\/\/pan\.baidu\.com\/rest\/\d\.\d\/membership\/(volume|product|user) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https?:\/\/pan\.baidu\.com\/cms\/config\?method=query url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https?:\/\/pan\.baidu\.com\/act\/v2\/skin\/(userset|inuse)\? url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
+^https?:\/\/pan\.baidu\.com\/(pmall\/space|api)\/quota url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/BaiduCloud.js
 
 [mitm]
 
