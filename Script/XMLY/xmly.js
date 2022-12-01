@@ -8,12 +8,29 @@
 
 [rewrite_local]
 
+^https?:\/\/.*\.ximalaya\.com\/mobile-playpage\/view\/ url reject
+^https?:\/\/.*\.ximalaya\.com\/chaos-notice-web\/v1\/message\/preview\/list url reject
+^https?:\/\/.*\.ximalaya\.com\/social-web\/bottomTabs\/dynamicEntrance\/status url reject
+^https?:\/\/.*\.xmcdn\.com\/\w{8}\/\w{4}-\w{16}\/.+gif$ url reject
+^https?:\/\/.*\.ximalaya\.com\/(dog-portal\/checkOld|(child-mobile\/child|aged-mobile\/aged)\/mode\/query) url reject
+^https?:\/\/.*\.ximalaya\.com\/discovery-feed\/isShowUserGiftPendant url reject
+^https?:\/\/.*\.ximalaya\.com\/mobile-user\/unread url reject
+^https?:\/\/.*\.ximalaya\.com/mobile-user/minorProtection/pop url reject
+^https?:\/\/.*\.ximalaya\.com\/collector\/xl\/v\d url reject
+^https?:\/\/.*\.ximalaya\.com\/butler-portal\/versionCheck url reject
+^https?:\/\/(adse\.wsa|adse|adbehavior)\.ximalaya\.com\/.* url reject
+^https?:\/\/.*\.ximalaya\.com\/mobile\/discovery\/v\d\/location url reject
+^https?:\/\/.*\.ximalaya\.com\/hotWord url reject
+^https?:\/\/.*\.ximalaya\.com\/guideWord url reject
+^https?:\/\/.*\.ximalaya\.com\/api\/v\d\/adRealTime url reject
+^https?:\/\/.*\.ximalaya\.com\/ting\/(loading|feed|home)? url reject
+^https?:\/\/.*\.ximalaya\.com\/discovery-feed\/focus\/queryF url reject
 ^https?:\/\/(mobile|mobilehera|mobwsa|mwsa|m|ar)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|album\/album\/page|playpage\/(playpage\/(tabs|recommendInfo)|track))|product\/(promotion|detail\/v1\/basicInfo)|business-vip-|(playlist|rec-association\/recommend)\/album) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly.js
 ^https?:\/\/(mobile|mobilehera|mobwsa|pns)\.ximalaya\.com\/(mobile-playpage|mobile\/(quickplay|acceptapn)|comment-mobile/get|sound-guide-portal\/(sound\/guide|display)) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly_crack.js
 
 [mitm] 
 
-hostname = *.ximalaya.com, 180.153.255.*, 180.153.140.*, 180.153.250.*, 114.80.99.*, 114.80.139.237, 114.80.161.29, 1.62.62.64
+hostname = *.ximalaya.com, *.xmcdn.com, 180.153.255.*, 180.153.140.*, 180.153.250.*, 114.80.99.*, 114.80.139.237, 114.80.161.29, 1.62.62.64
 
 *******************************/
 
