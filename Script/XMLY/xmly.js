@@ -8,6 +8,7 @@
 
 [rewrite_local]
 
+^https?:\/\/xdcs-collector\.ximalaya\.com\/(api|nyx)\/(v1|v3) url reject
 ^https?:\/\/.*\.ximalaya\.com\/mobile-playpage\/view\/ url reject
 ^https?:\/\/.*\.ximalaya\.com\/chaos-notice-web\/v1\/message\/preview\/list url reject
 ^https?:\/\/.*\.ximalaya\.com\/social-web\/bottomTabs\/dynamicEntrance\/status url reject
