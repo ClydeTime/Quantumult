@@ -7,7 +7,7 @@
 问题反馈: @NobyDa_bot
 
 ************************
-QXn说明：
+QX说明：
 ************************
 手动登录 https://www.52pojie.cn/home.php 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
@@ -64,10 +64,11 @@ if ($.env.isRequest) {
 
 async function sign52(){
   await login();
-  console.log("第一次签到尝试");
+
   await realSign(reqData, 1);
-  console.log("第二次签到尝试");
-  await realSign(req_data, 2);
+  await realSign(reqData, 2);
+  await realSign(req_data, 3);
+  await realSign(req_data, 4);
   $.done();
 }
 
