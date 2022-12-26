@@ -63,6 +63,26 @@
                 "xmly_spec",
                 "xmly_gene"
             ]
+        },
+        {
+            "id": "v.qq.com",
+            "name": "qqvideo",
+            "author": "@MartinsKing",
+            "script": "https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/videoqq.js",
+            "descs_html":
+            [
+                ""
+            ],
+            "icons":
+            [
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/videoqq.png",
+                "https://raw.githubusercontent.com/Orz-3/mini/master/Color/videoqq.png"
+            ],
+            "keys":
+            [
+                "videoqq_pc_cookie",
+                "videoqq_ref_url"
+            ]
         }
     ]
 }
