@@ -82,6 +82,21 @@
             [
                 "videoqq_pc_cookie",
                 "videoqq_ref_url"
+            ],
+            "settings":
+            [
+                {
+                    "id": "videoqq_pc_cookie",
+                    "name": "pc_cookie",
+                    "type": "text",
+                    "desc": "腾讯视频网页版cookie"
+                },
+                {
+                    "id": "videoqq_ref_url",
+                    "name": "ref_url",
+                    "type": "text",
+                    "desc": "腾讯视频Request URL"
+                }
             ]
         }
     ]
