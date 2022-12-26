@@ -1,9 +1,60 @@
-/****
- *
- * @description 腾讯视频好莱坞会员V力值签到，手机签到和领取任务及奖励。
- * @author BlueSkyClouds
- * @create_at 2022-11-30
- */
+/*
+腾讯视频签到脚本
+
+更新时间: 2022-12-26
+脚本兼容: QuantumultX, Surge, Loon
+脚本作者: MayoBlueSky
+脚本修改: MartinsKing
+软件功能: 腾讯视频每日签到
+注意事项:
+  抓取cookie时注意保证账号登录状态；
+使用声明: ⚠️此脚本仅供学习与交流, 请勿贩卖！⚠️
+使用说明：
+    ①获取cookie
+        后台退出手机腾讯视频客户端的情况下,重新打开APP进入主页
+        如通知成功获取cookie,则可以使用此签到脚本.
+        获取Cookie后, 请将Cookie脚本禁用并移除主机名,以免产生不必要的MITM.
+    ②获取pc_cookie以及ref_url添加到boxjs,boxjs订阅链接「https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/boxjs.json」
+        ref_url获取教程: 「https://cdn.jsdelivr.net/gh/BlueskyClouds/Script/img/2020/11/1/img/v_1.jpg」
+        pc_cookie获取教程: 「https://cdn.jsdelivr.net/gh/BlueskyClouds/Script/img/2020/11/1/img/v_2.jpg」
+    ③脚本将在每天上午5点00执行,您可以修改执行时间.
+致谢: 感谢MayoBlueSky作者提供脚本,本人未做联系,私自适配使用并公开,望见谅！
+/***********************
+Surge 远程脚本配置:
+************************
+
+[Script]
+腾讯视频签到任务 = type=cron,cronexp=0 5 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/videoqq.js,timeout=15,wake-system=1
+
+# 腾讯视频获取Cookie
+「请在模块中添加,成功获取cookie后模块应去除勾选」
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.sgmodule
+
+************************
+QuantumultX 远程脚本配置:
+************************
+
+[task_local]
+# 腾讯视频签到
+0 5 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/videoqq.js, tag=腾讯视频签到, enabled=true, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/videoqq.png
+
+[rewrite_remote]
+# 腾讯视频获取Cookie
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到cookie, update-interval=172800, opt-parser=false, enabled=true
+
+************************
+Loon  远程脚本配置:
+************************
+
+[Script]
+# 腾讯视频签到
+cron "0 5 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/videoqq.js, tag=腾讯视频签到
+
+[Plugin]
+# 腾讯视频获取Cookie
+https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
+
+*/
 
 const $ = new Env('腾讯视频会员签到');
 const name = "videoqq"
