@@ -2,27 +2,26 @@
  *
  * @description 腾讯视频好莱坞会员V力值签到，手机签到和领取任务及奖励。
  * @author BlueSkyClouds
- * @懂得自然懂，解释不了，自用，非要用去原作者那里看看「https://raw.githubusercontent.com/MayoBlueSky/My-Actions/master/function/q_video/q_video.js」
+ * @create_at 2022-11-30
  */
 
 const $ = new Env('腾讯视频会员签到');
-const name = "腾讯视频"
-let ref_url = ''
-let cookie = ''
-let _cookie = ''
-const auth = getAuth()
+const name = "videoqq"
+const zh_name = "腾讯视频"
+const config = {
+  cookie: {},
+  headers: {}
+};
+let cookie = $.getdata(name + "_cookie");
+let ref_url = $.getdata(name + "_ref_url");
+let pc_cookie = $.getdata(name + "_pc_cookie");
+const auth = getAuth(cookie)
+
 let notice = $.time('yyyy年MM月dd日') + "\n"
 
 let headers = {
     'Referer' : `https://film.video.qq.com/`,
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Mobile/11A465 QQLiveBrowser/8.7.45 AppType/UN WebKitCore/WKWebView iOS GDTTangramMobSDK/4.370.6 GDTMobSDK/4.370.6 cellPhone/iPhone 12 pro max',
-    'Cookie': _cookie
-}
-
-let real_headers = {
-    'Referer' : `https://film.video.qq.com/`,
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Mobile/11A465 QQLiveBrowser/8.7.45 AppType/UN WebKitCore/WKWebView iOS GDTTangramMobSDK/4.370.6 GDTMobSDK/4.370.6 cellPhone/iPhone 12 pro max',
-    'Cookie': cookie
+    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Mobile/11A465 QQLiveBrowser/8.7.45 AppType/UN WebKitCore/WKWebView iOS GDTTangramMobSDK/4.370.6 GDTMobSDK/4.370.6 cellPhone/iPhone 12 pro max'
 }
 
 !(async () => {
@@ -33,10 +32,44 @@ let real_headers = {
   } else {
     console.log("- 任务正在进行，请耐心等待")
     ref_url_ver()
+    if(typeof cookie == 'undefined') {
+        console.log("您尚未获取cookie,请先获取cookie")
+        $.msg(zh_name, "cookie catch error", "请先获取cookie")
+        $.done()
+    }
+    if(typeof cookie == 'undefined') {
+        console.log("您尚未添加pc_cookie,请先在boxjs中添加pc_cookie")
+        $.msg(zh_name, "pc_cookie add error", "请先在boxjs中添加pc_cookie")
+        $.done()
+    }
     await main()
     $.done()
 }
 })()
+
+
+function GetCookie() {
+  if ("object" == typeof $request) {
+    if (typeof $request.headers.cookie != 'undefined') {
+      config.headers.Cookie = $request.headers.cookie;
+    } else if (typeof $request.headers.Cookie != 'undefined') {
+      config.headers.Cookie = $request.headers.Cookie;
+    }
+    config.cookie = getAuth(config.headers.Cookie);
+
+    if (config.cookie.vdevice_qimei36) {
+      console.log("- cookie获取成功");
+
+      $.setdata(Object.keys(config.cookie).map(i => i + '=' + config.cookie[i]).join('; '), name + "_cookie")
+      ? $.msg(zh_name, "cookie catch success", "获得 cookie 成功")
+      : $.msg(zh_name, "cookie catch failed", "获得 cookie 失败")
+    } else {
+      console.log("- 尚未登录, 请登录后再重新获取cookie");
+    }   
+  }
+  $.done();
+}
+
 
 const parseSet = (cookie) => {
   var obj = {};
@@ -49,21 +82,22 @@ const parseSet = (cookie) => {
   return obj;
 };
 
-function getAuth(c = cookie) {
+
+function getAuth(cookie) {
     let needParams = [""]
     //适配微信登录
     if (cookie) {
         if (cookie.includes("main_login=wx")) {
             needParams = ["vdevice_qimei36", "video_platform", "pgv_pvid", "pgv_info", "video_omgid", "main_login", "access_token", "appid", "openid", "vuserid", "vusession"]
         } else if (cookie.includes("main_login=qq")) {
-            needParams = ["vdevice_qimei36", "video_platform", "pgv_pvid", "pgv_info", "video_omgid", "main_login", "vqq_access_token", "vqq_appid", "vqq_openid", "vqq_vuserid", "vqq_vusession"]
+            needParams = ["vdevice_qimei36", "video_platform", "pgv_pvid", "video_omgid", "main_login", "vqq_access_token", "vqq_appid", "vqq_openid", "vqq_vuserid", "vqq_vusession"]
         } else {
             console.log("getAuth - 无法提取有效cookie参数")
         }
     }
     const obj = {}
-    if (c) {
-        c.split('; ').forEach(t => {
+    if (cookie) {
+        cookie.split('; ').forEach(t => {
             const [key, val] = t.split(/\=(.*)$/, 2)
             needParams.indexOf(key) !== -1 && (obj[key] = val)
         })
@@ -76,7 +110,7 @@ function refCookie(url = ref_url) {
     return new Promise(resovle => {
         const options = {
           url: url,
-          headers: headers
+          headers: {...headers, Cookie: pc_cookie}
         }
         $.get(options, (error, response, data) => {
             const obj = parseSet(response.headers['Set-Cookie'])
@@ -92,13 +126,14 @@ function refCookie(url = ref_url) {
             }
             // 刷新cookie后去签到
             resovle({
-                ...real_headers, Cookie: Object.keys(auth).map(i => i + '=' + auth[i]).join('; ')
+                ...headers, Cookie: Object.keys(auth).map(i => i + '=' + auth[i]).join('; ')
             })
         })
     })
 }
 
 function ref_url_ver(url = ref_url) {
+    headers = {...headers, Cookie: pc_cookie}
     $.get({
         url, headers
     }, function (error, response, data) {
@@ -124,7 +159,7 @@ function txVideoSignIn(headers) {
         if (error) {
             $.log(error);
             console.log("腾讯视频会员签到", "签到请求失败 ‼️‼️", error)
-            $.msg(name, "签到请求失败 ‼️‼️", error)
+            $.msg(zh_name, "签到请求失败 ‼️‼️", error)
         } else {
             if (data != null) {
                 let jsonParsed, code, check_in_score;
@@ -149,7 +184,7 @@ function txVideoSignIn(headers) {
                 notice += "腾讯视频会员签到：签到失败-Cookie失效 ‼️‼️" + "\n"
                 console.log("腾讯视频会员签到：签到失败, Cookie失效 ‼️‼️")
             }
-            $.msg(name, "", notice)
+            $.msg(zh_name, "", notice)
         }
         resolve()
     })
@@ -201,8 +236,6 @@ function txVideoDownTasks(headers) {
 async function main() {
     return refCookie().then(
       async (params) => {
-        console.log(params)
-        console.log(JSON.stringify(params))
         await txVideoSignIn(params)
         await txVideoDownTasks(params)
     })
