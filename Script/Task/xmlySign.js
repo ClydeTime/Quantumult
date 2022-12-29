@@ -153,7 +153,7 @@ async function main() {
             let exec_times = 6 - config.gene.num
             if (exec_times != 0) {
                 console.log("### 通用任务进行中")
-                let listSet = [101, 143, 176, 177, 180, 227]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 高德领水果(失效224), 123狂欢节 -双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
+                let listSet = [101, 143, 176, 177, 180, 249]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 浏览会员商品页 123狂欢节(失效227), 高德领水果(失效224), 双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
                 for (let i=0; i<exec_times; i++) {
                     await takeGeneralTask(listSet[i])
                     let temp_flag = await handInGeneralTask(listSet[i])
@@ -169,6 +169,9 @@ async function main() {
                 $.setdata(JSON.stringify(config.gene), name + "_gene")
                 gene_message = `🟢 今日通用任务已全部完成`
             } else {
+                config.gene.num = 0
+                config.gene.time = format(startTime)
+                $.setdata(JSON.stringify(config.gene), name + "_gene")
                 gene_message = `🟡 今日通用任务尚未全部完成,请查看日志`
             }   
         } else {
@@ -425,7 +428,7 @@ async function userAdd(){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/x-www-form-urlencoded`
     }
-    let body = `bizType=11&isFollow=1&toUid=21061786`
+    let body = `bizType=11&isFollow=1&toUid=2342717`
     let myRequest = {
         url: `https://mobile.ximalaya.com/mobile/follow`,
         headers: headers,
@@ -461,7 +464,7 @@ async function userDelete(){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/x-www-form-urlencoded`
     }
-    let body = `bizType=13&isFollow=0&toUid=21061786`
+    let body = `bizType=13&isFollow=0&toUid=2342717`
     let myRequest = {
         url: `https://mobile.ximalaya.com/mobile/follow`,
         headers: headers,
