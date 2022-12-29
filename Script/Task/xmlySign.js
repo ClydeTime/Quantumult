@@ -1,7 +1,7 @@
 /*
 喜马拉雅签到脚本
 
-更新时间: 2022-11-30
+更新时间: 2022-12-29
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
@@ -724,7 +724,7 @@ async function adVideoGetToken(){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/json`
     }
-    let body = `{"aid":112,"taskId":199}`
+    let body = `{"aid":112,"taskId":252}`
     let myRequest = {
         url: `http://m.ximalaya.com/web-activity/task/v2/genTaskToken`,
         headers: headers,
@@ -754,7 +754,7 @@ async function adVideoFinish(token){
         "Cookie": config.xm_cookie,
         'Content-Type': `application/json`
     }
-    let body = `{"aid":112,"taskId":199,"token":"${token}","progress":1}`
+    let body = `{"aid":112,"taskId":252,"token":"${token}","progress":1}`
     let myRequest = {
         url: `http://m.ximalaya.com/web-activity/task/v2/incrTaskProgress`,
         headers: headers,
