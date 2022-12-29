@@ -123,7 +123,7 @@ async function realSign(reqData, count){
         return false;
       } else {
         $.msgBody = "脚本待更新 ‼️‼️";
-        console.log(resp.body);
+        //console.log(resp.body);
         return false;
       }
     })
