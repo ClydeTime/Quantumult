@@ -1,7 +1,7 @@
 /*
 喜马拉雅签到脚本
 
-更新时间: 2022-12-29
+更新时间: 2022-12-31
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
@@ -74,10 +74,10 @@ const inspect = (key) => {
     }
 }
 
-const check = (key) =>
+const check = (key, num) =>
   !config.hasOwnProperty(key) ||
   !config[key].hasOwnProperty("time") ||
-  !(config[key]["num"] > 5) ||
+  !(config[key]["num"] > num) ||
   format(new Date().toDateString()) > config[key].time
 
 const $ = new Env('喜马拉雅')
@@ -125,7 +125,7 @@ async function main() {
 
         inspect("watch")
 
-        if (check("watch")) {
+        if (check("watch", 5)) {
             let exec_times = 6 - config.watch.num
             console.log("### 看广告任务进行中")
             for (let i=0; i<exec_times; i++) {
@@ -148,12 +148,12 @@ async function main() {
 
         inspect("gene")
 
-        if (check("gene")) {
+        if (check("gene", 6)) {
             let gene_flag = true
-            let exec_times = 6 - config.gene.num
+            let exec_times = 7 - config.gene.num
             if (exec_times != 0) {
                 console.log("### 通用任务进行中")
-                let listSet = [101, 143, 176, 177, 180, 249]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 浏览会员商品页 123狂欢节(失效227), 高德领水果(失效224), 双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
+                let listSet = [101, 143, 176, 177, 180, 238, 249]    //任务列表分别为「逛福利列表, 浏览会员频道, 哈利波特互动页, 逛官方商城, 今日热点, 支付宝消费金, 浏览会员商品页 123狂欢节(失效227), 高德领水果(失效224), 双十一特惠-(任务结束216), 年货节问卷(225), 点评(217), 百度(104)」
                 for (let i=0; i<exec_times; i++) {
                     await takeGeneralTask(listSet[i])
                     let temp_flag = await handInGeneralTask(listSet[i])
@@ -164,7 +164,7 @@ async function main() {
             }
 
             if (gene_flag) {
-                config.gene.num = 6
+                config.gene.num = 7
                 config.gene.time = format(startTime)
                 $.setdata(JSON.stringify(config.gene), name + "_gene")
                 gene_message = `🟢 今日通用任务已全部完成`
@@ -181,7 +181,7 @@ async function main() {
 
         inspect("spec")
 
-        if (check("spec")) {
+        if (check("spec", 5)) {
             await share()
             await voiceAdd()
             await voiceDelete()
