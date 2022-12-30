@@ -1,10 +1,10 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2022-12-30
+更新时间: 2022-12-31
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
-软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务
+软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务等
 注意事项:
   抓取cookie时注意保证账号登录状态；
   账号内须有一定数量的关注数，否则无法完成投币；
@@ -198,6 +198,7 @@ async function signBiliBili() {
       await vipScoreGo();
       await vipScoreFan();
       await vipScoreMovie();
+      await vipWatchAccept();
     }
     
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
@@ -597,6 +598,39 @@ async function vipScoreMovie(){
       }
     }, (reason) =>  {
       console.log("- 浏览影视频道任务失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function vipWatchAccept(){
+  console.log("#### 接取大会员观看正片30min任务");
+  let url = `https://api.bilibili.com/pgc/activity/score/task/receive`;
+  let headers = {
+    'Content-Type' : `application/json`,
+    'Cookie' : `SESSDATA=${config.cookie.SESSDATA}`,
+    'Referer' : `https://big.bilibili.com/mobile/bigPoint/task`
+  };
+  let body = `{"taskCode":"ogvwatch"}`;
+  const myRequest = {
+      url: url,
+      headers: headers,
+      body: body
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0 && body.message == "success") {
+        console.log("- 大会员观看正片任务接取成功, 自行观看完成后积分自动到账");
+        return true;
+      } else {
+        console.log("- 大会员观看正片任务接取失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 大会员观看正片任务接取失败");
       console.log(`- headers ${JSON.stringify(response.headers)}`);
       return false;
     }
