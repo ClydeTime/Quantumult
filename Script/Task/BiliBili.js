@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2022-12-31
+更新时间: 2023-01-03
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务等
@@ -23,7 +23,7 @@ QX, Surge, Loon说明：
   ②通过网址[https://www.bilibili.com]登录，不支持请求桌面网站。
 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
-脚本将在每天上午8点30执行, 您可以修改执行时间.
+脚本将在每天上午8点30执行, 您可以修改执行时间, 但是注意不要在凌晨执行, 否则部分任务可能无法完成(非脚本问题, 可能与B站服务器有关)
 2.投币设置
 定时任务脚本投币规则为: 随机获取关注列表Up主视频, 默认5视频5硬币, 不点赞.
 用户如需要不投币的版本, 请使用boxjs订阅「https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/boxjs.json」
@@ -33,7 +33,7 @@ Surge 脚本配置:
 ************************
 
 [Script]
-B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js
+B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js,wake-system=1,timeout=15,script-update-interval=0
 
 # BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块应去除勾选」
 https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.sgmodule
