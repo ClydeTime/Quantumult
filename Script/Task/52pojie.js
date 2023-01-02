@@ -129,8 +129,9 @@ async function realSign(reqData, count){
     })
     .catch((err) => ($.msgBody = `签到失败 ‼️‼️\n${err || err.message}`))
     .finally(async () => {
-      $.notify('吾爱破解', `第${count}次尝试签到`, $.msgBody);
-      
+      if (count == 2) {
+        $.notify('吾爱破解', `第${count}次尝试签到`, $.msgBody);
+      }
     })
 }
 
