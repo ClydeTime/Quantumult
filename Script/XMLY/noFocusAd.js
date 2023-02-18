@@ -1,7 +1,7 @@
 /******************************
 
 脚本功能：去除喜马拉雅首页轮盘滚动广告（非广告推荐不删除）
-更新时间：2022-12-31
+更新时间：2023-2-18
 
 *******************************
 [rewrite_local]
@@ -13,9 +13,7 @@
 hostname= *.ximalaya.com
 */
 
-let body = JSON.parse($response.body);
-
-body.replace(/(\{"isAd.*?\})/g,x=>{
-   return x.match('isAd":true') ? '' : x ;
-})
-$done({ body: JSON.stringify(body) });
+let obj = JSON.parse($response.body)
+obj.header[0].item.list[0].data =
+obj.header[0].item.list[0].data.filter(x=>!x.isAd)
+$done({body:JSON.stringify(obj)})
