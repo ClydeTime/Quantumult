@@ -26,7 +26,7 @@
 ^https?:\/\/.*\.ximalaya\.com\/api\/v\d\/adRealTime url reject
 ^https?:\/\/.*\.ximalaya\.com\/ting\/(loading|feed|home)? url reject
 ^https?:\/\/.*\.ximalaya\.com\/discovery-feed\/focus\/queryF url reject
-^https?:\/\/(mobile|mobilehera|mobwsa)\.ximalaya\.com\/focus-mobile\/focusPic\/info url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/noFocusAd.js
+#^https?:\/\/(mobile|mobilehera|mobwsa)\.ximalaya\.com\/focus-mobile\/focusPic\/info url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/noFocusAd.js
 ^https?:\/\/(mobile|mobilehera|mobwsa|mwsa|m|ar)\.ximalaya\.com\/(mobile\/(v\d\/album\/track|album\/paid\/info)|nyx\/history\/query\/detail|starwar\/task|vip\/(check|tabs|v\d\/recommand)|mobile-(user|album\/album\/page|playpage\/(playpage\/(tabs|recommendInfo)|track))|product\/(promotion|detail\/v1\/basicInfo)|business-vip-|(playlist|rec-association\/recommend)\/album) url script-response-body https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly.js
 ^https?:\/\/(mobile|mobilehera|mobwsa|pns)\.ximalaya\.com\/(mobile-playpage|mobile\/(quickplay|acceptapn)|comment-mobile/get|sound-guide-portal\/(sound\/guide|display)) url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/XMLY/xmly_crack.js
 
