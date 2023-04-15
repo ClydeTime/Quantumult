@@ -1,19 +1,21 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2023-04-15
+更新时间: 2023-04-16
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
-软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务等
+软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
 注意事项:
   抓取cookie时注意保证账号登录状态;
   账号内须有一定数量的关注数，否则无法完成投币;
   当硬币不足5枚，提示硬币不足，停止投币;
-  为保证投币任务成功, 脚本有重试机制(最多重试10次), 以确保任务完成, 前提需要您尽可能多的关注Up主.
+  为保证投币任务成功, 脚本有重试机制(最多重试10次), 以确保任务完成, 前提需要您尽可能多的关注Up主;
+  年度大会员每月B币券会在每月1号、15号尝试领取，确保应用正常运行, 以防漏领;
+  年度大会员自动充电会在每次领劵之后进行, 默认为自己充电, B币多的用户可自行到boxjs设置，以防误充.
   Loon特别注意:
     MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
 使用声明: ⚠️此脚本仅供学习与交流，请勿贩卖！⚠️
-脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung
+脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung、SocialSisterYi
 特别鸣谢: tg用户「🐈🐈‍⬛🐈‍⬛整点猫咪️」提供Surge供测试, 频道链接「https://t.me/GetsomeCats」
 ************************
 QX, Surge, Loon说明：
@@ -86,7 +88,7 @@ const cookie2object = (cookie) => {
 
 const $ = new Env("bilibili");
 const name = "bilibili";
-const startTime = $.time('yyyy-MM-dd HH:mm:ss');
+const startTime = format();
 const config = {
   cookie: {},
   cards: [],
@@ -200,6 +202,29 @@ async function signBiliBili() {
       await vipScoreMovie();
       await vipScoreDress();
       await vipWatchAccept();
+      //B币券每月尝试两次领取
+      if ($.time('dd') == 1 || $.time('dd') == 15) {
+        if (config.user.vipType == 2) {
+          await vipPrivilege(1);
+          let charge_mid = $.getdata(name + "_charge_mid");
+          if (charge_mid == "" || typeof charge_mid == 'undefined') {
+            charge_mid = config.user.mid;
+          }
+          
+          let bp_num = $.getdata(name + "_bp_num");
+          if (bp_num == "" || typeof bp_num == 'undefined') {
+            bp_num = 5;
+          }
+          await Charge(charge_mid, bp_num);//充电
+          await vipPrivilege(2);
+          await vipPrivilege(3);
+          await vipPrivilege(4);
+          await vipPrivilege(5);
+        }else if (config.user.vipType == 1) {
+          await vipPrivilege(6);
+          await vipPrivilege(7);
+        }
+      } 
     }
     
     if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
@@ -220,12 +245,12 @@ async function signBiliBili() {
     console.log(`- ${s}`);
     console.log(`- ${z}`);
 
-    //$.msg(title, `📅  ${format(startTime)}`, `${u}\n${w}\n${s}`);
+    //$.msg(title, `📅  ${startTime}`, `${u}\n${w}\n${s}`);
 
     notice = {
       title: `${name} [${config.user.uname}]`,
       content:
-        `更新时间: ${format(startTime)}\n` +
+        `更新时间: ${startTime}\n` +
         `任务:登录(观看)${check("watch") ? "" : "+10exp"} 分享${check("share") ? "" : "+5exp"} 投币${check("coins") ? "" : "+50exp"}\n` +
         `经验:当前${config.user.level_info.current_exp}/下级${config.user.level_info.next_exp}/满级28800\n` +
         `等级:${config.user.level_info.current_level} 升级${
@@ -241,7 +266,7 @@ async function signBiliBili() {
     }
     $.done();
   } else{
-    $.msg(`${name} 任务失败`,`📅 ${format(startTime)}`, "请更新cookie");
+    $.msg(`${name} 任务失败`,`📅 ${startTime}`, "请更新cookie");
     $.done();
   }
 }
@@ -264,7 +289,7 @@ async function queryStatus() {
               console.log("- 今日已登录");
               config.user.num = (config.user.num==0 ? 1 : config.user.num);
               if (!config['user'].hasOwnProperty("time")) {
-                config.user.time = format(startTime);
+                config.user.time = startTime;
               }
               $.setdata(JSON.stringify(config.user), name + "_user");
             } else {
@@ -276,7 +301,7 @@ async function queryStatus() {
               console.log("- 今日已观看");
               config.watch.num = (config.watch.num==0 || typeof config.watch.num=='undefined' ? 1 : config.watch.num);
               if (!config['watch'].hasOwnProperty("time")) {
-                config.watch.time = format(startTime);
+                config.watch.time = startTime;
               }
               $.setdata(JSON.stringify(config.watch), name + "_watch");
             } else {
@@ -288,7 +313,7 @@ async function queryStatus() {
               console.log("- 今日已分享");
               config.share.num = (config.share.num==0 || typeof config.share.num=='undefined' ? 1 : config.share.num);
               if (!config['share'].hasOwnProperty("time")) {
-                config.share.time = format(startTime);
+                config.share.time = startTime;
               }
               $.setdata(JSON.stringify(config.share), name + "_share");
             } else {
@@ -300,10 +325,10 @@ async function queryStatus() {
               console.log("- 今日已投币");
               config.coins.num = 50;
               if (!config['coins'].hasOwnProperty("time")) {
-                config.coins.time = format(startTime);
+                config.coins.time = startTime;
               } else {
                 if (format(new Date().toDateString()) > config.coins.time) {
-                  config.coins.time = format(startTime);
+                  config.coins.time = startTime;
                 }
               }
               $.setdata(JSON.stringify(config.coins), name + "_coins");
@@ -501,7 +526,7 @@ async function vipScoreSign(){
           const body = JSON.parse(response.body);
           if (body.code == 0 && body.message == "success") {
             console.log("- 大会员大积分任务签到成功");
-            config.score.time = format(startTime);
+            config.score.time = startTime;
             config.score.num = 1;
             $.setdata(JSON.stringify(config.score), name + "_score");
             return true;
@@ -665,6 +690,97 @@ async function vipWatchAccept(){
       }
     }, (reason) =>  {
       console.log("- 大会员观看正片任务接取失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function vipPrivilege(type){
+  console.log("#### 领取大会员月度福利");
+  let url = `https://api.bilibili.com/x/vip/privilege/receive`;
+  let headers = {
+    'Cookie': `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+  };
+  let body = `csrf=${config.cookie.bili_jct}&type=${type}`;
+  const myRequest = {
+      url: url,
+      headers: headers,
+      body: body
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0) {
+        if (type == 1) {
+          console.log("- 领取年度大会员每月B币券成功");
+          $.msg("年度大会员月度福利", "B币券", "🎉🎉🎉领取成功");
+        }else if (type == 2) {
+          console.log("- 领取年度大会员每月会员购优惠券成功");
+        }else if (type == 3) {
+          console.log("- 领取年度大会员每月漫画福利券成功");
+        }else if (type == 4) {
+          console.log("- 领取年度大会员每月会员购包邮券成功");
+        }else if (type == 5) {
+          console.log("- 领取年度大会员每月漫画商城优惠券成功");
+        }else if (type == 6) {
+          console.log("- 领取大会员每月装扮体验卡成功");
+        }else if (type == 7) {
+          console.log("- 领取大会员每月课堂优惠券成功");
+        }
+        return true;
+      } else {
+        console.log("- 领取大会员每月福利失败, 福利编码为" + type);
+        console.log("- 失败原因 " + body.message);
+        if (type == 1) {
+          $.msg("年度大会员月度福利", "B币券领取失败", "失败原因为: " + body.message);
+        }
+        //其他福利没什么用,失败也无需单独提醒
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 领取大会员每月福利失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function Charge(mid, bp_num){
+  console.log("#### B币券自动充电");
+  let url = 'https://api.bilibili.com/x/ugcpay/web/v2/trade/elec/pay/quick';
+  let headers = {
+    'Cookie': `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+  };
+  let body = `bp_num=${bp_num}&is_bp_remains_prior=true&up_mid=${mid}&otype=up&oid=${mid}&csrf=${config.cookie.bili_jct}`;
+  const myRequest = {
+      url: url,
+      headers: headers,
+      body: body
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0) {
+        if (body.data.status == 4) {
+          if (mid == config.user.mid) {
+            console.log("- 为自己充电成功");
+          }else {
+            console.log(`- 为用户id为${mid}的用户充电成功`);
+          }
+        }else if (body.data.status == -4) {
+          console.log("- 充电失败, B币不足");
+        }else {
+          console.log("- 充电失败");
+        }
+        return true;
+      } else {
+        console.log("- 充电失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 充电失败");
       console.log(`- headers ${JSON.stringify(response.headers)}`);
       return false;
     }
@@ -846,10 +962,10 @@ async function me(){
         console.log("- cookie有效即将开始任务");
         if (check("user") || config.user.mid != body.data.mid) {
           config.user = body.data;
-          config.user.time = format(startTime);
-          config.watch.time = format(startTime);
-          config.share.time = format(startTime);
-          config.coins.time = format(startTime);
+          config.user.time = startTime;
+          config.watch.time = startTime;
+          config.share.time = startTime;
+          config.coins.time = startTime;
           config.score.num = 0;
           $.setdata(JSON.stringify(config.watch), name + "_watch");
           $.setdata(JSON.stringify(config.share), name + "_share");
