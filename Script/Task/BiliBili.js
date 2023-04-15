@@ -6,10 +6,10 @@
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务等
 注意事项:
-  抓取cookie时注意保证账号登录状态；
-  账号内须有一定数量的关注数，否则无法完成投币；
-  当硬币不足5枚，提示硬币不足，停止投币；
-  为保证投币任务成功, 脚本有重试机制, 以确保任务完成, 前提需要你尽可能多的关注Up主，否则会出现无限重试, 无限卡顿的问题.（原因就是执行脚本次数过多后, 关注的Up主视频都被投过币了, 找不到未被投币的视频）
+  抓取cookie时注意保证账号登录状态;
+  账号内须有一定数量的关注数，否则无法完成投币;
+  当硬币不足5枚，提示硬币不足，停止投币;
+  为保证投币任务成功, 脚本有重试机制(最多重试10次), 以确保任务完成, 前提需要您尽可能多的关注Up主.
   Loon特别注意:
     MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
 使用声明: ⚠️此脚本仅供学习与交流，请勿贩卖！⚠️
@@ -19,8 +19,8 @@
 QX, Surge, Loon说明：
 ************************
 1.获取cookie
-  ①后台退出手机B站客户端的情况下，重新打开APP进入主页
-  ②通过网址[https://www.bilibili.com]登录，不支持请求桌面网站。
+  ①后台退出手机B站客户端的情况下, 重新打开APP进入主页
+  ②通过网址「https://www.bilibili.com」登录
 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
 脚本将在每天上午8点30执行, 您可以修改执行时间, 但是注意不要在凌晨执行, 否则部分任务可能无法完成(非脚本问题, 可能与B站服务器有关)
@@ -198,6 +198,7 @@ async function signBiliBili() {
       await vipScoreGo();
       await vipScoreFan();
       await vipScoreMovie();
+      await vipScoreDress();
       await vipWatchAccept();
     }
     
@@ -602,6 +603,35 @@ async function vipScoreMovie(){
       }
     }, (reason) =>  {
       console.log("- 浏览影视频道任务失败");
+      console.log(`- headers ${JSON.stringify(response.headers)}`);
+      return false;
+    }
+  );
+}
+
+async function vipScoreDress(){
+  console.log("#### 大会员浏览装扮商城主页任务");
+  let url = 'https://api.bilibili.com/pgc/activity/score/task/complete/v2';
+  let headers = {};
+  let body = `csrf=${config.cookie.bili_jct}&ts=1681553685&taskCode=dress-view&access_key=${config.key}`;
+  const myRequest = {
+      url: url,
+      headers: headers,
+      body: body
+  };
+  await $.http.post(myRequest).then(
+    (response) => {
+      const body = JSON.parse(response.body);
+      if (body.code == 0 && body.message == "success") {
+        console.log("- 浏览装扮商城主页任务成功,获得10点大积分");
+        return true;
+      } else {
+        console.log("- 浏览装扮商城主页任务失败");
+        console.log("- 失败原因 " + body.message);             
+        return false;
+      }
+    }, (reason) =>  {
+      console.log("- 浏览装扮商城主页任务失败");
       console.log(`- headers ${JSON.stringify(response.headers)}`);
       return false;
     }
