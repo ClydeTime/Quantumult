@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2023-01-03
+更新时间: 2023-04-15
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到+任务等
@@ -371,8 +371,12 @@ async function coin(){
               return true;
             } else {
               console.log("- 投币失败, 失败原因 " + body.message);
-              console.log("- 正在重试...")
-              await coin();         
+              config.coins.failures = (config.coins.failures ==0 || typeof config.coins.failures=='undefined' ? 1 : config.coins.failures) + 1;
+              $.setdata(JSON.stringify(config.coins), name + "_coins");
+              if (config.coins.failures < 11) {
+                console.log("- 正在重试...重试次数 " + (config.coins.failures - 1) + "(超过十次不再重试)");
+                await coin();
+              }
               return false;
             }
           }, (reason) =>  {
@@ -766,15 +770,22 @@ async function share(aid, bvid) {
         headers: headers,
         body: body
     };
-    return await $.http.post(myRequest).then((response) => {
-        const data = JSON.parse(response.body);
-        if (data.code == 0) {
+    return await $.http.post(myRequest).then(
+      async (response) => {
+        const body = JSON.parse(response.body);
+        if (body.code == 0) {
           config.share.num = (config.share.num || 0) + 1;
           console.log("- 分享成功");
           return $.setdata(JSON.stringify(config.share), name + "_share");
         } else {
-          console.log("- 分享失败");
-          console.log(`- data ${JSON.stringify(response.body)}`);
+          console.log("- 分享失败, 失败原因" + body.message);
+          config.share.failures = (config.share.failures ==0 || typeof config.share.failures=='undefined' ? 1 : config.share.failures) + 1;
+          $.setdata(JSON.stringify(config.share), name + "_share");
+          if (config.share.failures < 6) {
+            console.log("- 正在重试...重试次数 " + (config.share.failures - 1) + "(超过五次不再重试)");
+            item = config.cards[Math.floor(Math.random() * config.cards.length)];
+            await share(item.desc.rid, item.desc.bvid);
+          }
           return false;
         }
       });
