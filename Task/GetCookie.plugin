@@ -1,5 +1,5 @@
-#!name= MartinsKing签到脚本Cookie获取
-#!desc= 包括B站, 喜马拉雅, 腾讯视频 获取方法请看脚本注释; 建议使用后手动将该插件禁用, 以避免无意义的MITM.
+#!name= Cookie获取(MartingsKing)
+#!desc= 包括B站, 喜马拉雅, 腾讯视频, 贴吧, NGA 获取方法请看脚本注释; 建议使用后手动将该插件禁用, 以避免无意义的MITM.
 #!author= MartinsKing
 #!homepage= https://github.com/ClydeTime/Quantumult/tree/master
 #!icon= https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Tips/IMG_4128.png
@@ -13,5 +13,11 @@ http-request ^https?:\/\/m.bilibili.com/$ script-path=https://raw.githubusercont
 
 http-request ^https?:\/\/iacc\.rec\.qq\.com script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/videoqq.js, tag=腾讯视频Cookie
 
+http-request ^https?:\/\/ngabbs.com\/nuke.php$ script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/nga.js, tag=NGA玩家社区Cookie
+
+http-request ^https?:\/\/tiebac\.baidu\.com\/c\/u\/follow\/getFoldedMessageUserInfo script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/TieBa.js, tag=贴吧Cookie1
+
+http-request ^https?:\/\/c\.tieba\.baidu\.com\/c\/u\/follow\/getFoldedMessageUserInfo script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/TieBa.js, tag=贴吧Cookie2
+
 [MITM]
-hostname = app.bilibili.com, m.bilibili.com, mobile.ximalaya.com, mobwsa.ximalaya.com, mobilehera.ximalaya.com, iacc.rec.qq.com, 180.153.255.*, 180.153.250.*, 180.153.140.*, 114.80.99.*, 114.80.139.*, 114.80.161.*, 1.62.62.64, 61.172.194.184
+hostname = app.bilibili.com, m.bilibili.com, mobile.ximalaya.com, mobwsa.ximalaya.com, mobilehera.ximalaya.com, ngabbs.com, iacc.rec.qq.com, c.tieba.baidu.com, tiebac.baidu.com
