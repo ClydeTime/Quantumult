@@ -274,8 +274,6 @@ function GetCookie() {
   if (config.cookie) {
     if ($.getdata(name + "_cookie") != 'undefined') {
       if ($.getdata(name + "_cookie") != config.cookie) {
-      	console.log($.getdata(name + "_cookie"));
-      	console.log(config.cookie);
         if (config.cookie.indexOf("BDUSS") != -1) {
           $.setdata(config.cookie, name + "_cookie")? $.msg(zh_name, "cookie catch success", "获得 cookie 成功") : $.msg(zh_name, "cookie catch failed", "获得 cookie 失败")
         }
