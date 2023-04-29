@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2023-04-16
+更新时间: 2023-04-29
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -839,7 +839,13 @@ async function getFavAid(arr){
   }
   return await $.http.get(myRequest).then(
     (response) => {
-      const body = JSON.parse(response.body);
+      let body = JSON.parse('[' + response.body.replace(/}{/g, '},{') + ']');
+      if (body[0].code === -509) {//请求接口频繁，实际上还是会返回到数组的第二个元素中
+        body = body[1];
+      }else {
+        body = body[0];
+      }
+      //const body = JSON.parse(response.body);
       if (body.code == 0) {
         console.log("- 获取投币视频成功");
         let vlist = body.data.list.vlist;
