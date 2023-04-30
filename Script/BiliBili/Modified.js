@@ -39,9 +39,14 @@ const URL = new URLs();
 					switch (PATH) {
 						case "x/v2/splash/show": // 开屏页
 						case "x/v2/splash/list": // 开屏页
-							if (body.data.show) {
-								delete body.data.show;
-								$.log(`🎉 ${$.name}`, "开屏页广告去除", "");
+						case "x/v2/splash/brand/list": // 开屏页
+						case "x/v2/splash/event/list2": // 开屏页
+							const item = ["account", "event_list", "preload", "show"];
+							if (body.data) {
+								item.forEach((i) => {
+									delete body.data[i];
+									$.log(`🎉 ${$.name}`, "开屏页广告去除");
+								});
 							}
 							break;
 						case "x/v2/feed/index": // 推荐页
@@ -54,7 +59,7 @@ const URL = new URLs();
 												for (const v of i.banner_item) {
 													if (v.type) {
 														if (v.type === 'ad') {
-															$.log(`🎉 ${$.name}`, "banner广告去除", "");
+															$.log(`🎉 ${$.name}`, "banner广告去除");
 															return false;
 														}
 													}
@@ -62,13 +67,13 @@ const URL = new URLs();
 											}
 										} else if (cardType === 'cm_v2' && ['ad_web_s', 'ad_av', 'ad_web_gif', 'ad_player', 'ad_inline_3d', 'ad_inline_eggs'].includes(cardGoto)) {
 										// ad_player大视频广告 ad_web_gif大gif广告 ad_web_s普通小广告 ad_av创作推广广告 ad_inline_3d  上方大的视频3d广告 ad_inline_eggs 上方大的视频广告
-											$.log(`🎉 ${$.name}`, `${cardGoto}广告去除)`, "");
+											$.log(`🎉 ${$.name}`, `${cardGoto}广告去除)`);
 											return false;
 										} else if (cardType === 'small_cover_v10' && cardGoto === 'game') {
-											$.log(`🎉 ${$.name}`, "游戏广告去除", "");
+											$.log(`🎉 ${$.name}`, "游戏广告去除");
 											return false;
 										} else if (cardType === 'cm_double_v9' && cardGoto === 'ad_inline_av') {
-											$.log(`🎉 ${$.name}`, "大视频广告去除", "");
+											$.log(`🎉 ${$.name}`, "大视频广告去除");
 											return false;
 										}
 									}
@@ -85,7 +90,7 @@ const URL = new URLs();
 										["ad", "vertical_live", "vertical_pgc"].includes(i.card_goto)
 									)
 								);
-								$.log(`🎉 ${$.name}`, "story广告去除", "");
+								$.log(`🎉 ${$.name}`, "story广告去除");
 							}
 							break;
 					};
@@ -116,7 +121,7 @@ const URL = new URLs();
 										i.items = [];
 									}
 								});
-								$.log(`🎉 ${$.name}`, "观影页广告去除", "");
+								$.log(`🎉 ${$.name}`, "观影页广告去除");
 							}
 							break;
 						case "x/player/wbi/playurl": // UGC-用户生产内容-播放地址
@@ -140,13 +145,13 @@ const URL = new URLs();
 						case "xlive/app-room/v1/index/getInfoByRoom": // 直播
 							if (body.data?.activity_banner_info) {
 								body.data.activity_banner_info = null;
-								$.log(`🎉 ${$.name}`, "直播banner广告去除", "");
+								$.log(`🎉 ${$.name}`, "直播banner广告去除");
 							}
 							if (body.data?.shopping_info) {
 								body.data.shopping_info = {
 									is_show: 0
 								};
-								$.log(`🎉 ${$.name}`, "直播购物广告去除", "");
+								$.log(`🎉 ${$.name}`, "直播购物广告去除");
 							}
 							if (body.data?.new_tab_info?.outer_list?.length > 0) {
 								body.data.new_tab_info.outer_list =
@@ -203,12 +208,12 @@ const URL = new URLs();
 											let data = PlayViewReply.fromBinary(body);
 											const oldBackgroundConf = data.playArc?.backgroundPlayConf;
 											if ( oldBackgroundConf && (!oldBackgroundConf.isSupport || oldBackgroundConf.disabled)) {
-												$.log(`🎉 ${$.name}`, "后台播放限制去除", "");
+												$.log(`🎉 ${$.name}`, "后台播放限制去除");
 												data.playArc.backgroundPlayConf.isSupport = true;
 												data.playArc.backgroundPlayConf.disabled = false;
 												data.playArc.backgroundPlayConf.extraContent = null;
 											}else {
-												$.log(`🚧 ${$.name}`, "无后台播放限制", "");
+												$.log(`🚧 ${$.name}`, "无后台播放限制");
 											}
 											body = PlayViewReply.toBinary(data);
 											break;
@@ -226,11 +231,11 @@ const URL = new URLs();
 											let data = DynAllReply.fromBinary(body);
 											if (data.topicList) {
 												data.topicList = null;
-												$.log(`🎉 ${$.name}`, "推荐话题去除", "");
+												$.log(`🎉 ${$.name}`, "推荐话题去除");
 											}
 											if (data.upList) {
 												data.upList = null;
-												$.log(`🎉 ${$.name}`, "最常访问去除", "");
+												$.log(`🎉 ${$.name}`, "最常访问去除");
 											}
 											if (data.dynamicList?.list?.length) {
 												data.dynamicList.list = data.dynamicList.list.filter(
@@ -241,7 +246,7 @@ const URL = new URLs();
 														return false;
 													}
 												);
-												$.log(`🎉 ${$.name}`, "动态列表广告去除", "");
+												$.log(`🎉 ${$.name}`, "动态列表广告去除");
 											}
 											body = DynAllReply.toBinary(data);
 											break;
@@ -259,7 +264,7 @@ const URL = new URLs();
 											let data = ViewReply.fromBinary(body);
 											if (data.cms?.length) {
 												data.cms = [];
-												$.log(`🎉 ${$.name}`, "up主推荐广去除", "");
+												$.log(`🎉 ${$.name}`, "up主推荐广去除");
 											}
 											if (data.relates?.length) {
 												data.relates = data.relates.filter((item) => {
@@ -268,12 +273,12 @@ const URL = new URLs();
 													}
 													return true;
 												});
-												$.log(`🎉 ${$.name}`, "相关推荐广告去除", "");
+												$.log(`🎉 ${$.name}`, "相关推荐广告去除");
 											}
 											const adsControlValue = data.cmConfig?.adsControl?.value;
 											if (adsControlValue) {
 												data.cmConfig = null;
-												$.log(`🎉 ${$.name}`, "up主推荐广告弹幕去除", "");
+												$.log(`🎉 ${$.name}`, "up主推荐广告弹幕去除");
 											}
 											for (const i in data.tIcon) {
 												if (data.tIcon[i] === null) {
