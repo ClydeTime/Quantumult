@@ -1,7 +1,7 @@
 /*
 哔哩哔哩签到脚本
 
-更新时间: 2023-04-29
+更新时间: 2023-04-30
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -155,9 +155,7 @@ async function signBiliBili() {
       real_times = exec_times;
       exec_times = exec_times - (config.coins.num / 10);
     }
-    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
-      flag = false;
-    }
+    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || (config.coins.num < real_times * 10 && config.user.money > 5)) flag = false;
     if (!flag){
       await dynamic();
       if (config.cards.length) {
@@ -169,7 +167,7 @@ async function signBiliBili() {
         console.log("- 获取视频失败，请重试或寻求帮助");
       }
       
-      if (config.user.money < 1) {
+      if (config.user.money < 5) {
         console.log("#### 投币任务");
         console.log("- 硬币不足, 投币失败");
         exec_times = 0;
@@ -220,6 +218,8 @@ async function signBiliBili() {
           await vipPrivilege(3);
           await vipPrivilege(4);
           await vipPrivilege(5);
+          await vipPrivilege(6);
+          await vipPrivilege(7);
         }else if (config.user.vipType == 1) {
           await vipPrivilege(6);
           await vipPrivilege(7);
@@ -227,7 +227,7 @@ async function signBiliBili() {
       } 
     }
     
-    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || config.coins.num < real_times * 10) {
+    if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || (config.coins.num < real_times * 10 && config.user.money > 5)) {//增加判断,硬币不足也算完成任务
       flag = false;
     } else {
       flag = true;
