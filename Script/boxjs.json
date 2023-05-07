@@ -22,13 +22,7 @@
             ],
             "keys":
             [
-                "bilibili_headers",
-                "bilibili_watch",
-                "bilibili_share",
-                "bilibili_coins",
-                "bilibili_score",
-                "bilibili_user",
-                "bilibili_key",
+                "bilibili_daily_bonus",
                 "bilibili_exec",
                 "bilibili_charge_mid",
                 "bilibili_bp_num"
