@@ -362,6 +362,7 @@ async function watch(aid, bvid, cid) {
 			const body = $.toObj(response.body)
 			if (body?.code === 0) {
 				$.log(`- 累计观看(登录)次数 ${(config.watch.num || 0) + 1}`)
+				config.user.num = (config.user.num || 0) + 1
 				config.watch.num = (config.watch.num || 0) + 1
 				$.setdata($.toStr(config), $.name + "_daily_bonus")
 			} else {
