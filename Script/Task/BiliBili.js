@@ -1,69 +1,51 @@
 /*
-哔哩哔哩签到脚本
+哔哩哔哩每日任务
 
-更新时间: 2023-05-23
+更新时间: 2023-10-14
 脚本兼容: QuantumultX, Surge, Loon
-脚本作者: MartinsKing
+脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
 注意事项:
-  抓取cookie时注意保证账号登录状态;
-  账号内须有一定数量的关注数，否则无法完成投币;
-  当硬币不足5枚，提示硬币不足，停止投币;
-  为保证投币任务成功, 脚本有重试机制(最多重试10次), 以确保任务完成, 前提需要您尽可能多的关注Up主;
-  年度大会员每月B币券会在每月1号、15号尝试领取，确保应用正常运行, 以防漏领;
-  年度大会员自动充电会在每次领劵之后进行, 默认为自己充电, B币多的用户可自行到boxjs设置，以防误充.
-  Loon特别注意:
-    MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
+	抓取cookie时注意保证账号登录状态;
+	账号内须有一定数量的关注数，否则无法完成投币;
+	当硬币不足5枚，提示硬币不足，停止投币;
+	为保证投币任务成功, 脚本有重试机制(最多重试10次), 以确保任务完成, 前提需要您尽可能多的关注Up主;
+	年度大会员每月B币券会在每月1号、15号尝试领取，确保应用正常运行, 以防漏领;
+	年度大会员自动充电会在每次领劵之后进行, 默认为自己充电, B币多的用户可自行到boxjs设置，以防误充.
 使用声明: ⚠️此脚本仅供学习与交流，请勿贩卖！⚠️
 脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung、SocialSisterYi
-特别鸣谢: tg用户「🐈🐈‍⬛🐈‍⬛整点猫咪️」提供Surge供测试, 频道链接「https://t.me/GetsomeCats」
 ************************
 QX, Surge, Loon说明：
 ************************
 1.获取cookie
-  ①后台退出手机B站客户端的情况下, 重新打开APP进入主页
-  ②通过网址「https://www.bilibili.com」登录
+	①后台退出手机B站客户端的情况下, 重新打开APP进入主页
+	②通过网址「https://www.bilibili.com」登录（`暂不支持Loon`）
 如通知成功获取cookie, 则可以使用此签到脚本.
-获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
-脚本将在每天上午8点30执行, 您可以修改执行时间, 但是注意不要在凌晨执行, 否则部分任务可能无法完成(非脚本问题, 可能与B站服务器有关)
+脚本将在每天上午7点30执行.
 2.投币设置
 定时任务脚本投币规则为: 随机获取关注列表Up主视频, 默认5视频5硬币, 不点赞.
-用户如需要不投币的版本, 请使用boxjs订阅「https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/boxjs.json」
+用户如需要不投币的版本, 请使用boxjs订阅「https://raw.githubusercontent.com/ClydeTime/BiliBili/main/boxjs/BiliBili.boxjs.json」
 将投币次数置为0, 并保存即可.
 /***********************
 Surge 脚本配置:
 ************************
 
-[Script]
-B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js,wake-system=1,timeout=15,script-update-interval=0
-
-# BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块应去除勾选」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.sgmodule
+# B站每日等级任务 「请在模块中添加」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/BiliBiliDailyBonus.sgmodule
 
 ************************
 QuantumultX 远程脚本配置:
 ************************
 
-[task_local]
-# B站每日等级任务
-30 8 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
-
-[rewrite_remote]
-# B站获取Cookie 「成功获取Cookie后请去除勾选」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到Cookie, update-interval=172800, opt-parser=false, enabled=true
+# B站每日等级任务 「请在重写中添加」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/BiliBiliDailyBonus.snippet
 
 ************************
 Loon 远程脚本配置:
 ************************
 
-[Script]
-# BiliBili每日等级任务
-cron "30 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=BiliBili每日等级任务
-
-[Plugin]
-# BiliBili获取Cookie 「成功获取Cookie后请禁用插件」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
-
+# B站每日等级任务 「请在插件中添加」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/BiliBiliDailyBonus.plugin
 */
 
 const format = (ts, fmt = 'yyyy-MM-dd HH:mm:ss') => {
@@ -84,6 +66,35 @@ const cookie2object = (cookie) => {
 		obj[brr[0]] = brr[1];
 	});
 	return obj;
+}
+
+const setCookieToLocalStore = async (config, times) => {
+	if (config.cookie.DedeUserID) {
+		var url = $request.url
+		config.key = url.match(/.*access_key=(.*?)&build/)?.[1]
+		config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+		if (!config.key) {
+			let confirm_uri = await getConfirm_uri()
+			let envType = $.getEnv()
+			if (envType === 'Surge') {
+				await captureAccess_key(confirm_uri)
+				await getRecentRequests()
+			}else if (envType === 'Quantumult X') {
+				await getAccess_key(confirm_uri)
+			}//'Loon need to do'
+		}
+		if (times === 1) {
+			$.setdata($.toStr(config), $.name + "_daily_bonus")
+				? $.msg($.name, "首次获取cookie", "🎉获取 cookie 成功")
+				: $.msg($.name, "首次获取cookie", "🤒获取 cookie 失败")
+		} else {
+			$.setdata($.toStr(config), $.name + "_daily_bonus")
+				? $.msg($.name, "检测到cookie已更新", "🎉更新 cookie 成功")
+				: $.msg($.name, "检测到cookie已更新", "🤒更新 cookie 失败")
+		}
+	} else {
+		$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
+	}
 }
 
 const $ = new Env("bilibili")
@@ -120,19 +131,121 @@ function getCookie() {
 		} else if (typeof $request.headers.Cookie != 'undefined') {
 			Cookie = $request.headers.Cookie
 		}
-		config.cookie = cookie2object(Cookie)
-		if (config.cookie.DedeUserID) {
-			$.log("- cookie获取成功")
-			let url = $request.url
-			config.key = url.match(/.*access_key=(.*?)&build/)?.[1]
-			config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
-			$.setdata($.toStr(config), $.name + "_daily_bonus")
-			? $.msg($.name, "cookie catch success", "🎉获得 cookie 成功")
-			: $.msg($.name, "cookie catch failed", "🤒获得 cookie 失败")
+		if (Boolean(Cookie)) {
+			config.cookie = cookie2object(Cookie)
+			original_config = $.getjson($.name + "_daily_bonus", {})
+			if (Boolean(original_config.cookie)) {
+				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
+					$.log("- cookie未失效,无需更新")
+				} else {
+					setCookieToLocalStore(config, 2)
+				}
+			} else {
+				setCookieToLocalStore(config, 1)
+			}
 		} else {
-			$.log("- 尚未登录, 请登录后再重新获取cookie")
-		}   
+			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
+		}
 	}
+}
+
+async function getConfirm_uri() {
+	var sign = md5("api=http://link.acg.tv/forum.php" + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	const myRequest = {
+			url: "https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=http://link.acg.tv/forum.php&sign=" + sign,
+			headers: {
+				"cookie": config.cookieStr
+			}
+	}
+	return await $.http.get(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0) {
+				return body?.data?.confirm_uri
+			} else {
+				$.log("- 查询失败")
+				$.log("- 失败原因 " + body?.message)
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	}, reason => {
+		$.log("- 失败原因 " + $.toStr(reason))
+		return "error"
+	})
+}
+
+function captureAccess_key(confirm_uri) {
+	return new Promise((resolve, reject) => {
+		const myRequest = {
+				url: confirm_uri,
+				headers: {
+					"cookie": config.cookieStr
+				}
+		}
+		$.get(myRequest,(err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
+}
+
+function getAccess_key(confirm_uri) {
+	return new Promise((resolve, reject) => {
+		$.log("- 正在获取access_key, 请稍后")
+		const myRequest = {
+				url: confirm_uri,
+				headers: {
+					"cookie": config.cookieStr
+				},
+				opts: {
+					"redirection": false
+				}
+		}
+		$.get(myRequest,(err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+					const url = resp.headers.Location
+					if (url) {
+						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
+					}
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
+}
+
+function getRecentRequests() {
+	return new Promise((resolve, reject) => {
+		$.log("- 正在获取最近请求列表, 请稍后")
+		$httpAPI("GET","/v1/requests/recent",null,(result) => {
+			if (!result) reject(result)
+			else {
+				try {
+					const url = result.requests.find(request => request.URL.includes("access_key"))?.URL;
+					if (url) {
+						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
+					}
+				} catch (e) {
+					$.logErr(e, result)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
 }
 
 async function signBiliBili() {
@@ -140,7 +253,7 @@ async function signBiliBili() {
 	if (config.cookie && await me()) {
 		await queryStatus()
 		var flag = true
-		let exec_times = $.getdata($.name + "_exec")	//用户设置投币次数
+		let exec_times = config.Settings?.exec	//用户设置投币次数
 		if (!Boolean(exec_times)) {
 			exec_times = 5
 			real_times = 5 - (Number(config.coins.num) / 10)
@@ -166,13 +279,13 @@ async function signBiliBili() {
 			if (real_times === 0){
 				$.log(`- 今日已完成 ${config.coins.time}`)
 			} else {
-				//$.log(`- 需要投币次数 ${real_times}`)
 				for (var i = 0; i < real_times; i ++) {
 					if (Math.floor(config.user.money) <= 5) {
 						$.log("- 硬币不足,投币失败")
 						break
 					} else {
 						await coin()
+						await $.wait(300) //减少频繁请求概率
 					}
 				}
 			}
@@ -185,6 +298,7 @@ async function signBiliBili() {
 		await silver2coin()
 		await vipScoreSign()
 		if (config.user.vipStatus === 1) {
+			await vipExtraEx()
 			await vipScoreGo()
 			await vipScoreFan()
 			await vipScoreMovie()
@@ -195,8 +309,8 @@ async function signBiliBili() {
 				if (config.user.vipType === 2) {
 					await vipPrivilege(1)
 					await $.wait(800); //延迟执行，防止领劵延迟
-					let charge_mid = $.getdata($.name + "_charge_mid") || config.user.mid
-					let bp_num = $.getdata($.name + "_bp_num") || 5
+					let charge_mid = config.Settings?.charge_mid || config.user.mid
+					let bp_num = config.Settings?.bp_num || 5
 					await Charge(charge_mid, bp_num)//充电
 					await vipPrivilege(2)
 					await vipPrivilege(3)
@@ -672,6 +786,47 @@ async function vipScoreSign() {
 			$.log("- 今日已完成")
 		}
 	}
+}
+
+function vipExtraEx() {
+	return new Promise((resolve, reject) => {
+		$.log("#### 大会员每日额外经验值")
+		const body = {
+			csrf: config.cookie.bili_jct,
+			mobi_app: 'iphone',
+			platform:'ios',
+			appkey:'27eb53fc9058f8c3',
+			access_key:`${config.key}`
+		}
+		const myRequest = {
+			url: "https://api.bilibili.com/x/vip/experience/add",
+			headers: {
+				'Accept:' : `application/json, text/plain, */*`,
+				'App-key': 'iphone'
+			},
+			body: $.queryStr(body)
+		}
+		$.post(myRequest, (err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+					const body = $.toObj(data)
+					if (body?.code == 0 && body?.message == "0") {
+						$.log("- 成功获得10经验值")
+						return true
+					} else {
+						$.log("- 每日额外经验任务失败")
+						$.log("- 失败原因 " + body?.message)
+						return false
+					}
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
 }
 
 function vipScoreGo() {
