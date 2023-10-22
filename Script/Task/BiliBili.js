@@ -123,7 +123,7 @@ let real_times //实际需要投币次数
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done())
 
-function getCookie() {
+async function getCookie() {
 	if ('object' == typeof $request) {
 		let Cookie
 		if (typeof $request.headers.cookie != 'undefined') {
@@ -138,10 +138,10 @@ function getCookie() {
 				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
 					$.log("- cookie未失效,无需更新")
 				} else {
-					setCookieToLocalStore(config, 2)
+					await setCookieToLocalStore(config, 2)
 				}
 			} else {
-				setCookieToLocalStore(config, 1)
+				await setCookieToLocalStore(config, 1)
 			}
 		} else {
 			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
