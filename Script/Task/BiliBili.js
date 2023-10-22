@@ -115,7 +115,7 @@ let real_times //实际需要投币次数
 !(async () => {
 	if (typeof $request != "undefined") {
 		$.log("- 正在获取cookie, 请稍后")
-		getCookie()
+		await getCookie()
 	} else {
 		await signBiliBili()
 	}
