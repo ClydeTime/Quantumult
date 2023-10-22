@@ -560,6 +560,7 @@ async function coin() {
 				const myRequest = {
 					url: "https://api.bilibili.com/x/web-interface/coin/add",
 					headers: {
+						'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
 						'accept': 'application/json, text/plain, */*',
 						'content-type': 'application/x-www-form-urlencoded',
 						'origin': 'https://www.bilibili.com',
