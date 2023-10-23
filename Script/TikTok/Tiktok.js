@@ -63,5 +63,12 @@ function video_lists(lists) {
         lists.aweme_acl.download_mask_panel = lists.aweme_acl.download_general;
         lists.aweme_acl.share_general = lists.aweme_acl.download_general;
     }
+    if (lists.image_post_info.images) {
+        for (let i in lists.image_post_info.images) {
+            lists.image_post_info.images[i].owner_watermark_image.url_list = lists.image_post_info.images[i].display_image.url_list;
+            lists.image_post_info.images[i].user_watermark_image.url_list = lists.image_post_info.images[i].thumbnail.url_list;
+        }
+        lists.without_watermark = true;
+    }
     return lists;
 }
