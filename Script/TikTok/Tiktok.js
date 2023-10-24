@@ -28,7 +28,7 @@ function Follow(data) {
 
 function Feed(aweme_list) {
 	if (aweme_list && aweme_list.length > 0) {
-		aweme_list = aweme_list.filter((i) => !(i.is_ads === true));
+		aweme_list = aweme_list.filter(i => !(i.is_ads === true));
 		for (let i in aweme_list) {
 			if (aweme_list[i].video) {
 				download_list(aweme_list[i]);
@@ -61,7 +61,7 @@ function download_list(list) {
 		list.aweme_acl.download_mask_panel = list.aweme_acl.download_general;
 		list.aweme_acl.share_general = list.aweme_acl.download_general;
 	}
-	if (list.image_post_info.images) {
+	if (list.image_post_info && list.image_post_info.images) {
 		for (let i in list.image_post_info.images) {
 			list.image_post_info.images[i].owner_watermark_image.url_list = list.image_post_info.images[i].display_image.url_list;
 			list.image_post_info.images[i].user_watermark_image.url_list = list.image_post_info.images[i].thumbnail.url_list;
