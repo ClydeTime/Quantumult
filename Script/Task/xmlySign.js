@@ -1,8 +1,8 @@
 /*
 喜马拉雅签到脚本
 
-更新时间: 2023-11-02
-脚本兼容: QuantumultX, Surge, Loon
+更新时间: 2023-11-03
+脚本兼容: Surge
 脚本作者: MartinsKing
 软件功能: 喜马拉雅每日签到
 注意事项:
@@ -15,42 +15,16 @@
         如通知成功获取cookie,则可以使用此签到脚本.
         获取Cookie后, 请将Cookie脚本禁用并移除主机名,以免产生不必要的MITM.
         脚本将在每天上午8点35执行,您可以修改执行时间.
-    Loon注意事项
-        MitM不要勾选MITM over HTTP/2,否则脚本无法正确执行,如必要请获取Cookie成功后再勾选
 /***********************
 Surge 远程脚本配置:
 ************************
 
 [Script]
-喜马拉雅签到任务 = type=cron,cronexp=35 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,timeout=15,wake-system=1
+喜马拉雅签到任务 = type=cron,cronexp=35 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/xmly.js,timeout=15,wake-system=1
 
 # 喜马拉雅获取Cookie
 「请在模块中添加,成功获取cookie后模块应去除勾选」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.sgmodule
-
-************************
-QuantumultX 远程脚本配置:
-************************
-
-[task_local]
-# 喜马拉雅签到+任务
-35 8 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, tag=喜马拉雅签到任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/ximalaya.png, enabled=true
-
-[rewrite_remote]
-# 喜马拉雅获取Cookie
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing通用签到cookie, update-interval=172800, opt-parser=false, enabled=true
-
-************************
-Loon  远程脚本配置:
-************************
-
-[Script]
-# 喜马拉雅签到+任务
-cron "35 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, tag=喜马拉雅签到
-
-[Plugin]
-# 喜马拉雅获取Cookie
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
+https://raw.githubusercontent.com/ClydeTime/Surge/main/Task/GetCookie.sgmodule
 
 */
 
@@ -116,7 +90,7 @@ async function main() {
     config.watch = $.getjson(name + "_watch", {})
     config.spec = $.getjson(name + "_spec", {})
     //config.gene = $.getjson(name + "_gene", {})
-    config.xm_cookie = `${typeof config['headers']['Cookie']=='undefined' ? config['he$.logaders']['cookie'] : config['headers']['Cookie']}`
+    config.xm_cookie = `${typeof config['headers']['Cookie']=='undefined' ? config['headers']['cookie'] : config['headers']['Cookie']}`
     let sign_flag = await xmlySign()
     
     if (sign_flag) {
@@ -846,30 +820,30 @@ async function handInGeneralTask(taskId){
             body = JSON.parse(response.body)
             if (body.ret == 0) {
                 if (body.data.status == 0) { 
-                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 217) {
+                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 336) {
                         config.spec.num += 1
                         config.spec.time = format(startTime)
                         $.setdata(JSON.stringify(config.spec), name + "_spec")
                         $.log("- 交还特殊任务成功, 获得奖励点数")
-                    } else {
+                    } /* else {
                         config.gene.num += 1
                         config.gene.time = format(startTime)
                         $.setdata(JSON.stringify(config.gene), name + "_gene")
                         $.log("- 交还通用任务成功, 获得10点奖励")
-                    }
+                    } */
                     return true
                 } else if (body.data.status == 1) {
-                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 217) {
+                    if ((taskId > 167 && taskId < 173) || taskId == 96 || taskId == 336) {
                         config.spec.num += 1
                         config.spec.time = format(startTime)
                         $.setdata(JSON.stringify(config.spec), name + "_spec")
                         $.log("- 此项特殊任务今日已交还")
-                    } else {
+                    } /* else {
                         config.gene.num += 1
                         config.gene.time = format(startTime)
                         $.setdata(JSON.stringify(config.gene), name + "_gene")
                         $.log("- 此项通用任务今日已交还")
-                    }
+                    } */
                     return true
                 } else if (body.data.status == -1) {
                     $.log("--- !!!此任务尚未完成,不能交还")
