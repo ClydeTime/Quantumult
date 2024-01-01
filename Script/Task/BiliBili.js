@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务
 
-更新时间: 2023-10-14
+更新时间: 2023-11-1
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -353,7 +353,7 @@ async function signBiliBili() {
 				`等级:当前${config.user.level_info.current_level}级 升满级最快需${Math.ceil((config.user.v6_exp)/65)}天`,
 		}
 		if (!flag) {
-			$.msg(notice.title, "❗️有未完成的任务", `请检查console查看具体原因, 可尝试手动执行完成任务\n` + notice.content)
+			$.msg(notice.title, "❗️有未完成的任务", notice.content)
 		} else {
 			$.msg(notice.title, "✅任务完成", notice.content)
 		}
