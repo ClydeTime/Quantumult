@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务
 
-更新时间: 2023-11-1
+更新时间: 2024-01-16
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -138,6 +138,9 @@ async function getCookie() {
 				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
 					$.log("- cookie未失效,无需更新")
 				} else {
+					if (original_config?.Settings) {
+						config.Settings = original_config.Settings
+					}
 					await setCookieToLocalStore(config, 2)
 				}
 			} else {
