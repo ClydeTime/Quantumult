@@ -1,7 +1,7 @@
 /*
-哔哩哔哩每日任务
+哔哩哔哩每日任务(V1.1)
 
-更新时间: 2024-01-16
+更新时间: 2024-03-18
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -19,7 +19,7 @@ QX, Surge, Loon说明：
 ************************
 1.获取cookie
 	①后台退出手机B站客户端的情况下, 重新打开APP进入主页
-	②通过网址「https://www.bilibili.com」登录（`暂不支持Loon`）
+	②通过网址「https://www.bilibili.com」登录,登录后当前网页登录状态失效
 如通知成功获取cookie, 则可以使用此签到脚本.
 脚本将在每天上午7点30执行.
 2.投币设置
@@ -52,46 +52,52 @@ const format = (ts, fmt = 'yyyy-MM-dd HH:mm:ss') => {
 	return $.time(fmt, ts);
 }
 
-const check = (key) =>
+const check = key =>
 	!config.hasOwnProperty(key) ||
 	!config[key].hasOwnProperty("time") ||
 	!(config[key]["num"] > 0) ||
-	format(new Date().toDateString()) > config[key].time;
+	format(new Date().toDateString()) > config[key].time
 
-const cookie2object = (cookie) => {
-	var obj = {};
-	var arr = cookie.split("; ");
+const string2object = cookie => {
+	let obj = {}
+	let arr = cookie.split("; ")
 	arr.forEach(function (val) {
-		var brr = val.split("=");
-		obj[brr[0]] = brr[1];
-	});
-	return obj;
+		let array = val.split("=")
+		obj[array[0]] = array[1]
+	})
+	return obj
 }
 
-const setCookieToLocalStore = async (config, times) => {
+const isFlag = exec_times => 
+	config.user.num === 0 ||
+	config.watch.num === 0 ||
+	config.share.num === 0 ||
+	(config.coins.num < exec_times * 10 && Math.floor(config.user.money) > 5)
+
+const persistentStore = async config => {
 	if (config.cookie.DedeUserID) {
-		var url = $request.url
+		const url = $request.url
 		config.key = url.match(/.*access_key=(.*?)&build/)?.[1]
 		config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
-		if (!config.key) {
-			let confirm_uri = await getConfirm_uri()
-			let envType = $.getEnv()
-			if (envType === 'Surge') {
-				await captureAccess_key(confirm_uri)
-				await getRecentRequests()
-			}else if (envType === 'Quantumult X') {
-				await getAccess_key(confirm_uri)
-			}//'Loon need to do'
+		if (!config.key) { //网页方式登录
+			let auth_code = "0", access_key = "0", login_confirm = false
+			auth_code = await getAuthCode()
+			if (auth_code !== "0") login_confirm = await loginConfirm(auth_code)
+			if (login_confirm) access_key = await getAccessKey(auth_code)
+			if (access_key !== "0") {
+				config.key = access_key
+			} else {
+				$.log("- 获取用户access_key失败!")
+				$.msg($.name, "🤒获取用户access_key失败!")
+			}
 		}
-		if (times === 1) {
-			$.setdata($.toStr(config), $.name + "_daily_bonus")
-				? $.msg($.name, "首次获取cookie", "🎉获取 cookie 成功")
-				: $.msg($.name, "首次获取cookie", "🤒获取 cookie 失败")
-		} else {
-			$.setdata($.toStr(config), $.name + "_daily_bonus")
-				? $.msg($.name, "检测到cookie已更新", "🎉更新 cookie 成功")
-				: $.msg($.name, "检测到cookie已更新", "🤒更新 cookie 失败")
-		}
+		const isFirstInsert = config.FirstInsert
+		delete config.FirstInsert
+		$.log($.toStr(config))
+		const successMessage = $.setItem($.name + "_daily_bonus", $.toStr(config))
+			? "🎉cookie存储成功"
+			: "🤒cookie存储失败"
+		$.msg($.name, isFirstInsert ? "首次获取cookie" : "检测到cookie已更新", successMessage)
 	} else {
 		$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
 	}
@@ -99,6 +105,7 @@ const setCookieToLocalStore = async (config, times) => {
 
 const $ = new Env("bilibili")
 const startTime = format()
+let cards = []
 let config = {
 	cookie: {},
 	cookieStr: "",
@@ -109,7 +116,6 @@ let config = {
 	coins: {},
 	score: {}
 }
-let cards = []
 let real_times //实际需要投币次数
 
 !(async () => {
@@ -124,27 +130,21 @@ let real_times //实际需要投币次数
 	.finally(() => $.done())
 
 async function getCookie() {
-	if ('object' == typeof $request) {
-		let Cookie
-		if (typeof $request.headers.cookie != 'undefined') {
-			Cookie = $request.headers.cookie
-		} else if (typeof $request.headers.Cookie != 'undefined') {
-			Cookie = $request.headers.Cookie
-		}
-		if (Boolean(Cookie)) {
-			config.cookie = cookie2object(Cookie)
-			original_config = $.getjson($.name + "_daily_bonus", {})
-			if (Boolean(original_config.cookie)) {
-				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
-					$.log("- cookie未失效,无需更新")
-				} else {
-					if (original_config?.Settings) {
-						config.Settings = original_config.Settings
-					}
-					await setCookieToLocalStore(config, 2)
-				}
+	if ("object" === typeof $request) {
+		let Cookie = $request.headers.cookie || $request.headers.Cookie
+		if (Cookie) {
+			config.cookie = string2object(Cookie)
+			const PStoreConfig = $.getItem($.name + "_daily_bonus", {})
+			if (PStoreConfig.cookie && PStoreConfig.cookie.bili_jct !== config.cookie.bili_jct) {
+				if (PStoreConfig.Settings) config.Settings = PStoreConfig.Settings // 同步boxjs数据
+				config.FirstInsert = false
+				$.log($.toStr(config))
+				await persistentStore(config)
+			} else if (PStoreConfig.cookie) {
+				$.log("- cookie未失效,无需更新")
 			} else {
-				await setCookieToLocalStore(config, 1)
+				config.FirstInsert = true
+				await persistentStore(config)
 			}
 		} else {
 			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
@@ -152,110 +152,10 @@ async function getCookie() {
 	}
 }
 
-async function getConfirm_uri() {
-	var sign = md5("api=http://link.acg.tv/forum.php" + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
-	const myRequest = {
-			url: "https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=http://link.acg.tv/forum.php&sign=" + sign,
-			headers: {
-				"cookie": config.cookieStr
-			}
-	}
-	return await $.http.get(myRequest).then(response => {
-		try {
-			const body = $.toObj(response.body)
-			if (body?.code === 0) {
-				return body?.data?.confirm_uri
-			} else {
-				$.log("- 查询失败")
-				$.log("- 失败原因 " + body?.message)
-			}
-		} catch (e) {
-			$.logErr(e, response)
-		}
-	}, reason => {
-		$.log("- 失败原因 " + $.toStr(reason))
-		return "error"
-	})
-}
-
-function captureAccess_key(confirm_uri) {
-	return new Promise((resolve, reject) => {
-		const myRequest = {
-				url: confirm_uri,
-				headers: {
-					"cookie": config.cookieStr
-				}
-		}
-		$.get(myRequest,(err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
-			}
-		})
-	})
-}
-
-function getAccess_key(confirm_uri) {
-	return new Promise((resolve, reject) => {
-		$.log("- 正在获取access_key, 请稍后")
-		const myRequest = {
-				url: confirm_uri,
-				headers: {
-					"cookie": config.cookieStr
-				},
-				opts: {
-					"redirection": false
-				}
-		}
-		$.get(myRequest,(err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const url = resp.headers.Location
-					if (url) {
-						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
-			}
-		})
-	})
-}
-
-function getRecentRequests() {
-	return new Promise((resolve, reject) => {
-		$.log("- 正在获取最近请求列表, 请稍后")
-		$httpAPI("GET","/v1/requests/recent",null,(result) => {
-			if (!result) reject(result)
-			else {
-				try {
-					const url = result.requests.find(request => request.URL.includes("access_key"))?.URL;
-					if (url) {
-						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
-					}
-				} catch (e) {
-					$.logErr(e, result)
-				} finally {
-					resolve()
-				}
-			}
-		})
-	})
-}
-
 async function signBiliBili() {
-	config = $.getjson($.name + "_daily_bonus", {})
+	config = $.getItem($.name + "_daily_bonus", {})
 	if (config.cookie && await me()) {
 		await queryStatus()
-		var flag = true
 		let exec_times = config.Settings?.exec	//用户设置投币次数
 		if (!Boolean(exec_times)) {
 			exec_times = 5
@@ -264,13 +164,12 @@ async function signBiliBili() {
 			exec_times = Number(exec_times)
 			real_times = Math.max(0, exec_times - (Number(config.coins.num) / 10))
 		}
-		
-		if (config.user.num < 1 || config.watch.num < 1 || config.share.num < 1 || (config.coins.num < exec_times * 10 && Math.floor(config.user.money) > 5)) flag = false
-		if (!flag){
+		let flag = isFlag(exec_times)
+		if (flag){
 			await dynamic()
 			if (cards.length) {
-				item = cards[Math.floor(Math.random() * cards.length)]
-				card = $.toObj(item.card)
+				let item = cards[Math.floor(Math.random() * cards.length)]
+				let card = $.toObj(item.card)
 				short_link = encodeURIComponent(card?.short_link_v2.replace(/\\\//g, '/'))
 				await watch(item.desc.rid, item.desc.bvid, card.cid)
 				await share(item.desc.rid, card.cid, short_link)
@@ -282,13 +181,13 @@ async function signBiliBili() {
 			if (real_times === 0){
 				$.log(`- 今日已完成 ${config.coins.time}`)
 			} else {
-				for (var i = 0; i < real_times; i ++) {
+				for (let i = 0; i < real_times; i ++) {
 					if (Math.floor(config.user.money) <= 5) {
 						$.log("- 硬币不足,投币失败")
 						break
 					} else {
 						await coin()
-						await $.wait(300) //减少频繁请求概率
+						$.wait(300) //减少频繁请求概率
 					}
 				}
 			}
@@ -308,141 +207,135 @@ async function signBiliBili() {
 			await vipScoreDress()
 			await vipWatchAccept()
 			//B币券每月尝试两次领取
-			if ($.time('dd') === '1' || $.time('dd') === '15') {
+			let day = $.time('dd')
+			if (day === '1' || day === '15') {
 				if (config.user.vipType === 2) {
 					await vipPrivilege(1)
-					await $.wait(800); //延迟执行，防止领劵延迟
-					let charge_mid = config.Settings?.charge_mid || config.user.mid
-					let bp_num = config.Settings?.bp_num || 5
+					$.wait(800) //延迟执行，防止领劵延迟
+					let charge_mid = config.Settings?.charge_mid || config.user.mid  //用户设置充电id
+					let bp_num = config.Settings?.bp_num || 5  //用户设置充电数量
 					await Charge(charge_mid, bp_num)//充电
-					await vipPrivilege(2)
-					await vipPrivilege(3)
-					await vipPrivilege(4)
-					await vipPrivilege(5)
-					await vipPrivilege(6)
-					await vipPrivilege(7)
-				}else if (config.user.vipType === 1) {
+					for (let i = 2; i <= 7; i++) await vipPrivilege(i)
+				} else if (config.user.vipType === 1) {
 					await vipPrivilege(6)
 					await vipPrivilege(7)
 				}
 			} 
 		}
-		flag =
-			config.user.num < 1 ||
-			config.watch.num < 1 ||
-			config.share.num < 1 ||
-			(config.coins.num < exec_times * 10 && Math.floor(config.user.money) > 5)	//硬币不足也算完成任务
-				? false
-				: true
+		flag = !isFlag(exec_times)
 		let title = `${$.name} 登录${config.user.num}/观看${config.watch.num}/分享${config.share.num}/投币${config.coins.num / 10}${flag ? "已完成" : "未完成"}`
 		$.log(`#### ${title}`)
-
-		let u = `登录时间: ${config.user.time || "暂无"}`
-		let w = `观看时间: ${config.watch.time || "暂无"}`
-		let s = `分享时间: ${config.share.time || "暂无"}`
-		let z = `投币时间: ${config.coins.time || "暂无"}`
-		$.log(`- ${u}`)
-		$.log(`- ${w}`)
-		$.log(`- ${s}`)
-		$.log(`- ${z}`)
-
-		//$.msg(title, `📅  ${startTime}`, `${u}\n${w}\n${s}`)
+		$.log(`- 登录时间: ${config.user.time || "暂无"}`)
+		$.log(`- 观看时间: ${config.watch.time || "暂无"}`)
+		$.log(`- 分享时间: ${config.share.time || "暂无"}`)
+		$.log(`- 投币时间: ${config.coins.time || "暂无"}`)
 
 		notice = {
 			title: `${$.name} [${config.user.uname}]`,
+			subTitle: `${flag ? "✅任务完成" : "❗️有未完成的任务"}`,
 			content:
 				`任务:登录(观看)${check("watch") ? "" : "+10exp"} 分享${check("share") ? "" : "+5exp"} 投币${check("coins") ? "" : "+50exp"}\n` +
 				`经验:当前${config.user.level_info.current_exp}/下级${config.user.level_info.next_exp}/满级28800\n` +
 				`等级:当前${config.user.level_info.current_level}级 升满级最快需${Math.ceil((config.user.v6_exp)/65)}天`,
 		}
-		if (!flag) {
-			$.msg(notice.title, "❗️有未完成的任务", notice.content)
-		} else {
-			$.msg(notice.title, "✅任务完成", notice.content)
-		}
+		$.msg(notice.title, notice.subTitle, notice.content)
 	} else {
 		$.msg(`${$.name} 任务失败`,`📅 ${startTime}`, "🤒请更新cookie")
 	}
 }
 
-function queryStatus() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 检查任务进行状况")
-		const myRequest = {
-				url: "https://api.bilibili.com/x/member/web/exp/reward",
-				headers: {
-					"cookie": config.cookieStr
-				}
-		}
-		$.get(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0) {
-						if (body.data.login) {
-							$.log("- 今日已登录")
-							config.user.num = (config.user.num == 0 ? 1 : config.user.num)
-							if (!config['user'].hasOwnProperty("time")) {
-								config.user.time = startTime
-							}
-						} else {
-							$.log("! 今日尚未登录")
-							config.user.num = 0
-						}
-						if (body.data.watch){
-							$.log("- 今日已观看")
-							config.watch.num = (config.watch.num == 0 || typeof config.watch.num=='undefined' ? 1 : config.watch.num)
-							if (!config['watch'].hasOwnProperty("time")) {
-								config.watch.time = startTime
-							}
-						} else {
-							$.log("! 今日尚未观看")
-							config.watch.num = 0
-						}
-						if (body.data.share){
-							$.log("- 今日已分享")
-							config.share.num = (config.share.num == 0 || typeof config.share.num=='undefined' ? 1 : config.share.num)
-							if (!config['share'].hasOwnProperty("time")) {
-								config.share.time = startTime
-							}
-						} else {
-							$.log("! 今日尚未分享")
-							config.share.num = 0
-						}
-						if (body.data.coins === 50){
-							$.log("- 今日已投币")
-							config.coins.num = 50
-							if (!config['coins'].hasOwnProperty("time")) {
-								config.coins.time = startTime
-							} else {
-								if (format(new Date().toDateString()) > config.coins.time) {
-									config.coins.time = startTime
-								}
-							}
-						} else if ((body.data.coins / 10) >= real_times) {
-							config.coins.time = startTime
-							$.log("- 今日投币已完成用户预期")
-							config.coins.num = body.data.coins
-						} else if (config.user.money <= 5) {
-							$.log("! 硬币数不足")
-							config.coins.num = body.data.coins
-						} else {
-							$.log("! 今日投币未完成")
-							config.coins.num = body.data.coins
-						}
-						$.setdata($.toStr(config), $.name + "_daily_bonus")
-					} else {
-						$.log("- 查询失败")
-						$.log("- 失败原因 " + body?.message)
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function getAuthCode() {
+	const body = {
+		appkey: "27eb53fc9058f8c3",
+		local_id: 0,
+		ts: $.getTimestamp()
+	}
+	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
+	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	body['sign'] = sign
+	const myRequest = {
+		url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+		},
+		body: $.queryStr(body)
+	}
+	return await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body.code === 0 && body.message === "0") {
+				$.log("- 获取auth_code成功")
+				return body.data.auth_code
+			} else {
+				$.log("- 获取auth_code失败")
+				return "0"
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+async function loginConfirm(auth_code) {
+	const body = {
+		auth_code,
+		build: 7082000,
+		csrf: config.cookie.bili_jct
+	}
+	const myRequest = {
+		url: "https://passport.bilibili.com/x/passport-tv-login/h5/qrcode/confirm",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+			'cookie': `DedeUserID=${config.cookie.DedeUserID}; SESSDATA=${config.cookie.SESSDATA}`
+		},
+		body: $.queryStr(body)
+	}
+	return await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body.code === 0 && body.message === "0") {
+				$.log("- 确认登录成功")
+				return true
+			} else {
+				$.log("- 确认登录失败")
+				return false
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+async function getAccessKey(auth_code) {
+	const body = {
+		appkey: "27eb53fc9058f8c3",
+		auth_code,
+		local_id: 0,
+		ts: $.getTimestamp()
+	}
+	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
+	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	body['sign'] = sign
+	const myRequest = {
+		url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+		},
+		body: $.queryStr(body)
+	}
+	return await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body.code === 0 && body.message === "0") {
+				$.log("- 获取access_key成功")
+				return body.data.access_token
+			} else {
+				$.log("- 获取access_key失败")
+				return "0"
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
@@ -451,15 +344,15 @@ async function watch(aid, bvid, cid) {
 	if (check("watch")) {
 		$.log(`- 正在观看(登录)(${bvid})`)
 		const body = {
-			aid: aid,
-			cid: cid,
-			bvid: bvid,
+			aid,
+			cid,
+			bvid,
 			mid: config.user.mid,
 			csrf: config.cookie.bili_jct,
 			played_time : 1,
 			real_played_time: 1,
 			realtime: 1,
-			start_ts: parseInt($.startTime / 1000),
+			start_ts: $.getTimestamp(),
 			type: 3,
 			dt: 2,
 			play_type: 0,
@@ -477,13 +370,13 @@ async function watch(aid, bvid, cid) {
 			},
 			body: $.queryStr(body)
 		}
-		await $.http.post(myRequest).then(response => {
+		await $.fetch(myRequest).then(response => {
 			const body = $.toObj(response.body)
 			if (body?.code === 0) {
 				$.log(`- 累计观看(登录)次数 ${(config.watch.num || 0) + 1}`)
 				config.user.num = (config.user.num || 0) + 1
 				config.watch.num = (config.watch.num || 0) + 1
-				$.setdata($.toStr(config), $.name + "_daily_bonus")
+				$.setItem($.name + "_daily_bonus", $.toStr(config))
 			} else {
 				$.log("- 观看失败, 失败原因: " + body?.message)
 			}
@@ -497,7 +390,7 @@ async function share(aid, cid, short_link) {
 	$.log("2️⃣ 分享任务")
 	if (check("share")) {
 		$.log("- 正在分享, aid=" + aid)
-		var body = {
+		const body = {
 			access_key: config.key.replace(/&actionKey=.*?&appkey=.*$/, ''),
 			actionKey: 'appkey',
 			appkey: '27eb53fc9058f8c3',
@@ -519,21 +412,21 @@ async function share(aid, cid, short_link) {
 			spm_id: 'main.ugc-video-detail.0.0',
 			statistics: '%7B%22appId%22%3A1%2C%22version%22%3A%227.27.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D',
 			success: 1,
-			ts: parseInt($.startTime / 1000)
+			ts: $.getTimestamp()
 		}
-		var sign = md5($.queryStr(body) + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+		const sign = md5($.queryStr(body) + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
 		body['sign'] = sign
 		const myRequest = {
 			url: 'https://api.bilibili.com/x/share/finish',
 			headers: {},
 			body: $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
 		}
-		await $.http.post(myRequest).then(async response => {
+		await $.fetch(myRequest).then(response => {
 			const body = $.toObj(response.body)
 			if (body?.code === 0) {
 				config.share.num = (config.share.num || 0) + 1
 				$.log("- 分享成功")
-				$.setdata($.toStr(config), $.name + "_daily_bonus")
+				$.setItem($.name + "_daily_bonus", $.toStr(config))
 			} else {
 				$.log("- 分享失败, 失败原因: " + body?.message)
 			}
@@ -546,59 +439,58 @@ async function share(aid, cid, short_link) {
 async function coin() {
 	if (config.coins.num >= 50) {
 		$.log(`- 今日已完成 ${config.coins.time}`)
-		return true
-	} else {
-		let like_uid_list = await getFavUid()
-		if (like_uid_list && like_uid_list.length > 0) {
-			let aid = await getFavAid(like_uid_list)
-			//$.log("即将投币的视频aid: " + aid)
-			if (aid !== 0) {
-				const body = {
-					aid: aid,
-					multiply: 1,
-					select_like: 0,
-					cross_domain: true,
-					csrf: config.cookie.bili_jct
-				}
-				const myRequest = {
-					url: "https://api.bilibili.com/x/web-interface/coin/add",
-					headers: {
-						'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-						'accept': 'application/json, text/plain, */*',
-						'content-type': 'application/x-www-form-urlencoded',
-						'origin': 'https://www.bilibili.com',
-						'referer': 'https://www.bilibili.com/video/BV1MT411G7fG?vd_source=1970993e2eff4af7be029aefcfa468b8',
-						'cookie': config.cookieStr
-					},
-					body: $.queryStr(body)
-				}
-				await $.http.post(myRequest).then(async response => {
-					try {
-						const body = $.toObj(response.body)
-						if (body.code === 0 && body.message == 0) {
-							$.log("- 投币成功")
-							config.user.money -= 1
-							config.coins.num += 10
-							$.setdata($.toStr(config), $.name + "_daily_bonus")
-						} else {
-							$.log("- 投币失败,失败原因 " + body.message)
-							config.coins.failures = (config.coins.failures == 0 || typeof config.coins.failures == 'undefined' ? 1 : config.coins.failures + 1)
-							$.setdata($.toStr(config), $.name + "_daily_bonus")
-							if (config.coins.failures < 11) {
-								$.log("- 正在重试...重试次数 " + (config.coins.failures - 1) + "(超过十次不再重试)")
-								await coin()
-							}
-						}
-					} catch (e) {
-						$.logErr(e, response)
-					}
-				})
-			} else {
-				$.log("获取随机投币视频失败")
+		return
+	}
+	let like_uid_list = await getFavUid()
+	if (like_uid_list && like_uid_list.length > 0) {
+		let aid = await getFavAid(like_uid_list)
+		//$.log("即将投币的视频aid: " + aid)
+		if (aid !== 0) {
+			const body = {
+				aid,
+				multiply: 1,
+				select_like: 0,
+				cross_domain: true,
+				csrf: config.cookie.bili_jct
 			}
+			const myRequest = {
+				url: "https://api.bilibili.com/x/web-interface/coin/add",
+				headers: {
+					'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+					'accept': 'application/json, text/plain, */*',
+					'content-type': 'application/x-www-form-urlencoded',
+					'origin': 'https://www.bilibili.com',
+					'referer': 'https://www.bilibili.com/video/BV1MT411G7fG?vd_source=1970993e2eff4af7be029aefcfa468b8',
+					'cookie': config.cookieStr
+				},
+				body: $.queryStr(body)
+			}
+			await $.fetch(myRequest).then(async response => {
+				try {
+					const body = $.toObj(response.body)
+					if (body.code === 0 && body.message === 0) {
+						$.log("- 投币成功")
+						config.user.money -= 1
+						config.coins.num += 10
+						$.setItem($.name + "_daily_bonus", $.toStr(config))
+					} else {
+						$.log("- 投币失败,失败原因 " + body.message)
+						config.coins.failures = (config.coins.failures === 0 || typeof config.coins.failures === 'undefined' ? 1 : config.coins.failures + 1)
+						$.setItem($.name + "_daily_bonus", $.toStr(config))
+						if (config.coins.failures < 11) {
+							$.log("- 正在重试...重试次数 " + (config.coins.failures - 1) + "(超过十次不再重试)")
+							await coin()
+						}
+					}
+				} catch (e) {
+					$.logErr(e, response)
+				}
+			})
 		} else {
-			$.log("获取随机关注用户列表失败")
+			$.log("获取随机投币视频失败")
 		}
+	} else {
+		$.log("获取随机关注用户列表失败")
 	}
 }
 
@@ -609,7 +501,7 @@ async function getFavUid() {
 			'cookie': config.cookieStr
 		}
 	}
-	return await $.http.get(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			let like_uid_list = new Array()
@@ -617,7 +509,7 @@ async function getFavUid() {
 				$.log("- 获取关注列表成功")
 				let like_list = body?.data?.list
 				//let $.name_list = new Array()
-				for (var i = 0; i < like_list.length; i ++) {
+				for (let i = 0; i < like_list.length; i ++) {
 					//$.name_list[i] = like_list[i].u$.name
 					like_uid_list[i] = like_list[i].mid
 				}
@@ -636,16 +528,16 @@ async function getFavUid() {
 
 async function getFavAid(arr) {
 	//$.log("- 获取关注列表中的随机视频")
-	var random_int = Math.floor((Math.random()*arr.length))
-	var random_mid = arr[random_int]
-	var wbiSigns = getWbiSigns({mid: random_mid})
+	let random_int = Math.floor((Math.random()*arr.length))
+	let random_mid = arr[random_int]
+	let wbiSigns = getWbiSigns({mid: random_mid})
 	const myRequest = {
 		url: `https://api.bilibili.com/x/space/wbi/arc/search?${wbiSigns}`,
 		headers: {
 			'cookie': config.cookieStr
 		}
 	}
-	return await $.http.get(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0) {
@@ -670,90 +562,76 @@ async function getFavAid(arr) {
 	})
 }
 
-function silver2coin() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 银瓜子兑换硬币任务")
-		const body = {
-			csrf: config.cookie.bili_jct,
-			csrf_token: config.cookie.bili_jct
-		}
-		const myRequest = {
-			url: "https://api.live.bilibili.com/xlive/revenue/v1/wallet/silver2coin",
-			headers: {
-				'cookie': config.cookieStr
-			},
-			body: $.queryStr(body)
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					let result = $.toObj(data)
-					let title = `${$.name} 银瓜子转硬币`
-					// 兑换成功
-					if (result && result.code == 0) {
-						let subTitle = `- ${result.message}`
-						let detail = `- 成功兑换: ${result.data.coin} 个硬币\n当前银瓜子: ${result.data.silver} , 当前金瓜子: ${result.data.gold}`
-						$.log(subTitle)
-						$.log(detail)
-						$.msg(title, subTitle, detail)
-					}
-					// 兑换中止（重复兑换&银瓜子不足）
-					else if (result && result.code == 403) {
-						let subTitle = "- 未成功兑换"
-						let detail = `- 原因: ${result.message}`
-						$.log(subTitle)
-						$.log(detail)
-						$.msg(title, subTitle, detail)
-					}
-					// 兑换失败
-					else {
-						let subTitle = "- 兑换失败"
-						let detail = `- 原因: ${result.message}`
-						$.log(subTitle)
-						$.log(detail)
-						$.msg(title, subTitle, detail)
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function silver2coin() {
+	$.log("#### 银瓜子兑换硬币任务")
+	const body = {
+		csrf: config.cookie.bili_jct,
+		csrf_token: config.cookie.bili_jct
+	}
+	const myRequest = {
+		url: "https://api.live.bilibili.com/xlive/revenue/v1/wallet/silver2coin",
+		headers: {
+			'cookie': config.cookieStr
+		},
+		body: $.queryStr(body)
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			let result = $.toObj(response.body)
+			let title = `${$.name} 银瓜子转硬币`
+			// 兑换成功
+			if (result && result.code === 0) {
+				let subTitle = `- ${result.message}`
+				let detail = `- 成功兑换: ${result.data.coin} 个硬币\n当前银瓜子: ${result.data.silver} , 当前金瓜子: ${result.data.gold}`
+				$.log(subTitle)
+				$.log(detail)
+				$.msg(title, subTitle, detail)
 			}
-		})
+			// 兑换中止（重复兑换&银瓜子不足）
+			else if (result && result.code === 403) {
+				let subTitle = "- 未成功兑换"
+				let detail = `- 原因: ${result.message}`
+				$.log(subTitle)
+				$.log(detail)
+				$.msg(title, subTitle, detail)
+			}
+			// 兑换失败
+			else {
+				let subTitle = "- 兑换失败"
+				let detail = `- 原因: ${result.message}`
+				$.log(subTitle)
+				$.log(detail)
+				$.msg(title, subTitle, detail)
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function liveSign() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 直播签到任务")
-		const myRequest = {
-			url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
-			headers: {
-				'cookie': config.cookieStr
-			}
+async function liveSign() {
+	$.log("#### 直播签到任务")
+	const myRequest = {
+		url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
+		headers: {
+			'cookie': config.cookieStr
 		}
-		$.get(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					let body = $.toObj(data)
-					if (body?.code === 0) {
-						$.log("- 签到成功")
-						$.log(`签到奖励:${body.data.text},连续签到${body.data.hadSignDays}天`)
-					} else if (body && body.code == 1011040){
-						$.log("- 今日已完成")
-					} else {
-						$.log("- 签到失败")
-						$.log("- 失败原因 " + body?.message)
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			let body = $.toObj(response.body)
+			if (body?.code === 0) {
+				$.log("- 签到成功")
+				$.log(`签到奖励:${body.data.text},连续签到${body.data.hadSignDays}天`)
+			} else if (body && body.code === 1011040){
+				$.log("- 今日已完成")
+			} else {
+				$.log("- 签到失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
@@ -765,25 +643,26 @@ async function vipScoreSign() {
 		if (check("score")) {
 			const myRequest = {
 				url: "https://api.bilibili.com/pgc/activity/score/task/sign",
+				method: "POST",
 				headers: {
 					'Referer': 'https://big.bilibili.com/mobile/bigPoint/task',
 					'cookie': config.cookieStr
 				}
 			}
-			await $.http.post(myRequest).then(response => {
+			await $.fetch(myRequest).then(response => {
 				try {
 					const body = $.toObj(response.body)
 					if (body?.code === 0 && body?.message === "success") {
 						$.log("- 签到成功")
 						config.score.time = startTime
 						config.score.num = 1
-						$.setdata($.toStr(config), $.name + "_daily_bonus")
+						$.setItem($.name + "_daily_bonus", $.toStr(config))
 					} else {
 						$.log("- 签到失败")
 						$.log("- 失败原因 " + body?.message)
 					}
 				} catch (e) {
-					$.logErr(e, resp)
+					$.logErr(e, response)
 				}
 			})
 		} else {
@@ -792,313 +671,266 @@ async function vipScoreSign() {
 	}
 }
 
-function vipExtraEx() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 大会员每日额外经验值")
-		const body = {
-			csrf: config.cookie.bili_jct,
-			mobi_app: 'iphone',
-			platform:'ios',
-			appkey:'27eb53fc9058f8c3',
-			access_key:`${config.key}`
-		}
-		const myRequest = {
-			url: "https://api.bilibili.com/x/vip/experience/add",
-			headers: {
-				'Accept:' : `application/json, text/plain, */*`,
-				'App-key': 'iphone'
-			},
-			body: $.queryStr(body)
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code == 0 && body?.message == "0") {
-						$.log("- 成功获得10经验值")
-						return true
-					} else {
-						$.log("- 每日额外经验任务失败")
-						$.log("- 失败原因 " + body?.message)
-						return false
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipExtraEx() {
+	$.log("#### 大会员每日额外经验值")
+	const body = {
+		csrf: config.cookie.bili_jct,
+		ts: $.getTimestamp(),
+		buvid: config.cookie.Buvid,
+		mobi_app: 'iphone',
+		platform:'ios',
+		appkey:'27eb53fc9058f8c3',
+		access_key:`${config.key}`
+	}
+	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
+	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	body['sign'] = sign
+	const myRequest = {
+		url: "https://api.bilibili.com/x/vip/experience/add",
+		headers: {
+			'accept': 'application/json, text/plain, */*',
+			'app-key': 'iphone'
+		},
+		body: $.queryStr(body)
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "0") {
+				$.log("- 成功获得10经验值")
+			} else {
+				$.log("- 每日额外经验任务失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipScoreGo() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 大会员浏览会员购10s任务")
-		const myRequest = {
-			url: "https://show.bilibili.com/api/activity/fire/common/event/dispatch",
-			headers: {
-				'Content-Type' : `application/json`,
-				'Cookie': config.cookieStr
-			},
-			body: `{"eventId":"hevent_oy4b7h3epeb"}`
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code == 0 && body?.message == "SUCCESS") {
-						$.log("- 成功获得10点大积分")
-						return true
-					} else {
-						$.log("- 浏览会员购任务失败")
-						$.log("- 失败原因 " + body?.message)
-						return false
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipScoreGo() {
+	$.log("#### 大会员浏览会员购10s任务")
+	const myRequest = {
+		url: "https://show.bilibili.com/api/activity/fire/common/event/dispatch",
+		headers: {
+			'Content-Type' : `application/json`,
+			'Cookie': config.cookieStr
+		},
+		body: `{"eventId":"hevent_oy4b7h3epeb"}`
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "SUCCESS") {
+				$.log("- 成功获得10点大积分")
+			} else {
+				$.log("- 浏览会员购任务失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipScoreFan() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 大会员浏览追番频道10s任务")
-		const myRequest = {
-			url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=jp_channel&sign=768d600feba34e6d1109e4157c0f0c5f&task_sign=557D1ACE13E9E81393259FFB621D6D0E`,
-			headers: {}
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0 && body?.message === "success") {
-						$.log("- 成功获得10点大积分")
-					} else {
-						$.log("- 浏览追番频道任务失败")
-						$.log("- 失败原因 " + body?.message)
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipScoreFan() {
+	$.log("#### 大会员浏览追番频道10s任务")
+	const myRequest = {
+		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=jp_channel&sign=768d600feba34e6d1109e4157c0f0c5f&task_sign=557D1ACE13E9E81393259FFB621D6D0E`,
+		method: "POST",
+		headers: {}
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				$.log("- 成功获得10点大积分")
+			} else {
+				$.log("- 浏览追番频道任务失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipScoreMovie() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 大会员浏览影视频道10s任务")
-		const myRequest = {
-			url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=tv_channel&sign=09ece1c295cb86d74778b93c59c0da3a&task_sign=B7DA5FAE25C39F53C62C03076CF2878B`,
-			headers: {}
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0 && body?.message === "success") {
-						$.log("- 成功获得10点大积分")
-						return true
-					} else {
-						$.log("- 浏览影视频道任务失败")
-						$.log("- 失败原因 " + body?.message)
-						return false
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipScoreMovie() {
+	$.log("#### 大会员浏览影视频道10s任务")
+	const myRequest = {
+		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=tv_channel&sign=09ece1c295cb86d74778b93c59c0da3a&task_sign=B7DA5FAE25C39F53C62C03076CF2878B`,
+		method: "POST",
+		headers: {}
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				$.log("- 成功获得10点大积分")
+			} else {
+				$.log("- 浏览影视频道任务失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipScoreDress() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 大会员浏览装扮商城主页任务")
-		const body = {
-			csrf: config.cookie.bili_jct,
-			ts: parseInt($.startTime / 1000),
-			taskCode: 'dress-view',
-			access_key: config.key
-		}
-		const myRequest = {
-			url: 'https://api.bilibili.com/pgc/activity/score/task/complete/v2',
-			headers: {},
-			body: $.queryStr(body)
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0 && body?.message === "success") {
-						$.log("- 成功获得10点大积分")
-					} else {
-						$.log("- 浏览装扮商城主页任务失败")
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipScoreDress() {
+	$.log("#### 大会员浏览装扮商城主页任务")
+	const body = {
+		csrf: config.cookie.bili_jct,
+		ts: $.getTimestamp(),
+		taskCode: 'dress-view',
+		access_key: config.key
+	}
+	const myRequest = {
+		url: 'https://api.bilibili.com/pgc/activity/score/task/complete/v2',
+		headers: {},
+		body: $.queryStr(body)
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				$.log("- 成功获得10点大积分")
+			} else {
+				$.log("- 浏览装扮商城主页任务失败")
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipWatchAccept() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 接取大会员观看正片30min任务")
-		const myRequest = {
-			url: 'https://api.bilibili.com/pgc/activity/score/task/receive',
-			headers: {
-				'Content-Type' : `application/json`,
-				'Cookie' : `SESSDATA=${config.cookie.SESSDATA}`,
-				'Referer' : `https://big.bilibili.com/mobile/bigPoint/task`
-			},
-			body: `{"taskCode":"ogvwatch"}`
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0 && body?.message === "success") {
-						$.log("- 大会员观看正片任务接取成功, 需自行观看")
-					} else {
-						$.log("- 大会员观看正片任务接取失败")
-						$.log("- 失败原因 " + body?.message)
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
-				}
+async function vipWatchAccept() {
+	$.log("#### 接取大会员观看正片30min任务")
+	const myRequest = {
+		url: 'https://api.bilibili.com/pgc/activity/score/task/receive',
+		headers: {
+			'Content-Type' : `application/json`,
+			'Cookie' : `SESSDATA=${config.cookie.SESSDATA}`,
+			'Referer' : `https://big.bilibili.com/mobile/bigPoint/task`
+		},
+		body: `{"taskCode":"ogvwatch"}`
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				$.log("- 大会员观看正片任务接取成功, 需自行观看")
+			} else {
+				$.log("- 大会员观看正片任务接取失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function vipPrivilege(type) {
-	return new Promise((resolve, reject) => {
-		$.log("#### 领取大会员月度福利")
-		const body = {
-			csrf: config.cookie.bili_jct,
-			type: type
-		}
-		const myRequest = {
-			url: 'https://api.bilibili.com/x/vip/privilege/receive',
-			headers: {
-				'Cookie': config.cookieStr
-			},
-			body: $.queryStr(body)
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0) {
-						if (type === 1) {
-							$.log("- 领取年度大会员每月B币券成功")
-							$.msg("年度大会员月度福利", "B币券", "🎉🎉🎉领取成功")
-						}else if (type === 2) {
-							$.log("- 领取年度大会员每月会员购优惠券成功")
-						}else if (type === 3) {
-							$.log("- 领取年度大会员每月漫画福利券成功")
-						}else if (type === 4) {
-							$.log("- 领取年度大会员每月会员购包邮券成功")
-						}else if (type === 5) {
-							$.log("- 领取年度大会员每月漫画商城优惠券成功")
-						}else if (type === 6) {
-							$.log("- 领取大会员每月装扮体验卡成功")
-						}else if (type === 7) {
-							$.log("- 领取大会员每月课堂优惠券成功")
-						}
-					} else {
-						$.log("- 领取大会员每月福利失败, 福利编码为" + type)
-						$.log("- 失败原因 " + body?.message)
-						if (type === 1) {
-							$.msg("年度大会员月度福利", "B币券领取失败", "失败原因为: " + body?.message)
-						}
-						//其他福利没什么用,失败也无需单独通知
-					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
+async function vipPrivilege(type) {
+	$.log("#### 领取大会员月度福利")
+	const body = {
+		csrf: config.cookie.bili_jct,
+		type
+	}
+	const myRequest = {
+		url: 'https://api.bilibili.com/x/vip/privilege/receive',
+		headers: {
+			'Cookie': config.cookieStr
+		},
+		body: $.queryStr(body)
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0) {
+				switch (type) {
+					case 1:
+						$.log("- 领取年度大会员每月B币券成功")
+						$.msg("年度大会员月度福利", "B币券", "🎉🎉🎉领取成功")
+						break
+					case 2:
+						$.log("- 领取年度大会员每月会员购优惠券成功")
+						break
+					case 3:
+						$.log("- 领取年度大会员每月漫画福利券成功")
+						break
+					case 4:
+						$.log("- 领取年度大会员每月会员购包邮券成功")
+						break
+					case 5:
+						$.log("- 领取年度大会员每月漫画商城优惠券成功")
+						break
+					case 6:
+						$.log("- 领取大会员每月装扮体验卡成功")
+						break
+					case 7:
+						$.log("- 领取大会员每月课堂优惠券成功")
+						break
+					default:
+						break
 				}
+			} else {
+				$.log("- 领取大会员每月福利失败, 福利编码为" + type)
+				$.log("- 失败原因 " + body?.message)
+				if (type === 1) {
+					$.msg("年度大会员月度福利", "B币券领取失败", "失败原因为: " + body?.message)
+				}
+				//其他福利没什么用,失败也无需单独通知
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function Charge(mid, bp_num) {
-	return new Promise((resolve, reject) => {
-		$.log("#### B币券自动充电")
-		const body = {
-			bp_num: bp_num,
-			is_bp_remains_prior: true,
-			up_mid: mid,
-			otype: 'up',
-			oid: mid,
-			csrf: config.cookie.bili_jct
-		}
-		const myRequest = {
-			url: 'https://api.bilibili.com/x/ugcpay/web/v2/trade/elec/pay/quick',
-			headers: {
-				'Cookie': config.cookieStr
-			},
-			body: $.queryStr(body)
-		}
-		$.post(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.code === 0) {
-						if (body?.data?.status === 4) {
-							if (mid === config.user.mid) {
-								$.log("- 为自己充电成功")
-							} else {
-								$.log(`- 为用户id为${mid}的用户充电成功`)
-							}
-						} else if (body?.data?.status === -4) {
-							$.log("- 充电失败, B币不足")
-						} else {
-							$.log("- 充电失败")
-							$.log("- 失败原因 " + body?.message)
-						}
-						return true
+async function Charge(mid, bp_num) {
+	$.log("#### B币券自动充电")
+	const body = {
+		bp_num,
+		is_bp_remains_prior: true,
+		up_mid: mid,
+		otype: 'up',
+		oid: mid,
+		csrf: config.cookie.bili_jct
+	}
+	const myRequest = {
+		url: 'https://api.bilibili.com/x/ugcpay/web/v2/trade/elec/pay/quick',
+		headers: {
+			'Cookie': config.cookieStr
+		},
+		body: $.queryStr(body)
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0) {
+				if (body?.data?.status === 4) {
+					if (mid === config.user.mid) {
+						$.log("- 为自己充电成功")
 					} else {
-						$.log("- 充电失败")
-						$.log("- 失败原因 " + body?.message)
-						return false
+						$.log(`- 为用户id为${mid}的用户充电成功`)
 					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
+				} else if (body?.data?.status === -4) {
+					$.log("- 充电失败, B币不足")
+				} else {
+					$.log("- 充电失败")
+					$.log("- 失败原因 " + body?.message)
 				}
+			} else {
+				$.log("- 充电失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
-function me() {
+async function me() {
 	$.log("#### 用户信息")
 	const myRequest = {
 		url: 'https://api.bilibili.com/x/web-interface/nav',
@@ -1106,12 +938,12 @@ function me() {
 			"cookie": config.cookieStr
 		}
 	}
-	return $.http.get(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code) {
 				$.log("- ❌❌获得用户信息失败(请更新cookie)")
-				$.setdata(null, $.name + "_daily_bonus")
+				$.setItem($.name + "_daily_bonus", null)
 				return false
 			} else {
 				$.log("- 🎉cookie有效任务即将开始🎉")
@@ -1121,7 +953,7 @@ function me() {
 				} else {
 					config.user.num = (config.user.num || 0) + 1
 				}
-				$.setdata($.toStr(config), $.name + "_daily_bonus")
+				$.setItem($.name + "_daily_bonus", $.toStr(config))
 
 				config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp
 				config.user.next_day = Math.ceil(config.user.mext_exp / 15)
@@ -1164,35 +996,99 @@ function me() {
 
 }
 
-function dynamic() {
-	return new Promise((resolve, reject) => {
-		$.log("#### 获取首页视频")
-		const myRequest = {
-			url: `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=${config.cookie.DedeUserID}&type_list=8&from=&platform=web`,
+async function queryStatus() {
+	$.log("#### 检查任务进行状况")
+	const myRequest = {
+			url: "https://api.bilibili.com/x/member/web/exp/reward",
 			headers: {
 				"cookie": config.cookieStr
 			}
-		}
-		$.get(myRequest, (err, resp, data) => {
-			if (err) reject(err)
-			else {
-				try {
-					const body = $.toObj(data)
-					if (body?.data?.cards) {
-						cards = body.data.cards
-						const { user, watch, share } = config
-						user.time = watch.time = share.time = startTime
-						$.log("- 获取视频动态成功")
-					} else {
-						$.log("- 获取视频动态失败")
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0) {
+				if (body.data.login) {
+					$.log("- 今日已登录")
+					config.user.num = (config.user.num === 0 ? 1 : config.user.num)
+					if (!config['user'].hasOwnProperty("time")) {
+						config.user.time = startTime
 					}
-				} catch (e) {
-					$.logErr(e, resp)
-				} finally {
-					resolve()
+				} else {
+					$.log("! 今日尚未登录")
+					config.user.num = 0
 				}
+				if (body.data.watch){
+					$.log("- 今日已观看")
+					config.watch.num = (config.watch.num === 0 || typeof config.watch.num === 'undefined' ? 1 : config.watch.num)
+					if (!config['watch'].hasOwnProperty("time")) {
+						config.watch.time = startTime
+					}
+				} else {
+					$.log("! 今日尚未观看")
+					config.watch.num = 0
+				}
+				if (body.data.share){
+					$.log("- 今日已分享")
+					config.share.num = (config.share.num === 0 || typeof config.share.num === 'undefined' ? 1 : config.share.num)
+					if (!config['share'].hasOwnProperty("time")) {
+						config.share.time = startTime
+					}
+				} else {
+					$.log("! 今日尚未分享")
+					config.share.num = 0
+				}
+				if (body.data.coins === 50){
+					$.log("- 今日已投币")
+					if (!config['coins'].hasOwnProperty("time")) {
+						config.coins.time = startTime
+					} else {
+						if (format(new Date().toDateString()) > config.coins.time) {
+							config.coins.time = startTime
+						}
+					}
+				} else if ((body.data.coins / 10) >= real_times) {
+					config.coins.time = startTime
+					$.log("- 已完成用户设置的投币量")
+				} else if (config.user.money <= 5) {
+					$.log("! 硬币数不足")
+				} else {
+					$.log("! 今日投币未完成")
+				}
+				config.coins.num = body.data.coins
+				$.setItem($.name + "_daily_bonus", $.toStr(config))
+			} else {
+				$.log("- 查询失败")
+				$.log("- 失败原因 " + body?.message)
 			}
-		})
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+async function dynamic() {
+	$.log("#### 获取首页视频")
+	const myRequest = {
+		url: `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=${config.cookie.DedeUserID}&type_list=8&from=&platform=web`,
+		headers: {
+			"cookie": config.cookieStr
+		}
+	}
+	await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.data?.cards) {
+				cards = body.data.cards
+				const { user, watch, share } = config
+				user.time = watch.time = share.time = startTime
+				$.log("- 获取视频动态成功")
+			} else {
+				$.log("- 获取视频动态失败")
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
 	})
 }
 
@@ -1206,4 +1102,4 @@ function md5(r){function n(r,n){return r<<n|r>>>32-n}function t(r,n){var t,o,e,u
 // prettier-ignore
 // https://github.com/chavyleung/scripts/blob/master/Env.min.js
 
-function Env(t,e){class s{constructor(t){this.env=t}send(t,e="GET"){t="string"==typeof t?{url:t}:t;let s=this.get;return"POST"===e&&(s=this.post),new Promise((e,a)=>{s.call(this,t,(t,s,r)=>{t?a(t):e(s)})})}get(t){return this.send.call(this.env,t)}post(t){return this.send.call(this.env,t,"POST")}}return new class{constructor(t,e){this.name=t,this.http=new s(this),this.data=null,this.dataFile="box.dat",this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=(new Date).getTime(),Object.assign(this,e),this.log("",`\ud83d\udd14${this.name}, \u5f00\u59cb!`)}getEnv(){return"undefined"!=typeof $environment&&$environment["surge-version"]?"Surge":"undefined"!=typeof $environment&&$environment["stash-version"]?"Stash":"undefined"!=typeof $task?"Quantumult X":"undefined"!=typeof $loon?"Loon":"undefined"!=typeof $rocket?"Shadowrocket":void 0}isQuanX(){return"Quantumult X"===this.getEnv()}isSurge(){return"Surge"===this.getEnv()}isLoon(){return"Loon"===this.getEnv()}isShadowrocket(){return"Shadowrocket"===this.getEnv()}isStash(){return"Stash"===this.getEnv()}toObj(t,e=null){try{return JSON.parse(t)}catch{return e}}toStr(t,e=null){try{return JSON.stringify(t)}catch{return e}}getjson(t,e){let s=e;const a=this.getdata(t);if(a)try{s=JSON.parse(this.getdata(t))}catch{}return s}setjson(t,e){try{return this.setdata(JSON.stringify(t),e)}catch{return!1}}lodash_get(t,e,s){const a=e.replace(/\[(\d+)\]/g,".$1").split(".");let r=t;for(const t of a)if(r=Object(r)[t],void 0===r)return s;return r}lodash_set(t,e,s){return Object(t)!==t?t:(Array.isArray(e)||(e=e.toString().match(/[^.[\]]+/g)||[]),e.slice(0,-1).reduce((t,s,a)=>Object(t[s])===t[s]?t[s]:t[s]=Math.abs(e[a+1])>>0==+e[a+1]?[]:{},t)[e[e.length-1]]=s,t)}getdata(t){let e=this.getval(t);if(/^@/.test(t)){const[,s,a]=/^@(.*?)\.(.*?)$/.exec(t),r=s?this.getval(s):"";if(r)try{const t=JSON.parse(r);e=t?this.lodash_get(t,a,""):e}catch(t){e=""}}return e}setdata(t,e){let s=!1;if(/^@/.test(e)){const[,a,r]=/^@(.*?)\.(.*?)$/.exec(e),n=this.getval(a),o=a?"null"===n?null:n||"{}":"{}";try{const e=JSON.parse(o);this.lodash_set(e,r,t),s=this.setval(JSON.stringify(e),a)}catch(e){const n={};this.lodash_set(n,r,t),s=this.setval(JSON.stringify(n),a)}}else s=this.setval(t,e);return s}getval(t){switch(this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":return $persistentStore.read(t);case"Quantumult X":return $prefs.valueForKey(t);default:return this.data&&this.data[t]||null}}setval(t,e){switch(this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":return $persistentStore.write(t,e);case"Quantumult X":return $prefs.setValueForKey(t,e);default:return this.data&&this.data[e]||null}}get(t,e=(()=>{})){switch(t.headers&&(delete t.headers["Content-Type"],delete t.headers["Content-Length"],delete t.headers["content-type"],delete t.headers["content-length"]),this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:this.isSurge()&&this.isNeedRewrite&&(t.headers=t.headers||{},Object.assign(t.headers,{"X-Surge-Skip-Scripting":!1})),$httpClient.get(t,(t,s,a)=>{!t&&s&&(s.body=a,s.statusCode=s.status?s.status:s.statusCode,s.status=s.statusCode),e(t,s,a)});break;case"Quantumult X":this.isNeedRewrite&&(t.opts=t.opts||{},Object.assign(t.opts,{hints:!1})),$task.fetch(t).then(t=>{const{statusCode:s,statusCode:a,headers:r,body:n,bodyBytes:o}=t;e(null,{status:s,statusCode:a,headers:r,body:n,bodyBytes:o},n,o)},t=>e(t&&t.error||"UndefinedError"))}}post(t,e=(()=>{})){const s=t.method?t.method.toLocaleLowerCase():"post";switch(t.body&&t.headers&&!t.headers["Content-Type"]&&!t.headers["content-type"]&&(t.headers["content-type"]="application/x-www-form-urlencoded"),t.headers&&(delete t.headers["Content-Length"],delete t.headers["content-length"]),this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:this.isSurge()&&this.isNeedRewrite&&(t.headers=t.headers||{},Object.assign(t.headers,{"X-Surge-Skip-Scripting":!1})),$httpClient[s](t,(t,s,a)=>{!t&&s&&(s.body=a,s.statusCode=s.status?s.status:s.statusCode,s.status=s.statusCode),e(t,s,a)});break;case"Quantumult X":t.method=s,this.isNeedRewrite&&(t.opts=t.opts||{},Object.assign(t.opts,{hints:!1})),$task.fetch(t).then(t=>{const{statusCode:s,statusCode:a,headers:r,body:n,bodyBytes:o}=t;e(null,{status:s,statusCode:a,headers:r,body:n,bodyBytes:o},n,o)},t=>e(t&&t.error||"UndefinedError"))}}time(t,e=null){const s=e?new Date(e):new Date;let a={"M+":s.getMonth()+1,"d+":s.getDate(),"H+":s.getHours(),"m+":s.getMinutes(),"s+":s.getSeconds(),"q+":Math.floor((s.getMonth()+3)/3),S:s.getMilliseconds()};/(y+)/.test(t)&&(t=t.replace(RegExp.$1,(s.getFullYear()+"").substr(4-RegExp.$1.length)));for(let e in a)new RegExp("("+e+")").test(t)&&(t=t.replace(RegExp.$1,1==RegExp.$1.length?a[e]:("00"+a[e]).substr((""+a[e]).length)));return t}queryStr(t){let e="";for(const s in t){let a=t[s];null!=a&&""!==a&&("object"==typeof a&&(a=JSON.stringify(a)),e+=`${s}=${a}&`)}return e=e.substring(0,e.length-1),e}msg(e=t,s="",a="",r){const n=t=>{switch(typeof t){case void 0:return t;case"string":switch(this.getEnv()){case"Surge":case"Stash":default:return{url:t};case"Loon":case"Shadowrocket":return t;case"Quantumult X":return{"open-url":t}}case"object":switch(this.getEnv()){case"Surge":case"Stash":case"Shadowrocket":default:{let e=t.url||t.openUrl||t["open-url"];return{url:e}}case"Loon":{let e=t.openUrl||t.url||t["open-url"],s=t.mediaUrl||t["media-url"];return{openUrl:e,mediaUrl:s}}case"Quantumult X":{let e=t["open-url"]||t.url||t.openUrl,s=t["media-url"]||t.mediaUrl,a=t["update-pasteboard"]||t.updatePasteboard;return{"open-url":e,"media-url":s,"update-pasteboard":a}}}default:return}};if(!this.isMute)switch(this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:$notification.post(e,s,a,n(r));break;case"Quantumult X":$notify(e,s,a,n(r))}}log(...t){t.length>0&&(this.logs=[...this.logs,...t]),console.log(t.join(this.logSeparator))}logErr(t,e=""){switch(this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":case"Quantumult X":default:this.log("",`\u2757\ufe0f${this.name}, \u9519\u8bef!`,e,t)}}wait(t){return new Promise(e=>setTimeout(e,t))}done(t={}){const e=(new Date).getTime(),s=(e-this.startTime)/1e3;switch(this.log("",`\ud83d\udd14${this.name}, \u7ed3\u675f! \ud83d\udd5b ${s} \u79d2`),this.log(),this.getEnv()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":case"Quantumult X":default:$done(t)}}}(t,e)}
+function Env(a,b){var c=Math.floor;return new class{constructor(a,b){this.name=a,this.version="1.7.4",this.data=null,this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=new Date().getTime(),Object.assign(this,b),this.log("",`🔔${this.name}, 开始!`)}platform(){return"undefined"!=typeof $environment&&$environment["surge-version"]?"Surge":"undefined"!=typeof $environment&&$environment["stash-version"]?"Stash":"undefined"==typeof module||!module.exports?"undefined"==typeof $task?"undefined"==typeof $loon?"undefined"==typeof $rocket?"undefined"==typeof Egern?void 0:"Egern":"Shadowrocket":"Loon":"Quantumult X":"Node.js"}isQuanX(){return"Quantumult X"===this.platform()}isSurge(){return"Surge"===this.platform()}isLoon(){return"Loon"===this.platform()}isShadowrocket(){return"Shadowrocket"===this.platform()}isStash(){return"Stash"===this.platform()}isEgern(){return"Egern"===this.platform()}toObj(a,b=null){try{return JSON.parse(a)}catch{return b}}toStr(a,b=null){try{return JSON.stringify(a)}catch{return b}}lodash_get(a={},b="",c=void 0){Array.isArray(b)||(b=this.toPath(b));const d=b.reduce((a,b)=>Object(a)[b],a);return d===void 0?c:d}lodash_set(a={},b="",c){return Array.isArray(b)||(b=this.toPath(b)),b.slice(0,-1).reduce((a,c,d)=>Object(a[c])===a[c]?a[c]:a[c]=/^\d+$/.test(b[d+1])?[]:{},a)[b[b.length-1]]=c,a}toPath(a){return a.replace(/\[(\d+)\]/g,".$1").split(".").filter(Boolean)}getItem(a=new String,b=null){let c=b;switch(a.startsWith("@")){case!0:const{key:b,path:d}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=b;let e=this.getItem(a,{});"object"!=typeof e&&(e={}),c=this.lodash_get(e,d);try{c=JSON.parse(c)}catch(a){}break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.read(a);break;case"Quantumult X":c=$prefs.valueForKey(a);break;default:c=this.data?.[a]||null}try{c=JSON.parse(c)}catch(a){}}return c??b}setItem(a=new String,b=new String){let c=!1;switch(typeof b){case"object":b=JSON.stringify(b);break;default:b=b+""}switch(a.startsWith("@")){case!0:const{key:d,path:e}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=d;let f=this.getItem(a,{});"object"!=typeof f&&(f={}),this.lodash_set(f,e,b),c=this.setItem(a,f);break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.write(b,a);break;case"Quantumult X":c=$prefs.setValueForKey(b,a);break;default:c=this.data?.[a]||null}}return c}async fetch(a={},b={}){switch(a.constructor){case Object:a={...a,...b};break;case String:a={url:a,...b}}a.method||(a.method=a.body??a.bodyBytes?"POST":"GET"),delete a.headers?.Host,delete a.headers?.[":authority"],delete a.headers?.["Content-Length"],delete a.headers?.["content-length"];const c=a.method.toLocaleLowerCase();switch(this.platform()){case"Loon":case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:return a.policy&&(this.isLoon()&&(a.node=a.policy),this.isStash()&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy))),a.followRedirect&&((this.isSurge()||this.isLoon())&&(a["auto-redirect"]=!1),this.isQuanX()&&(a.opts?a.opts.redirection=!1:a.opts={redirection:!1})),a.bodyBytes&&!a.body&&(a.body=a.bodyBytes,delete a.bodyBytes),await new Promise((b,d)=>{$httpClient[c](a,(c,e,f)=>{c?d(c):(e.ok=/^2\d\d$/.test(e.status),e.statusCode=e.status,f&&(e.body=f,!0==a["binary-mode"]&&(e.bodyBytes=f)),b(e))})});case"Quantumult X":return a.policy&&this.lodash_set(a,"opts.policy",a.policy),"boolean"==typeof a["auto-redirect"]&&this.lodash_set(a,"opts.redirection",a["auto-redirect"]),a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete object.body):a.body&&delete a.bodyBytes,await $task.fetch(a).then(a=>(a.ok=/^2\d\d$/.test(a.statusCode),a.status=a.statusCode,a),a=>Promise.reject(a.error))}}time(a,b=null){const d=b?new Date(b):new Date;let e={"M+":d.getMonth()+1,"d+":d.getDate(),"H+":d.getHours(),"m+":d.getMinutes(),"s+":d.getSeconds(),"q+":c((d.getMonth()+3)/3),S:d.getMilliseconds()};for(let c in /(y+)/.test(a)&&(a=a.replace(RegExp.$1,(d.getFullYear()+"").slice(4-RegExp.$1.length))),e)new RegExp("("+c+")").test(a)&&(a=a.replace(RegExp.$1,1==RegExp.$1.length?e[c]:("00"+e[c]).slice((""+e[c]).length)));return a}getBaseURL(a){return a.replace(/[?#].*$/,"")}isAbsoluteURL(a){return /^[a-z][a-z0-9+.-]*:/.test(a)}getURLParameters(a){return(a.match(/([^?=&]+)(=([^&]*))/g)||[]).reduce((b,a)=>(b[a.slice(0,a.indexOf("="))]=a.slice(a.indexOf("=")+1),b),{})}getTimestamp(a=new Date){return c(a.getTime()/1e3)}queryStr(a){let b=[];for(let c in a)a.hasOwnProperty(c)&&b.push(`${c}=${a[c]}`);let c=b.join("&");return c}queryObj(a){let b={},c=a.split("&");for(let d of c){let a=d.split("="),c=a[0],e=a[1]||"";c&&(b[c]=e)}return b}msg(a=this.name,b="",c="",d){const e=a=>{switch(typeof a){case void 0:return a;case"string":switch(this.platform()){case"Surge":case"Stash":case"Egern":default:return{url:a};case"Loon":case"Shadowrocket":return a;case"Quantumult X":return{"open-url":a}}case"object":switch(this.platform()){case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:{let b=a.url||a.openUrl||a["open-url"];return{url:b}}case"Loon":{let b=a.openUrl||a.url||a["open-url"],c=a.mediaUrl||a["media-url"];return{openUrl:b,mediaUrl:c}}case"Quantumult X":{let b=a["open-url"]||a.url||a.openUrl,c=a["media-url"]||a.mediaUrl,d=a["update-pasteboard"]||a.updatePasteboard;return{"open-url":b,"media-url":c,"update-pasteboard":d}}}default:}};if(!this.isMute)switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:$notification.post(a,b,c,e(d));break;case"Quantumult X":$notify(a,b,c,e(d))}}log(...a){0<a.length&&(this.logs=[...this.logs,...a]),console.log(a.join(this.logSeparator))}logErr(a,b){switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":case"Quantumult X":default:this.log("",`❗️${this.name}, 错误!`,a,b)}}wait(a){return new Promise(b=>setTimeout(b,a))}done(a={}){const b=new Date().getTime(),c=(b-this.startTime)/1e3;switch(this.log("",`🔔${this.name}, 结束! 🕛 ${c} 秒`),this.platform()){case"Surge":a.policy&&this.lodash_set(a,"headers.X-Surge-Policy",a.policy),$done(a);break;case"Loon":a.policy&&(a.node=a.policy),$done(a);break;case"Stash":a.policy&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy)),$done(a);break;case"Egern":$done(a);break;case"Shadowrocket":default:$done(a);break;case"Quantumult X":a.policy&&this.lodash_set(a,"opts.policy",a.policy),delete a["auto-redirect"],delete a["auto-cookie"],delete a["binary-mode"],delete a.charset,delete a.host,delete a.insecure,delete a.method,delete a.opt,delete a.path,delete a.policy,delete a["policy-descriptor"],delete a.scheme,delete a.sessionIndex,delete a.statusCode,delete a.timeout,a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete a.body):a.body&&delete a.bodyBytes,$done(a)}}}(a,b)}
