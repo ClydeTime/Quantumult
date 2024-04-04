@@ -678,9 +678,9 @@ async function vipExtraEx() {
 		ts: $.getTimestamp(),
 		buvid: config.cookie.Buvid,
 		mobi_app: 'iphone',
-		platform:'ios',
-		appkey:'27eb53fc9058f8c3',
-		access_key:`${config.key}`
+		platform: 'ios',
+		appkey: '27eb53fc9058f8c3',
+		access_key: config.key
 	}
 	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
 	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
@@ -713,7 +713,7 @@ async function vipScoreGo() {
 	const myRequest = {
 		url: "https://show.bilibili.com/api/activity/fire/common/event/dispatch",
 		headers: {
-			'Content-Type' : `application/json`,
+			'Content-Type' : 'application/json',
 			'Cookie': config.cookieStr
 		},
 		body: `{"eventId":"hevent_oy4b7h3epeb"}`
@@ -805,23 +805,36 @@ async function vipScoreDress() {
 }
 
 async function vipWatchAccept() {
-	$.log("#### 接取大会员观看正片30min任务")
+	$.log("#### 接取大会员观看剧集10min任务")
+	const body = {
+		csrf: config.cookie.bili_jct,
+		ts: $.getTimestamp(),
+		taskCode: 'ogvwatchnew',
+		mobi_app: 'iphone',
+		platform: 'ios',
+		appkey: '27eb53fc9058f8c3',
+		access_key: config.key
+	}
+	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
+	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	body['sign'] = sign
 	const myRequest = {
-		url: 'https://api.bilibili.com/pgc/activity/score/task/receive',
+		url: 'https://api.bilibili.com/pgc/activity/score/task/receive/v2',
 		headers: {
-			'Content-Type' : `application/json`,
-			'Cookie' : `SESSDATA=${config.cookie.SESSDATA}`,
-			'Referer' : `https://big.bilibili.com/mobile/bigPoint/task`
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/20F75 BiliApp/77200100 os/ios model/iPhone 15 Pro Max mobi_app/iphone build/77200100 osVer/17.4.1 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
+			'Cookie': `SESSDATA=${config.cookie.SESSDATA}`,
+			'Referer': `https://big.bilibili.com/mobile/bigPoint/task`
 		},
-		body: `{"taskCode":"ogvwatch"}`
+		body: $.queryStr(body)
 	}
 	await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
-				$.log("- 大会员观看正片任务接取成功, 需自行观看")
+				$.log("- 大会员观看剧集任务接取成功, 需自行观看")
 			} else {
-				$.log("- 大会员观看正片任务接取失败")
+				$.log("- 大会员观看剧集任务接取失败")
 				$.log("- 失败原因 " + body?.message)
 			}
 		} catch (e) {
