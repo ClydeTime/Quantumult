@@ -460,8 +460,7 @@ async function coin() {
 					'accept': 'application/json, text/plain, */*',
 					'content-type': 'application/x-www-form-urlencoded',
 					'origin': 'https://www.bilibili.com',
-					'referer': 'https://www.bilibili.com/video/BV1MT411G7fG?vd_source=1970993e2eff4af7be029aefcfa468b8',
-					'cookie': config.cookieStr
+					'cookie': config.cookieStr + ';buvid3=fuckchenruilovelaoliu'
 				},
 				body: $.queryStr(body)
 			}
