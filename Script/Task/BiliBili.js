@@ -178,6 +178,9 @@ async function signBiliBili() {
 			}
 
 			$.log("3️⃣ 投币任务")
+			if (typeof config.coins.failures !== 'undefined' && config.coins.failures > 0){
+				config.coins.failures = 0    //重置投币失败次数
+			}
 			if (real_times === 0){
 				$.log(`- 今日已完成 ${config.coins.time}`)
 			} else {
