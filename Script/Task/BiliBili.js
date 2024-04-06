@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务(V1.1)
 
-更新时间: 2024-03-18
+更新时间: 2024-04-06
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -468,7 +468,7 @@ async function coin() {
 			await $.fetch(myRequest).then(async response => {
 				try {
 					const body = $.toObj(response.body)
-					if (body.code === 0 && body.message === 0) {
+					if (body?.code === 0 && body?.message === "0") {
 						$.log("- 投币成功")
 						config.user.money -= 1
 						config.coins.num += 10
