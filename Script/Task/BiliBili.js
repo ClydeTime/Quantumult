@@ -963,12 +963,8 @@ async function me() {
 				return false
 			} else {
 				$.log("- 🎉cookie有效任务即将开始🎉")
-				if (check("user")) {
-					config.user = body?.data
-					config.user.num = 1
-				} else {
-					config.user.num = (config.user.num || 0) + 1
-				}
+				config.user = body?.data
+				config.user.num = check("user") ? 1 : (config.user.num || 0) + 1
 				$.setItem($.name + "_daily_bonus", $.toStr(config))
 
 				config.user.mext_exp = config.user.level_info.next_exp - config.user.level_info.current_exp
