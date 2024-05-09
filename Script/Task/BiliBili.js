@@ -537,7 +537,9 @@ async function getFavAid(arr) {
 	const myRequest = {
 		url: `https://api.bilibili.com/x/space/wbi/arc/search?${wbiSigns}`,
 		headers: {
-			'cookie': config.cookieStr
+			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/20F75 BiliApp/77200100 os/ios model/iPhone 15 Pro Max mobi_app/iphone build/77200100 osVer/17.4.1 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
+			'cookie': config.cookieStr,
+			'referer': 'https://space.bilibili.com'
 		}
 	}
 	return await $.fetch(myRequest).then(response => {
