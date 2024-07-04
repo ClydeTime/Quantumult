@@ -1,24 +1,19 @@
 /*
 腾讯视频签到脚本
 
-更新时间: 2022-12-26
+更新时间: 2024-07-04
 脚本兼容: QuantumultX, Surge, Loon
-脚本作者: MayoBlueSky
+脚本作者: WowYiJiu
 脚本修改: MartinsKing
 软件功能: 腾讯视频每日签到
 注意事项:
   抓取cookie时注意保证账号登录状态；
 使用声明: ⚠️此脚本仅供学习与交流, 请勿贩卖！⚠️
 使用说明：
-    ①获取cookie
-        后台退出手机腾讯视频客户端的情况下,重新打开APP进入主页
-        如通知成功获取cookie,则可以使用此签到脚本.
-        获取Cookie后, 请将Cookie脚本禁用并移除主机名,以免产生不必要的MITM.
-    ②获取pc_cookie以及ref_url添加到boxjs,boxjs订阅链接「https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/boxjs.json」
-        ref_url获取教程: 「https://cdn.jsdelivr.net/gh/BlueskyClouds/Script/img/2020/11/1/img/v_1.jpg」
-        pc_cookie获取教程: 「https://cdn.jsdelivr.net/gh/BlueskyClouds/Script/img/2020/11/1/img/v_2.jpg」
-    ③脚本将在每天上午5点00执行,您可以修改执行时间.
-致谢: 感谢MayoBlueSky作者提供脚本,本人未做联系,私自适配使用并公开,望见谅！
+- 进入腾讯视频app，点击右下角我的，点击头像下的视频VIP进入会员中心看到系统消息提示获取txspCookie成功即可
+- 浏览器进入腾讯视频网页版，登录后切换成桌面版，刷新网页看到系统消息提示获取txspRefreshCookie、txspRefreshBody成功即可
+- 获取Cookie后, 请将Cookie脚本禁用并移除主机名，以免产生不必要的MITM
+致谢: 感谢WowYiJiu作者的开源脚本
 /***********************
 Surge 远程脚本配置:
 ************************
@@ -56,240 +51,572 @@ https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugi
 
 */
 
-const $ = new Env('腾讯视频会员签到');
-const name = "videoqq"
-const zh_name = "腾讯视频"
-const config = {
-  cookie: {},
-  headers: {}
-};
-let cookie = $.getdata(name + "_cookie");
-let ref_url = $.getdata(name + "_ref_url");
-let pc_cookie = $.getdata(name + "_pc_cookie");
-const auth = getAuth(cookie)
+const $ = new Env("腾讯视频");
 
-let notice = $.time('yyyy年MM月dd日') + "\n"
+let txspCookie = $.getItem('txspCookie') || "";
+let txspRefreshCookie = $.getItem('txspRefreshCookie') || "";
+let txspRefreshBody = $.getItem('txspRefreshBody') || "";
+let dayOfGetMonthTicket = $.getItem('dayOfGetMonthTicket') || 1;
+let isSkipTxspCheckIn = ($.getItem('isSkipTxspCheckIn') !== undefined && $.getItem('isSkipTxspCheckIn') !== '') ? JSON.parse($.getItem('isSkipTxspCheckIn')) : false;
 
-let headers = {
-    'Referer' : `https://film.video.qq.com/`,
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Mobile/11A465 QQLiveBrowser/8.7.45 AppType/UN WebKitCore/WKWebView iOS GDTTangramMobSDK/4.370.6 GDTMobSDK/4.370.6 cellPhone/iPhone 12 pro max'
+let currentVersion = "v1.0.3", latestVersion = "";
+let nickname = "";
+let isTxspVip = false, isTxspSvip = false, isTxSportsVip = false, isTxSportsSvip = false;
+let endTime = "", svipEndTime = "", txSportsEndTime = "", txSportsSvipEndTime = "";
+let level = "", txSportsLevel = "";
+let score = "", txSportsScore = "";
+let month_received_score = "", month_limit = "";
+let isTxspCheckIn = "", isTxSportsCheckIn = "";
+let message = "";
+$.taskInfo = "";
+
+if ((isGetCookie = typeof $request !== `undefined`)) {
+	getCookie();
+	$.done();
+} else if (!txspCookie){
+	$.msg($.name, "您未获取腾讯视频Cookie", "点击此条跳转到腾讯视频获取Cookie", { 'open-url': 'tenvideo://', 'media-url': 'https://raw.githubusercontent.com/WowYiJiu/Personal/main/icon/videoqq.png' });
+	$.done();
+} else {
+	!(async () => {
+		await getVersion();
+		$.log(`\n当前版本：${currentVersion}  最新版本：${latestVersion}\n`);
+		$.version = `\n当前版本：${currentVersion}  最新版本：${latestVersion}\n`;
+		if(!txspCookie){
+			$.log(`未填写txspCookie环境变量`);
+			return;
+		}
+
+		$.log("---- 开始 刷新vusession ----");
+		await refresh_vusession();
+		$.log(`--------- 结束 ---------\n`);
+		$.log(`用户昵称：${nickname}`);
+		await getVipInfo();
+		if (isTxspVip){
+			$.log(`---- 腾讯视频VIP信息 ----`);
+			if (isTxspSvip){
+				$.log(`当前是腾讯视频SVIP`);
+			} else {
+				$.log(`当前是腾讯视频VIP`);
+			}
+			$.log(`当前等级：${level}`);
+			$.log(`当前成长：${score}`);
+			if (isTxspSvip){
+				$.log(`SVIP到期时间：${svipEndTime}`);
+			}
+			$.log(`VIP到期时间：${endTime}`);
+			$.log(`--------- 结束 ---------\n`);
+		}
+		if (isTxSportsVip){
+			$.log(`--- 腾讯体育VIP信息 ---`);
+			if (isTxSportsSvip){
+				$.log(`当前是腾讯体育超级VIP`);
+			} else {
+				$.log(`当前是腾讯体育VIP`);
+			}
+			$.log(`当前等级：${txSportsLevel}`);
+			$.log(`当前成长：${txSportsScore}`);
+			if (isTxSportsSvip){
+				$.log(`SVIP到期时间：${txSportsSvipEndTime}`);
+			}
+			$.log(`VIP到期时间：${txSportsEndTime}`);
+			$.log(`--------- 结束 ---------\n`);
+		}
+		if (isTxspVip){
+			$.log(`---- 开始 腾讯视频签到 ----`);
+			if (isSkipTxspCheckIn){
+				$.log(`当前设置为不进行腾讯视频签到，跳过`);
+			} else {
+				await readTxspTaskList();
+				await waitRandom(1000, 2000);
+				if (month_received_score === month_limit){
+					$.log(`本月活跃任务已满${month_limit}V力值，下个月再来哦`);
+				} else if (isTxspCheckIn){
+					$.log(`今天已签到, 明日再来吧`);
+				} else {
+					await txspCheckIn();
+					await waitRandom(1000, 2000);
+					await txVideoDownTasks();
+					await waitRandom(1000, 2000);
+				}
+			}
+			$.log(`--------- 结束 ---------\n`);
+		}
+		if (isTxSportsVip){
+			$.log(`---- 开始 腾讯体育签到 ----`);
+			await readTxSportsTaskList();
+			await waitRandom(1000, 2000);
+			if (isTxSportsCheckIn){
+				$.log(`今天已签到, 明日再来吧`);
+			} else {
+				await txSportsCheckIn();
+				await waitRandom(1000, 2000);
+			}
+			$.log(`--------- 结束 ---------\n`);
+			$.log(`---- 开始 领取每日球票 ----`);
+			await getDayTicket();
+			await waitRandom(1000, 2000);
+			$.log(`--------- 结束 ---------\n`);
+			$.log(`---- 开始 领取每月球票 ----`);
+			var today = new Date();
+			var date = today.getDate();
+			if (date !== dayOfGetMonthTicket){
+				$.log(`目标日期：${dayOfGetMonthTicket}号`);
+				$.log(`今天是${date}号`);
+				$.log(`跳过`);
+			} else {
+				$.log(`目标日期：${dayOfGetMonthTicket}号`);
+				$.log(`今天是${date}号`);
+				await getMonthTicket();
+			}
+			$.log(`--------- 结束 ---------\n`);
+		}
+	 await SendMsg();
+	})()
+		.catch((e) => $.logErr(e))
+		.finally(() => $.done());
 }
 
-!(async () => {
-  if (typeof $request != "undefined") {
-    console.log("- 正在获取cookie，请稍后")
-    GetCookie()
-    $.done()
-  } else {
-    console.log("- 任务正在进行，请耐心等待")
-    ref_url_ver()
-    if(typeof cookie == 'undefined') {
-        console.log("您尚未获取cookie,请先获取cookie")
-        $.msg(zh_name, "cookie catch error", "请先获取cookie")
-        $.done()
-    }
-    if(typeof cookie == 'undefined') {
-        console.log("您尚未添加pc_cookie,请先在boxjs中添加pc_cookie")
-        $.msg(zh_name, "pc_cookie add error", "请先在boxjs中添加pc_cookie")
-        $.done()
-    }
-    await main()
-    $.done()
-}
-})()
-
-
-function GetCookie() {
-  if ("object" == typeof $request) {
-    if (typeof $request.headers.cookie != 'undefined') {
-      config.headers.Cookie = $request.headers.cookie;
-    } else if (typeof $request.headers.Cookie != 'undefined') {
-      config.headers.Cookie = $request.headers.Cookie;
-    }
-    config.cookie = getAuth(config.headers.Cookie);
-
-    if (config.cookie.vdevice_qimei36) {
-      console.log("- cookie获取成功");
-
-      $.setdata(Object.keys(config.cookie).map(i => i + '=' + config.cookie[i]).join('; '), name + "_cookie")
-      ? $.msg(zh_name, "cookie catch success", "获得 cookie 成功")
-      : $.msg(zh_name, "cookie catch failed", "获得 cookie 失败")
-    } else {
-      console.log("- 尚未登录, 请登录后再重新获取cookie");
-    }   
-  }
-  $.done();
+async function refresh_vusession() {
+		let opt = {
+			url: `https://pbaccess.video.qq.com/trpc.video_account_login.web_login_trpc.WebLoginTrpc/NewRefresh`,
+			headers: {
+				cookie: txspRefreshCookie,
+				origin: 'https://v.qq.com',
+				referer: 'https://v.qq.com/',
+				'Content-Type': 'application/json'
+			},
+			body: txspRefreshBody
+		};
+		return await $.fetch(opt).then(response => {
+			try {
+				const obj = $.toObj(response.body)
+				if (obj.data.errcode === 0) {
+					let vqq_vusession = obj.data.vusession;
+					nickname = decodeURIComponent(obj.data.nick);
+						if (txspCookie.match(/main_login=([^;]*)/)[1] === "qq"){
+							txspCookie = txspCookie.replace(/(vqq_vusession=)[^;]*/, `$1${vqq_vusession}`);
+						} else if(txspCookie.match(/main_login=([^;]*)/)[1] === "wx"){
+							txspCookie = txspCookie.replace(/(vusession=)[^;]*/, `$1${vusession}`);
+						}
+					$.log("vusession成功")
+				} else {
+					$.log("vusession失败");
+				}
+			} catch (e) {
+				$.logErr(e, response)
+			}
+		})
 }
 
-
-const parseSet = (cookie) => {
-  var obj = {};
-  cookie = cookie.replace(/\GMT, /g,"GMT;"); 
-  var arr = cookie.split(";");
-  arr.forEach(function (val) {
-    var brr = val.split("=");
-    obj[brr[0]] = brr[1];
-  });
-  return obj;
-};
-
-
-function getAuth(cookie) {
-    let needParams = [""]
-    //适配微信登录
-    if (cookie) {
-        if (cookie.includes("main_login=wx")) {
-            needParams = ["vdevice_qimei36", "video_platform", "pgv_pvid", "pgv_info", "video_omgid", "main_login", "access_token", "appid", "openid", "vuserid", "vusession"]
-        } else if (cookie.includes("main_login=qq")) {
-            needParams = ["vdevice_qimei36", "video_platform", "pgv_pvid", "video_omgid", "main_login", "vqq_access_token", "vqq_appid", "vqq_openid", "vqq_vuserid", "vqq_vusession"]
-        } else {
-            console.log("getAuth - 无法提取有效cookie参数")
-        }
-    }
-    const obj = {}
-    if (cookie) {
-        cookie.split('; ').forEach(t => {
-            const [key, val] = t.split(/\=(.*)$/, 2)
-            needParams.indexOf(key) !== -1 && (obj[key] = val)
-        })
-    }
-    return obj
+async function getVipInfo() {
+		let opt = {
+			url: `https://vip.video.qq.com/rpc/trpc.query_vipinfo.vipinfo.QueryVipInfo/GetVipUserInfoH5`,
+			headers: {
+				cookie: txspCookie,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({"geticon":1,"viptype":"svip|sports|nfl","platform":5})
+		};
+		return await $.fetch(opt).then(response => {
+			try {
+				const obj = $.toObj(response.body)
+				if (!obj.servicetype) {
+					throw new Error(`Cookie已失效`);
+				} else {
+					if (obj.vip === 1){
+						isTxspVip = true;
+						endTime = obj.endTime;
+						level = obj.level;
+						score = obj.score;
+					}
+					if (obj.svip_info.vip === 1){
+						isTxspSvip = true;
+						svipEndTime = obj.svip_info.endTime;
+					}
+					if (obj.sports.vip.vip === 1){
+						isTxSportsVip = true;
+						txSportsEndTime = obj.sports.vip.endTime;
+						txSportsLevel = obj.sports.vip.level;
+						txSportsScore = obj.sports.vip.score;
+					}
+					if (obj.sports.svip.vip === 1){
+						isTxSportsSvip = true;
+						txSportsSvipEndTime = obj.sports.svip.endTime;
+					}
+				}
+			} catch (e) {
+				$.logErr(e, response)
+			}
+		})
 }
 
-
-function refCookie(url = ref_url) {
-    return new Promise(resovle => {
-        const options = {
-          url: url,
-          headers: {...headers, Cookie: pc_cookie}
-        }
-        $.get(options, (error, response, data) => {
-            const obj = parseSet(response.headers['Set-Cookie'])
-            const { vusession } = obj
-            const { vqq_vusession } = obj
-            const { access_token } = obj
-            //微信多一个access_token
-            if (typeof vusession != 'undefined') {
-                auth['vusession'] = vusession
-                auth['access_token'] = access_token
-            } else {
-                auth['vqq_vusession'] = vqq_vusession
-            }
-            // 刷新cookie后去签到
-            resovle({
-                ...headers, Cookie: Object.keys(auth).map(i => i + '=' + auth[i]).join('; ')
-            })
-        })
-    })
-}
-
-function ref_url_ver(url = ref_url) {
-    headers = {...headers, Cookie: pc_cookie}
-    $.get({
-        url, headers
-    }, function (error, response, data) {
-        if (error) {
-            $.log(error);
-            console.log("腾讯视频会员签到", "验证ref_url请求失败 ‼️‼️", error)
-        } else {
-            if (data.match(/nick/)) { //通过验证获取QQ昵称参数来判断是否正确
-                console.log("验证成功，执行主程序")
-            } else {
-                console.log("验证ref_url失败,无法获取个人资料 ref_url或Cookie失效 ‼️‼️")
-            }
-        }
-    })
-}
-
-// 手机端签到
-function txVideoSignIn(headers) {
-    return new Promise(resolve => {
-    $.get({
-        url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/CheckIn?rpc_data=%7B%7D`, headers
-    }, (error, response, data) => {
-        if (error) {
-            $.log(error);
-            console.log("腾讯视频会员签到", "签到请求失败 ‼️‼️", error)
-            $.msg(zh_name, "签到请求失败 ‼️‼️", error)
-        } else {
-            if (data != null) {
-                let jsonParsed, code, check_in_score;
-                jsonParsed = JSON.parse(data);
-                code = jsonParsed.ret;
-                check_in_score = jsonParsed.check_in_score;
-                if (code === 0 && check_in_score != undefined) {
-                    notice += "腾讯视频会员手机端签到成功：签到分数：" + check_in_score + "分 🎉" + "\n"
-                    console.log("腾讯视频会员手机端签到成功：签到分数：" + check_in_score + "分 🎉")
-                } else if (code === -2002) {
-                    console.log("腾讯视频会员手机端签到失败：重复签到 ‼️‼️")
-                    notice += "腾讯视频会员手机端签到失败：重复签到 ‼️‼️" + "\n"
-                } else if (code === -2007) {
-                    notice += "腾讯视频会员签到：非会员无法签到"
-                    console.log("腾讯视频会员签到：非会员无法签到")
-                } else {
-                    console.log("腾讯视频会员手机端签到失败：未知错误请查看控制台输出 ‼️‼️\n" + data)
-                    notice += "腾讯视频会员手机端签到失败：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
-                }
-
-            } else {
-                notice += "腾讯视频会员签到：签到失败-Cookie失效 ‼️‼️" + "\n"
-                console.log("腾讯视频会员签到：签到失败, Cookie失效 ‼️‼️")
-            }
-            $.msg(zh_name, "", notice)
-        }
-        resolve()
-    })
-    })
-}
-
-//观看60分钟任务签到请求
-function txVideoDownTasks(headers) {
-    return new Promise(resolve => {
-    $.get({
-        url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/ProvideAward?rpc_data=%7B%22task_id%22:1%7D`, headers
-    }, (error, response, data) => {
-        if (error) {
-            $.log(error);
-            console.log("腾讯视频会员签到", "观看任务签到请求 ‼️‼️", error)
-        } else {
-            if (data != null) {
-                let jsonParsed, code, check_in_score;
-                jsonParsed = JSON.parse(data);
-                code = jsonParsed.ret;
-                check_in_score = jsonParsed.check_in_score;
-                if (code === 0 && check_in_score != undefined) {
-                    notice += "腾讯视频会员观看任务签到成功：签到分数：" + check_in_score + "分 🎉" + "\n"
-                    console.log("腾讯视频会员观看任务签到成功：签到分数：" + check_in_score + "分 🎉")
-                } else if (code === -2002) {
-                    console.log("腾讯视频会员观看任务签到成功：重复签到 ‼️‼️")
-                    notice += "腾讯视频会员观看任务签到成功：重复签到 ‼️‼️" + "\n"
-                } else if (code === -2003) {
-                    console.log("腾讯视频会员观看任务签到失败：任务未完成 ‼️‼️")
-                    notice += "腾讯视频会员观看任务签到失败：任务未完成 ‼️‼️" + "\n"
-                } else if (code === -2007) {
-                    notice += "腾讯视频会员签到：非会员无法签到"
-                    console.log("腾讯视频会员签到：非会员无法签到")
-                } else {
-                    console.log("腾讯视频会员观看任务签到成功：未知错误请查看控制台输出 ‼️‼️\n" + data)
-                    notice += "腾讯视频会员观看任务签到成功：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
-                }
-            } else {
-                notice += "腾讯视频会员签到：签到失败-Cookie失效 或 脚本待更新 ‼️‼️" + "\n"
-                console.log("腾讯视频会员签到：签到失败, Cookie失效 或 脚本待更新 ‼️‼️")
-            }
-        }
-        resolve()
-    })
-    })
+/**
+ * 获取腾讯视频任务列表
+ * @async
+ * @function readTxspTaskList
+ * @returns
+ */
+async function readTxspTaskList() {
+		let opt = {
+			url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/ReadTaskList?rpc_data=%7B%22business_id%22:%221%22,%22platform%22:5%7D`,
+			headers: {
+				referer: "https://film.video.qq.com/x/grade/?ptag=user.apho&ovscroll=0&hidetitlebar=1&aid=V0$$1:0$2:7$3:8.11.01.25068$4:0$8:4&isDarkMode=1&uiType=REGULAR",
+				cookie: txspCookie
+			}
+		};
+		return await $.fetch(opt).then(response => {
+			try {
+				const obj = $.toObj(response.body)
+				var code = obj.ret;
+				let task_maintitle = "";
+				if (code === 0) {
+					month_received_score = obj.limit_info.month_received_score;
+					month_limit = obj.limit_info.month_limit;
+					let taskList = obj.task_list;
+					let txspCheckInTask = taskList && taskList.find(task => task.task_maintitle === "VIP会员每日签到");
+					isTxspCheckIn = txspCheckInTask.task_status;
+				}  else {
+					$.log(`获取腾讯视频任务列表失败，异常详细信息如下\n${data}`);
+				}
+			} catch (e) {
+				$.logErr(e, response)
+			}
+		})
 }
 
 
-async function main() {
-    return refCookie().then(
-      async (params) => {
-        await txVideoSignIn(params)
-        await txVideoDownTasks(params)
-    })
+/**
+ * 腾讯视频签到领取V力值
+ * @async
+ * @function txspCheckIn
+ * @returns
+ */
+async function txspCheckIn() {
+		let opt = {
+			url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/CheckIn?rpc_data==%7B%7D`,
+			headers: {
+				Referer: "https://film.video.qq.com/x/grade/?ptag=user.apho&ovscroll=0&hidetitlebar=1&aid=V0$$1:0$2:7$3:8.11.01.25068$4:0$8:4&isDarkMode=1&uiType=REGULAR",
+				Cookie: txspCookie
+			}
+		};
+		return await $.fetch(opt).then(response => {
+			try {
+				const obj = $.toObj(response.body);
+				var code = obj.ret;
+				let message;
+				if (code === 0 && obj.check_in_score != undefined) {
+					message = `签到成功：获得${obj.check_in_score}V力值`
+					$.log(message);
+				} else if (code === -2002) {
+					message = `今天已签到, 明日再来吧`
+					$.log(message);
+				} else {
+					message = `签到失败, 异常详细信息请查看日志\n`;
+					$.log(`签到失败，异常详细信息如下\n${obj.msg}`);
+				}
+				$.taskInfo += message + `\n`;
+			} catch (e) {
+				$.logErr(e, response)
+			}
+		})
 }
 
-function Env(t,e){class s{constructor(t){this.env=t}send(t,e="GET"){t="string"==typeof t?{url:t}:t;let s=this.get;return"POST"===e&&(s=this.post),new Promise((e,i)=>{s.call(this,t,(t,s,r)=>{t?i(t):e(s)})})}get(t){return this.send.call(this.env,t)}post(t){return this.send.call(this.env,t,"POST")}}return new class{constructor(t,e){this.name=t,this.http=new s(this),this.data=null,this.dataFile="box.dat",this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=(new Date).getTime(),Object.assign(this,e),this.log("",`🔔${this.name}, 开始!`)}isNode(){return"undefined"!=typeof module&&!!module.exports}isQuanX(){return"undefined"!=typeof $task}isSurge(){return"undefined"!=typeof $httpClient&&"undefined"==typeof $loon}isLoon(){return"undefined"!=typeof $loon}isShadowrocket(){return"undefined"!=typeof $rocket}isStash(){return"undefined"!=typeof $environment&&$environment["stash-version"]}toObj(t,e=null){try{return JSON.parse(t)}catch{return e}}toStr(t,e=null){try{return JSON.stringify(t)}catch{return e}}getjson(t,e){let s=e;const i=this.getdata(t);if(i)try{s=JSON.parse(this.getdata(t))}catch{}return s}setjson(t,e){try{return this.setdata(JSON.stringify(t),e)}catch{return!1}}getScript(t){return new Promise(e=>{this.get({url:t},(t,s,i)=>e(i))})}runScript(t,e){return new Promise(s=>{let i=this.getdata("@chavy_boxjs_userCfgs.httpapi");i=i?i.replace(/\n/g,"").trim():i;let r=this.getdata("@chavy_boxjs_userCfgs.httpapi_timeout");r=r?1*r:20,r=e&&e.timeout?e.timeout:r;const[o,n]=i.split("@"),a={url:`http://${n}/v1/scripting/evaluate`,body:{script_text:t,mock_type:"cron",timeout:r},headers:{"X-Key":o,Accept:"*/*"}};this.post(a,(t,e,i)=>s(i))}).catch(t=>this.logErr(t))}loaddata(){if(!this.isNode())return{};{this.fs=this.fs?this.fs:require("fs"),this.path=this.path?this.path:require("path");const t=this.path.resolve(this.dataFile),e=this.path.resolve(process.cwd(),this.dataFile),s=this.fs.existsSync(t),i=!s&&this.fs.existsSync(e);if(!s&&!i)return{};{const i=s?t:e;try{return JSON.parse(this.fs.readFileSync(i))}catch(t){return{}}}}}writedata(){if(this.isNode()){this.fs=this.fs?this.fs:require("fs"),this.path=this.path?this.path:require("path");const t=this.path.resolve(this.dataFile),e=this.path.resolve(process.cwd(),this.dataFile),s=this.fs.existsSync(t),i=!s&&this.fs.existsSync(e),r=JSON.stringify(this.data);s?this.fs.writeFileSync(t,r):i?this.fs.writeFileSync(e,r):this.fs.writeFileSync(t,r)}}lodash_get(t,e,s){const i=e.replace(/\[(\d+)\]/g,".$1").split(".");let r=t;for(const t of i)if(r=Object(r)[t],void 0===r)return s;return r}lodash_set(t,e,s){return Object(t)!==t?t:(Array.isArray(e)||(e=e.toString().match(/[^.[\]]+/g)||[]),e.slice(0,-1).reduce((t,s,i)=>Object(t[s])===t[s]?t[s]:t[s]=Math.abs(e[i+1])>>0==+e[i+1]?[]:{},t)[e[e.length-1]]=s,t)}getdata(t){let e=this.getval(t);if(/^@/.test(t)){const[,s,i]=/^@(.*?)\.(.*?)$/.exec(t),r=s?this.getval(s):"";if(r)try{const t=JSON.parse(r);e=t?this.lodash_get(t,i,""):e}catch(t){e=""}}return e}setdata(t,e){let s=!1;if(/^@/.test(e)){const[,i,r]=/^@(.*?)\.(.*?)$/.exec(e),o=this.getval(i),n=i?"null"===o?null:o||"{}":"{}";try{const e=JSON.parse(n);this.lodash_set(e,r,t),s=this.setval(JSON.stringify(e),i)}catch(e){const o={};this.lodash_set(o,r,t),s=this.setval(JSON.stringify(o),i)}}else s=this.setval(t,e);return s}getval(t){return this.isSurge()||this.isLoon()?$persistentStore.read(t):this.isQuanX()?$prefs.valueForKey(t):this.isNode()?(this.data=this.loaddata(),this.data[t]):this.data&&this.data[t]||null}setval(t,e){return this.isSurge()||this.isLoon()?$persistentStore.write(t,e):this.isQuanX()?$prefs.setValueForKey(t,e):this.isNode()?(this.data=this.loaddata(),this.data[e]=t,this.writedata(),!0):this.data&&this.data[e]||null}initGotEnv(t){this.got=this.got?this.got:require("got"),this.cktough=this.cktough?this.cktough:require("tough-cookie"),this.ckjar=this.ckjar?this.ckjar:new this.cktough.CookieJar,t&&(t.headers=t.headers?t.headers:{},void 0===t.headers.Cookie&&void 0===t.cookieJar&&(t.cookieJar=this.ckjar))}get(t,e=(()=>{})){if(t.headers&&(delete t.headers["Content-Type"],delete t.headers["Content-Length"]),this.isSurge()||this.isLoon())this.isSurge()&&this.isNeedRewrite&&(t.headers=t.headers||{},Object.assign(t.headers,{"X-Surge-Skip-Scripting":!1})),$httpClient.get(t,(t,s,i)=>{!t&&s&&(s.body=i,s.statusCode=s.status?s.status:s.statusCode,s.status=s.statusCode),e(t,s,i)});else if(this.isQuanX())this.isNeedRewrite&&(t.opts=t.opts||{},Object.assign(t.opts,{hints:!1})),$task.fetch(t).then(t=>{const{statusCode:s,statusCode:i,headers:r,body:o}=t;e(null,{status:s,statusCode:i,headers:r,body:o},o)},t=>e(t&&t.error||"UndefinedError"));else if(this.isNode()){let s=require("iconv-lite");this.initGotEnv(t),this.got(t).on("redirect",(t,e)=>{try{if(t.headers["set-cookie"]){const s=t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString();s&&this.ckjar.setCookieSync(s,null),e.cookieJar=this.ckjar}}catch(t){this.logErr(t)}}).then(t=>{const{statusCode:i,statusCode:r,headers:o,rawBody:n}=t,a=s.decode(n,this.encoding);e(null,{status:i,statusCode:r,headers:o,rawBody:n,body:a},a)},t=>{const{message:i,response:r}=t;e(i,r,r&&s.decode(r.rawBody,this.encoding))})}}post(t,e=(()=>{})){const s=t.method?t.method.toLocaleLowerCase():"post";if(t.body&&t.headers&&!t.headers["Content-Type"]&&(t.headers["Content-Type"]="application/x-www-form-urlencoded"),t.headers&&delete t.headers["Content-Length"],this.isSurge()||this.isLoon())this.isSurge()&&this.isNeedRewrite&&(t.headers=t.headers||{},Object.assign(t.headers,{"X-Surge-Skip-Scripting":!1})),$httpClient[s](t,(t,s,i)=>{!t&&s&&(s.body=i,s.statusCode=s.status?s.status:s.statusCode,s.status=s.statusCode),e(t,s,i)});else if(this.isQuanX())t.method=s,this.isNeedRewrite&&(t.opts=t.opts||{},Object.assign(t.opts,{hints:!1})),$task.fetch(t).then(t=>{const{statusCode:s,statusCode:i,headers:r,body:o}=t;e(null,{status:s,statusCode:i,headers:r,body:o},o)},t=>e(t&&t.error||"UndefinedError"));else if(this.isNode()){let i=require("iconv-lite");this.initGotEnv(t);const{url:r,...o}=t;this.got[s](r,o).then(t=>{const{statusCode:s,statusCode:r,headers:o,rawBody:n}=t,a=i.decode(n,this.encoding);e(null,{status:s,statusCode:r,headers:o,rawBody:n,body:a},a)},t=>{const{message:s,response:r}=t;e(s,r,r&&i.decode(r.rawBody,this.encoding))})}}time(t,e=null){const s=e?new Date(e):new Date;let i={"M+":s.getMonth()+1,"d+":s.getDate(),"H+":s.getHours(),"m+":s.getMinutes(),"s+":s.getSeconds(),"q+":Math.floor((s.getMonth()+3)/3),S:s.getMilliseconds()};/(y+)/.test(t)&&(t=t.replace(RegExp.$1,(s.getFullYear()+"").substr(4-RegExp.$1.length)));for(let e in i)new RegExp("("+e+")").test(t)&&(t=t.replace(RegExp.$1,1==RegExp.$1.length?i[e]:("00"+i[e]).substr((""+i[e]).length)));return t}queryStr(t){let e="";for(const s in t){let i=t[s];null!=i&&""!==i&&("object"==typeof i&&(i=JSON.stringify(i)),e+=`${s}=${i}&`)}return e=e.substring(0,e.length-1),e}msg(e=t,s="",i="",r){const o=t=>{if(!t)return t;if("string"==typeof t)return this.isLoon()?t:this.isQuanX()?{"open-url":t}:this.isSurge()?{url:t}:void 0;if("object"==typeof t){if(this.isLoon()){let e=t.openUrl||t.url||t["open-url"],s=t.mediaUrl||t["media-url"];return{openUrl:e,mediaUrl:s}}if(this.isQuanX()){let e=t["open-url"]||t.url||t.openUrl,s=t["media-url"]||t.mediaUrl,i=t["update-pasteboard"]||t.updatePasteboard;return{"open-url":e,"media-url":s,"update-pasteboard":i}}if(this.isSurge()){let e=t.url||t.openUrl||t["open-url"];return{url:e}}}};if(!this.isMute){if(this.isSurge()||this.isLoon()){$notification.post(e,s,i,o(r))}else if(this.isQuanX()){$notify(e,s,i,o(r))}}}log(...t){t.length>0&&(this.logs=[...this.logs,...t]),console.log(t.join(this.logSeparator))}logErr(t,e){const s=!this.isSurge()&&!this.isQuanX()&&!this.isLoon();s?this.log("",`❗️${this.name}, 错误!`,t.stack):this.log("",`❗️${this.name}, 错误!`,t)}wait(t){return new Promise(e=>setTimeout(e,t))}done(t={}){const e=(new Date).getTime(),s=(e-this.startTime)/1e3;this.log("",`🔔${this.name}, 结束! 🕛 ${s} 秒`),this.log(),this.isSurge()||this.isQuanX()||this.isLoon()?$done(t):this.isNode()&&process.exit(1)}}(t,e)}
+/**
+ * 观看60分钟任务签到请求
+ * @async
+ * @function txVideoDownTasks
+ * @returns
+ */
+async function txVideoDownTasks() {
+	let opt = {
+		url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/ProvideAward?rpc_data=%7B%22task_id%22:1%7D`,
+		headers: {
+			referer: "https://film.video.qq.com/x/grade/?ptag=user.apho&ovscroll=0&hidetitlebar=1&aid=V0$$1:0$2:7$3:8.11.01.25068$4:0$8:4&isDarkMode=1&uiType=REGULAR",
+			cookie: txspCookie
+		}
+	};
+	return await $.fetch(opt).then(response => {
+		try {
+			const obj = $.toObj(response.body)
+			var code = obj.ret;
+			let check_in_score = obj.check_in_score;
+			let message;
+			if (code === 0 && check_in_score != undefined) {
+				message = "观看任务签到成功：签到分数：" + check_in_score + "分 🎉" + "\n";
+				$.log(message);
+			} else if (code === -2002) {
+				message = "观看任务签到成功：您已签到 ‼️‼️" + "\n";
+				$.log(message);
+			} else if (code === -2003) {
+				message = "观看任务签到失败：任务未完成 ‼️‼️" + "\n";
+				$.log(message);
+			} else if (code === -2007) {
+				message = "观看任务签到失败：非会员无法签到";
+				$.log(message);
+			} else {
+				message = "观看任务签到失败：请查看控制台输出";
+				$.log(`观看任务签到失败：异常详细信息如下\n${obj.msg}`);
+			}
+			$.taskInfo += message + `\n`;
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+
+/**
+ * 获取腾讯体育任务列表
+ * @async
+ * @function readTxSportsTaskList
+ * @returns
+ */
+async function readTxSportsTaskList() {
+	let opt = {
+		url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/ReadTaskList?rpc_data={"business_id":3,"channel_id":4,"platform":5}`,
+		headers: {
+			Referer: "https://film.video.qq.com/x/sports-grade/?ovscroll=0&hidetitlebar=1&immersive=1",
+			Cookie: txspCookie,
+		},
+	};
+	return await $.fetch(opt).then(response => {
+		try {
+			const obj = $.toObj(response.body)
+			var code = obj.ret;
+			let task_maintitle = "";
+			if (code === 0) {
+				let taskList = obj.task_list;
+				let txSportsCheckInTasks = taskList && taskList.find(task => task.task_maintitle === "每日签到");
+				isTxSportsCheckIn = txSportsCheckInTasks.task_status;
+			}  else {
+				$.log(`获取腾讯视频任务列表失败，异常详细信息如下\n${data}`);
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+/**
+ * 腾讯体育签到领取热爱值
+ * @async
+ * @function txSportsCheckIn
+ * @returns
+ */
+async function txSportsCheckIn() {
+	let opt = {
+		url: `https://vip.video.qq.com/rpc/trpc.new_task_system.task_system.TaskSystem/CheckIn?rpc_data={"task_id":8006}`,
+		headers: {
+			Referer:
+				"https://film.video.qq.com/x/sports-grade/?ovscroll=0&hidetitlebar=1&immersive=1",
+			Cookie: txspCookie,
+		},
+	};
+	return await $.fetch(opt).then(response => {
+		try {
+			var code = obj.ret;
+			let message;
+			if (code === 0 && obj.check_in_score != undefined) {
+				message = `签到成功：获得${obj.check_in_score}热爱值`;
+				$.log(message);
+			} else if (code === -2002) {
+				message = `今天已签到, 明日再来吧`
+				$.log(message);
+			} else {
+				message = `签到失败, 异常详细信息请查看日志\n`
+				$.log(`签到失败，异常详细信息如下\n${opt.msg}`);
+			}
+			$.taskInfo += message + `\n`;
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+/**
+ * 领取每日球票
+ * @async
+ * @function getDayTicket
+ * @returns
+ */
+async function getDayTicket() {
+	let opt = {
+		url: "https://activity.video.qq.com/fcgi-bin/asyn_activity?otype=xjson&act_id=118561&module_id=158089&type=90&option=5",
+		headers: {
+			Origin: "https://film.video.qq.com",
+			Referer: "https://film.video.qq.com/x/sports-vip-channel/?from=tab",
+			Cookie: txspCookie,
+		},
+	};
+	return await $.fetch(opt).then(response => {
+		try {
+			const obj = $.toObj(response.body)
+			var code = obj.ret;
+			let message;
+			if (code === 0) {
+				message = `领取每日球票成功`;
+				$.log(message);
+			} else if (code === -2021) {
+				message = `每日球票已领取, 明日再来吧`;
+				$.log(message);
+			} else {
+				message = `领取每日球票失败，异常详细信息请查看日志\n`;
+				$.log(`领取每日球票失败，异常详细信息如下\n${obj.msg}`);
+			}
+			$.taskInfo += message + `\n`;
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+/**
+ * 领取每月球票
+ * @async
+ * @function getMonthTicket
+ * @returns
+ */
+async function getMonthTicket() {
+	let opt = {
+		url: "https://activity.video.qq.com/fcgi-bin/asyn_activity?otype=xjson&act_id=118561&module_id=165163&type=100160&option=100",
+		headers: {
+			Origin: "https://film.video.qq.com",
+			Referer: "https://film.video.qq.com/x/sports-vip-channel/?from=tab",
+			Cookie: txspCookie,
+		},
+	};
+	return await $.fetch(opt).then(response => {
+		try {
+			const obj = $.toObj(response.body)
+			var code = obj.ret;
+			let message;
+			if (code === 0) {
+				message = `领取每月球票成功`
+				$.log(message);
+			} else if (code === -903) {
+				message = `每月球票已领取，下个月再来哦`
+				$.log(message);
+			} else {
+				message = `领取每月球票失败，异常详细信息请查看日志\n`
+				$.log(`领取每月球票失败，异常详细信息如下\n${obj.msg}`);
+			}
+			$.taskInfo += message + `\n`;
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+function getCookie() {
+	if($request && $request.method !=`OPTIONS` && $request.url.match(/\/rpc\/trpc\.new_task_system\.task_system\.TaskSystem\/ReadTaskList/)){
+		let txsp = $request.headers["Cookie"] || $request.headers["cookie"];
+		if (txsp) {
+			if (typeof txspCookie === "undefined" || (txspCookie && txspCookie.length === 0)) {
+				$.setdata(txsp, "txspCookie");
+				$.log(`Cookie: ${txsp}`);
+				$.msg($.name, "🎉 Cookie写入成功", "不用请自行关闭重写!");
+			} else if (txsp !== txspCookie) {
+				$.setdata(txsp, "txspCookie");
+				$.log(`Cookie: ${txsp}`);
+				$.msg($.name, "🎉 Cookie更新成功", "不用请自行关闭重写!");
+			} else {
+				$.msg($.name, "⚠️ Cookie未变动 跳过更新", "不用请自行关闭重写!");
+			}
+		} else {
+			$.msg($.name, "⚠️ Cookie未找到", "不用请自行关闭重写!");
+		}
+	}
+	if($request && $request.method !=`OPTIONS` && $request.url.match(/\/trpc\.videosearch\.hot_rank\.HotRankServantHttp\/HotRankHttp/)){
+		let refreshCookie = $request.headers["Cookie"] || $request.headers["cookie"];
+		if (refreshCookie) {
+			if (typeof txspRefreshCookie === "undefined" || (txspRefreshCookie && txspRefreshCookie.length === 0)) {
+				$.setdata(refreshCookie, "txspRefreshCookie");
+				$.log(`Cookie: ${refreshCookie}`);
+				$.msg($.name, "🎉 refreshCookie写入成功", "不用请自行关闭重写!");
+			} else if (refreshCookie !== txspRefreshCookie) {
+				$.setdata(refreshCookie, "txspRefreshCookie");
+				$.log(`Cookie: ${refreshCookie}`);
+				$.msg($.name, "🎉 refreshCookie更新成功", "不用请自行关闭重写!");
+			} else {
+				$.msg($.name, "⚠️ refreshCookie未变动 跳过更新", "不用请自行关闭重写!");
+			}
+		} else {
+			$.msg($.name, "⚠️ refreshCookie未找到", "不用请自行关闭重写!");
+		}
+	}
+	if($request && $request.method !=`OPTIONS` && $request.url.match(/\/trpc\.video_account_login\.web_login_trpc\.WebLoginTrpc\/NewRefresh/)){
+		let refreshBody = $request.body;
+		if (refreshBody){
+			if (typeof txspRefreshBody === "undefined" || (txspRefreshBody && txspRefreshBody.length === 0)) {
+				$.setdata(refreshBody, "txspRefreshBody");
+				$.log(`refreshBody: ${refreshBody}`);
+				$.msg($.name, "🎉 refreshBody写入成功", "不用请自行关闭重写!");
+			} else if (refreshBody !== txspRefreshBody) {
+				$.setdata(refreshBody, "txspRefreshBody");
+				$.log(`refreshBody: ${refreshBody}`);
+				$.msg($.name, "🎉 refreshBody更新成功", "不用请自行关闭重写!");
+			} else {
+				$.msg($.name, "⚠️ refreshBody未变动 跳过更新", "不用请自行关闭重写!");
+			}
+		}
+	}
+}
+
+async function getVersion() {
+    const timeoutMs = 10000;
+    const opt = { 
+        url: "https://github.wowyijiu.today/https://raw.githubusercontent.com/WowYiJiu/Personal/main/Script/tenvideo.js",
+        timeout: timeoutMs 
+    };
+		let data =  await $.fetch(opt).then(response => {
+			try {
+				if (response) {
+					return response
+				}else {
+					return "undefined"
+				}
+			} catch (e) {
+				$.logErr(e, response)
+			}
+		})
+		data = $.toStr(data)
+    const versionInfo = data.match(/@version\s+(v\d+\.\d+\.\d+)/);
+	if (versionInfo) {
+		latestVersion = versionInfo[1];
+	} else {
+		latestVersion = "undefined";
+	}
+    return latestVersion;
+}
+
+async function SendMsg() {
+	$.msg($.name, "", `${$.version}\n${$.taskInfo}`);
+}
+
+async function waitRandom(min, max) {
+	var time = getRandomInt(min, max);
+	await $.wait(time);
+}
+
+// 随机生成整数
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// 提取Cookie的指定字段
+function extractValues(str, keys) {
+	let results = keys.map((key) =>
+		str.split("; ").find((s) => s.startsWith(key + "="))
+	);
+	return results.join(";");
+}
+
+
+
+/***************** Env *****************/
+// prettier-ignore
+// https://github.com/chavyleung/scripts/blob/master/Env.min.js
+
+function Env(a,b){var c=Math.floor;return new class{constructor(a,b){this.name=a,this.version="1.7.4",this.data=null,this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=new Date().getTime(),Object.assign(this,b),this.log("",`🔔${this.name}, 开始!`)}platform(){return"undefined"!=typeof $environment&&$environment["surge-version"]?"Surge":"undefined"!=typeof $environment&&$environment["stash-version"]?"Stash":"undefined"==typeof module||!module.exports?"undefined"==typeof $task?"undefined"==typeof $loon?"undefined"==typeof $rocket?"undefined"==typeof Egern?void 0:"Egern":"Shadowrocket":"Loon":"Quantumult X":"Node.js"}isQuanX(){return"Quantumult X"===this.platform()}isSurge(){return"Surge"===this.platform()}isLoon(){return"Loon"===this.platform()}isShadowrocket(){return"Shadowrocket"===this.platform()}isStash(){return"Stash"===this.platform()}isEgern(){return"Egern"===this.platform()}toObj(a,b=null){try{return JSON.parse(a)}catch{return b}}toStr(a,b=null){try{return JSON.stringify(a)}catch{return b}}lodash_get(a={},b="",c=void 0){Array.isArray(b)||(b=this.toPath(b));const d=b.reduce((a,b)=>Object(a)[b],a);return d===void 0?c:d}lodash_set(a={},b="",c){return Array.isArray(b)||(b=this.toPath(b)),b.slice(0,-1).reduce((a,c,d)=>Object(a[c])===a[c]?a[c]:a[c]=/^\d+$/.test(b[d+1])?[]:{},a)[b[b.length-1]]=c,a}toPath(a){return a.replace(/\[(\d+)\]/g,".$1").split(".").filter(Boolean)}getItem(a=new String,b=null){let c=b;switch(a.startsWith("@")){case!0:const{key:b,path:d}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=b;let e=this.getItem(a,{});"object"!=typeof e&&(e={}),c=this.lodash_get(e,d);try{c=JSON.parse(c)}catch(a){}break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.read(a);break;case"Quantumult X":c=$prefs.valueForKey(a);break;default:c=this.data?.[a]||null}try{c=JSON.parse(c)}catch(a){}}return c??b}setItem(a=new String,b=new String){let c=!1;switch(typeof b){case"object":b=JSON.stringify(b);break;default:b=b+""}switch(a.startsWith("@")){case!0:const{key:d,path:e}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=d;let f=this.getItem(a,{});"object"!=typeof f&&(f={}),this.lodash_set(f,e,b),c=this.setItem(a,f);break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.write(b,a);break;case"Quantumult X":c=$prefs.setValueForKey(b,a);break;default:c=this.data?.[a]||null}}return c}async fetch(a={},b={}){switch(a.constructor){case Object:a={...a,...b};break;case String:a={url:a,...b}}a.method||(a.method=a.body??a.bodyBytes?"POST":"GET"),delete a.headers?.Host,delete a.headers?.[":authority"],delete a.headers?.["Content-Length"],delete a.headers?.["content-length"];const c=a.method.toLocaleLowerCase();switch(this.platform()){case"Loon":case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:return a.policy&&(this.isLoon()&&(a.node=a.policy),this.isStash()&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy))),a.followRedirect&&((this.isSurge()||this.isLoon())&&(a["auto-redirect"]=!1),this.isQuanX()&&(a.opts?a.opts.redirection=!1:a.opts={redirection:!1})),a.bodyBytes&&!a.body&&(a.body=a.bodyBytes,delete a.bodyBytes),await new Promise((b,d)=>{$httpClient[c](a,(c,e,f)=>{c?d(c):(e.ok=/^2\d\d$/.test(e.status),e.statusCode=e.status,f&&(e.body=f,!0==a["binary-mode"]&&(e.bodyBytes=f)),b(e))})});case"Quantumult X":return a.policy&&this.lodash_set(a,"opts.policy",a.policy),"boolean"==typeof a["auto-redirect"]&&this.lodash_set(a,"opts.redirection",a["auto-redirect"]),a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete object.body):a.body&&delete a.bodyBytes,await $task.fetch(a).then(a=>(a.ok=/^2\d\d$/.test(a.statusCode),a.status=a.statusCode,a),a=>Promise.reject(a.error))}}time(a,b=null){const d=b?new Date(b):new Date;let e={"M+":d.getMonth()+1,"d+":d.getDate(),"H+":d.getHours(),"m+":d.getMinutes(),"s+":d.getSeconds(),"q+":c((d.getMonth()+3)/3),S:d.getMilliseconds()};for(let c in /(y+)/.test(a)&&(a=a.replace(RegExp.$1,(d.getFullYear()+"").slice(4-RegExp.$1.length))),e)new RegExp("("+c+")").test(a)&&(a=a.replace(RegExp.$1,1==RegExp.$1.length?e[c]:("00"+e[c]).slice((""+e[c]).length)));return a}getBaseURL(a){return a.replace(/[?#].*$/,"")}isAbsoluteURL(a){return /^[a-z][a-z0-9+.-]*:/.test(a)}getURLParameters(a){return(a.match(/([^?=&]+)(=([^&]*))/g)||[]).reduce((b,a)=>(b[a.slice(0,a.indexOf("="))]=a.slice(a.indexOf("=")+1),b),{})}getTimestamp(a=new Date){return c(a.getTime()/1e3)}queryStr(a){let b=[];for(let c in a)a.hasOwnProperty(c)&&b.push(`${c}=${a[c]}`);let c=b.join("&");return c}queryObj(a){let b={},c=a.split("&");for(let d of c){let a=d.split("="),c=a[0],e=a[1]||"";c&&(b[c]=e)}return b}msg(a=this.name,b="",c="",d){const e=a=>{switch(typeof a){case void 0:return a;case"string":switch(this.platform()){case"Surge":case"Stash":case"Egern":default:return{url:a};case"Loon":case"Shadowrocket":return a;case"Quantumult X":return{"open-url":a}}case"object":switch(this.platform()){case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:{let b=a.url||a.openUrl||a["open-url"];return{url:b}}case"Loon":{let b=a.openUrl||a.url||a["open-url"],c=a.mediaUrl||a["media-url"];return{openUrl:b,mediaUrl:c}}case"Quantumult X":{let b=a["open-url"]||a.url||a.openUrl,c=a["media-url"]||a.mediaUrl,d=a["update-pasteboard"]||a.updatePasteboard;return{"open-url":b,"media-url":c,"update-pasteboard":d}}}default:}};if(!this.isMute)switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:$notification.post(a,b,c,e(d));break;case"Quantumult X":$notify(a,b,c,e(d))}}log(...a){0<a.length&&(this.logs=[...this.logs,...a]),console.log(a.join(this.logSeparator))}logErr(a,b){switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":case"Quantumult X":default:this.log("",`❗️${this.name}, 错误!`,a,b)}}wait(a){return new Promise(b=>setTimeout(b,a))}done(a={}){const b=new Date().getTime(),c=(b-this.startTime)/1e3;switch(this.log("",`🔔${this.name}, 结束! 🕛 ${c} 秒`),this.platform()){case"Surge":a.policy&&this.lodash_set(a,"headers.X-Surge-Policy",a.policy),$done(a);break;case"Loon":a.policy&&(a.node=a.policy),$done(a);break;case"Stash":a.policy&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy)),$done(a);break;case"Egern":$done(a);break;case"Shadowrocket":default:$done(a);break;case"Quantumult X":a.policy&&this.lodash_set(a,"opts.policy",a.policy),delete a["auto-redirect"],delete a["auto-cookie"],delete a["binary-mode"],delete a.charset,delete a.host,delete a.insecure,delete a.method,delete a.opt,delete a.path,delete a.policy,delete a["policy-descriptor"],delete a.scheme,delete a.sessionIndex,delete a.statusCode,delete a.timeout,a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete a.body):a.body&&delete a.bodyBytes,$done(a)}}}(a,b)}
