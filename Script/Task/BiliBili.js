@@ -77,7 +77,7 @@ const isFlag = exec_times =>
 const persistentStore = async config => {
 	if (config.cookie.DedeUserID) {
 		const url = $request.url
-		config.key = url.match(/.*access_key=(.*?)&build/)?.[1]
+		config.key = url.match(/.*access_key=(.*?)&/)?.[1]
 		config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
 		if (!config.key) { //网页方式登录
 			let auth_code = "0", access_key = "0", login_confirm = false
