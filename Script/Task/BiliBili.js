@@ -1,7 +1,7 @@
 /*
-哔哩哔哩每日任务(V1.1)
+哔哩哔哩每日任务(V1.2)
 
-更新时间: 2024-04-06
+更新时间: 2025-01-31
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -199,7 +199,7 @@ async function signBiliBili() {
 			$.log("---- 经验值任务均已完成,将尝试额外任务")
 		}
 		
-		await liveSign()
+		await liveSign() //已下线
 		await silver2coin()
 		await vipScoreSign()
 		if (config.user.vipStatus === 1) {
@@ -450,21 +450,19 @@ async function coin() {
 		//$.log("即将投币的视频aid: " + aid)
 		if (aid !== 0) {
 			const body = {
+				access_key: config.key,
 				aid,
 				multiply: 1,
 				select_like: 0,
-				cross_domain: true,
-				csrf: config.cookie.bili_jct
 			}
 			const myRequest = {
-				url: "https://api.bilibili.com/x/web-interface/coin/add",
+				url: "https://app.bilibili.com/x/v2/view/coin/add",
 				headers: {
-					'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-					'accept': 'application/json, text/plain, */*',
+					'user-agent': 'bili-universal/83100100 CFNetwork/1.0 Darwin/24.3.0 os/ios model/iPhone 16 Pro Max mobi_app/iphone build/83100100 osVer/18.3 network/2 channel/AppStore',
+					'accept-encoding': 'gzip, deflate, br',
 					'content-type': 'application/x-www-form-urlencoded',
-					'origin': 'https://www.bilibili.com',
-					'referer': 'https://www.bilibili.com/video/BV1MT411G7fG?vd_source=1970993e2eff4af7be029aefcfa468b8',
-					'cookie': config.cookieStr + ';buvid3=fuckchenruilovelaoliu'
+					'app-key': 'iphone',
+					'cookie': config.cookieStr
 				},
 				body: $.queryStr(body)
 			}
@@ -490,10 +488,10 @@ async function coin() {
 				}
 			})
 		} else {
-			$.log("获取随机投币视频失败")
+			$.log("- 获取随机投币视频失败")
 		}
 	} else {
-		$.log("获取随机关注用户列表失败")
+		$.log("- 获取随机关注用户列表失败")
 	}
 }
 
@@ -537,7 +535,7 @@ async function getFavAid(arr) {
 	const myRequest = {
 		url: `https://api.bilibili.com/x/space/wbi/arc/search?${wbiSigns}`,
 		headers: {
-			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/20F75 BiliApp/77200100 os/ios model/iPhone 15 Pro Max mobi_app/iphone build/77200100 osVer/17.4.1 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
+			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/22D63 BiliApp/83100100 os/ios model/iPhone 16 Pro Max mobi_app/iphone build/8310000100 osVer/18.3 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
 			'cookie': config.cookieStr,
 			'referer': 'https://space.bilibili.com'
 		}
@@ -545,7 +543,7 @@ async function getFavAid(arr) {
 	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
-			if (body?.code === 0) {
+			if (body?.code === 0 && body.data?.list?.vlist.some(Boolean)) {
 				$.log("- 获取投币视频成功")
 				let vlist = body.data?.list?.vlist
 				let random_v_int = Math.floor((Math.random() * vlist.length))
@@ -741,7 +739,7 @@ async function vipScoreGo() {
 async function vipScoreFan() {
 	$.log("#### 大会员浏览追番频道10s任务")
 	const myRequest = {
-		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=jp_channel&sign=768d600feba34e6d1109e4157c0f0c5f&task_sign=557D1ACE13E9E81393259FFB621D6D0E`,
+		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&appkey=27eb53fc9058f8c3&position=jp_channel&statistics=%7B%22appId%22%3A1%2C%22version%22%3A%228.31.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D`,
 		method: "POST",
 		headers: {}
 	}
@@ -763,7 +761,7 @@ async function vipScoreFan() {
 async function vipScoreMovie() {
 	$.log("#### 大会员浏览影视频道10s任务")
 	const myRequest = {
-		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&position=tv_channel&sign=09ece1c295cb86d74778b93c59c0da3a&task_sign=B7DA5FAE25C39F53C62C03076CF2878B`,
+		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&appkey=27eb53fc9058f8c3&position=tv_channel&statistics=%7B%22appId%22%3A1%2C%22version%22%3A%228.31.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D`,
 		method: "POST",
 		headers: {}
 	}
@@ -788,6 +786,8 @@ async function vipScoreDress() {
 		csrf: config.cookie.bili_jct,
 		ts: $.getTimestamp(),
 		taskCode: 'dress-view',
+		statistics: '%7B%22appId%22%3A1%2C%22version%22%3A%228.31.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D',
+		appkey: '27eb53fc9058f8c3',
 		access_key: config.key
 	}
 	const myRequest = {
@@ -827,7 +827,7 @@ async function vipWatchAccept() {
 		url: 'https://api.bilibili.com/pgc/activity/score/task/receive/v2',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/20F75 BiliApp/77200100 os/ios model/iPhone 15 Pro Max mobi_app/iphone build/77200100 osVer/17.4.1 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
+			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/615.2.9.10.4 (KHTML, like Gecko) Mobile/22D63 BiliApp/83100100 os/ios model/iPhone 16 Pro Max mobi_app/iphone build/83100100 osVer/18.3 network/2 channel/AppStore c_locale/zh-Hans_CN s_locale/zh-Hans_CN disable_rcmd/0',
 			'Cookie': `SESSDATA=${config.cookie.SESSDATA}`,
 			'Referer': `https://big.bilibili.com/mobile/bigPoint/task`
 		},
