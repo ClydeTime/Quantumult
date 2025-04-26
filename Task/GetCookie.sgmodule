@@ -7,7 +7,7 @@ DOMAIN,gslbali.ximalaya.com,REJECT
 DOMAIN,gslbtx.ximalaya.com,REJECT
 
 [Script]
-B站Cookie(APP) = type=http-request,pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\?,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/BiliBili.js,requires-body=0
+B站Cookie(APP) = type=http-request,pattern=^https?:\/\/cm\.bilibili\.com\/cm\/api\/fees\/wise$,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/BiliBili.js,requires-body=0
 
 B站Cookie(网页) = type=http-request,pattern=^https?:\/\/m.bilibili.com/$,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/BiliBili.js,requires-body=0
 
@@ -26,4 +26,4 @@ NGA玩家社区Cookie = type=http-request,pattern=^https?:\/\/ngabbs.com\/nuke.p
 贴吧Cookie2 = type=http-request,pattern=^https?:\/\/c\.tieba\.baidu\.com\/c\/u\/follow\/getFoldedMessageUserInfo,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/TieBa.js,requires-body=0
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, m.bilibili.com, xmc.ximalaya.com, ngabbs.com, iacc.rec.qq.com, c.tieba.baidu.com, tiebac.baidu.com
+hostname = %APPEND% cm.bilibili.com, m.bilibili.com, xmc.ximalaya.com, ngabbs.com, iacc.rec.qq.com, c.tieba.baidu.com, tiebac.baidu.com
